@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export default class SettingsService {
+export class SettingsService {
     private readonly appPort: number;
 
     constructor() {
