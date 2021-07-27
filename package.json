@@ -1,0 +1,11 @@
+{
+  "name": "restful-nestjs",
+  "version": "1.0.0",
+  "description": "NodeJS and Nest learning",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+  },
+  "author": "Dmitry Yaniuk",
+  "license": "ISC"
+}
