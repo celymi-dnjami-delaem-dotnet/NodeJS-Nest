@@ -4,7 +4,7 @@
   "description": "NodeJS and Nest learning",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": ""
   },
   "author": "Dmitry Yaniuk",
   "license": "ISC"
