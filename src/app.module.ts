@@ -4,8 +4,14 @@ import { SettingsService } from './settings.service';
 import { ProductsController } from './api/controllers/products.controller';
 import { ProductService } from './bl/services/product.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CategorySchema, CategorySchemaName } from './db/schemas/categorySchema';
-import { ProductSchema, ProductSchemaName } from './db/schemas/productSchema';
+import { Category, CategorySchema } from './db/schemas/categorySchema';
+import { Product, ProductSchema } from './db/schemas/productSchema';
+import { ProductMapper } from './bl/mappers/product.mapper';
+import { ProductRepository } from './db/repository/product.repository';
+import { CategoryRepository } from './db/repository/category.repository';
+import { CategoryMapper } from './bl/mappers/category.mapper';
+import { CategoryService } from './bl/services/category.service';
+import { CategoryController } from './api/controllers/category.controller';
 
 @Module({
     imports: [
@@ -17,14 +23,22 @@ import { ProductSchema, ProductSchemaName } from './db/schemas/productSchema';
             },
         ),
         MongooseModule.forFeature([
-            { name: CategorySchemaName, schema: CategorySchema },
+            { name: Category.name, schema: CategorySchema },
             {
-                name: ProductSchemaName,
+                name: Product.name,
                 schema: ProductSchema,
             },
         ]),
     ],
-    controllers: [ProductsController],
-    providers: [SettingsService, ProductService],
+    controllers: [ProductsController, CategoryController],
+    providers: [
+        SettingsService,
+        CategoryService,
+        ProductService,
+        ProductMapper,
+        CategoryMapper,
+        ProductRepository,
+        CategoryRepository,
+    ],
 })
 export class AppModule {}

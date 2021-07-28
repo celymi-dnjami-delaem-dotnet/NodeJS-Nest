@@ -1,24 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
+import { ProductRepository } from '../../db/repository/product.repository';
+import { Product } from '../../db/schemas/productSchema';
+import { ProductDto } from '../../api/dto/product.dto';
+import { ProductMapper } from '../mappers/product.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ProductService {
-    getProducts(): any {
-        return [
-            {
-                displayName: 'Cyberpunk 2077',
-                price: '60$',
-                rating: 2.7,
-            },
-            {
-                displayName: 'SpongeBob SquarePants: Battle for Bikini Bottom – Rehydrated',
-                price: '40$',
-                rating: 9.8,
-            },
-            {
-                displayName: 'God Of War',
-                price: '50$',
-                rating: 8.6,
-            },
-        ];
+    constructor(private readonly productRepository: ProductRepository, private readonly productMapper: ProductMapper) {}
+
+    async getProductById(id: string): Promise<any> {
+        const productSchema: Product = await this.productRepository.getProductById(id);
+
+        return this.productMapper.mapToDto(productSchema);
+    }
+
+    async createProduct(product: ProductDto): Promise<any> {
+        const productSchema: Product = this.productMapper.mapToSchema(product);
+
+        return await this.productRepository.createProduct(productSchema);
     }
 }

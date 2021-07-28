@@ -4,16 +4,15 @@ import { Category } from './categorySchema';
 
 export type ProductDocument = Product & Document;
 
-@Schema({ skipVersioning: true })
+@Schema({ versionKey: false })
 export class Product {
-    @Prop({ type: MongooseSchema.Types.ObjectId })
     _id: string;
 
     @Prop({ required: true })
     displayName: string;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Category' })
-    category: Category;
+    category?: Category;
 
     @Prop({ required: true })
     totalRating: number;
@@ -23,8 +22,9 @@ export class Product {
 
     @Prop({ default: Date.now() })
     createdAt: Date;
-}
 
-export const ProductSchemaName = 'Product';
+    @Prop({ default: false })
+    isDeleted: boolean;
+}
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
