@@ -4,13 +4,14 @@ import { Category, CategoryDocument } from '../schemas/category.schema';
 import { Model } from 'mongoose';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
+import { Product } from '../schemas/product.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
     async getCategoryById(id: string): Promise<ServiceResult<Category>> {
-        const category = await this.categoryModel.findById(id).exec();
+        const category = await this.categoryModel.findOne({ _id: id }).populate('products', null, Product.name).exec();
 
         if (category) {
             return new ServiceResult<Category>(ServiceResultType.Success, category);

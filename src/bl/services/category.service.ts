@@ -3,8 +3,7 @@ import { CategoryRepository } from '../../db/repository/category.repository';
 import { CategoryDto } from '../../api/dto/models/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
-import { ServiceResultType } from '../result-wrappers/service-result-type';
-import { UserFriendlyException } from '../exceptions/user-friendly.exception';
+import { Utils } from '../utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CategoryService {
@@ -16,7 +15,7 @@ export class CategoryService {
     async getCategoryById(id: string): Promise<CategoryDto> {
         const { serviceResultType, data } = await this.categoryRepository.getCategoryById(id);
 
-        CategoryService.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType);
 
         return this.categoryMapper.mapToDtoModel(data);
     }
@@ -34,7 +33,7 @@ export class CategoryService {
 
         const { serviceResultType, data } = await this.categoryRepository.updateCategory(categorySchema);
 
-        CategoryService.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType);
 
         return this.categoryMapper.mapToDtoModel(data);
     }
@@ -42,18 +41,12 @@ export class CategoryService {
     async softRemoveCategory(id: string): Promise<void> {
         const { serviceResultType } = await this.categoryRepository.softRemoveCategory(id);
 
-        CategoryService.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType);
     }
 
     async removeCategory(id: string): Promise<void> {
         const { serviceResultType } = await this.categoryRepository.removeCategory(id);
 
-        CategoryService.validateServiceResultType(serviceResultType);
-    }
-
-    private static validateServiceResultType(serviceResultType: ServiceResultType, exceptionMessage?: string): void {
-        if (serviceResultType !== ServiceResultType.Success) {
-            throw new UserFriendlyException(serviceResultType, exceptionMessage);
-        }
+        Utils.validateServiceResultType(serviceResultType);
     }
 }
