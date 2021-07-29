@@ -1,4 +1,4 @@
-import { Product } from '../../db/schemas/productSchema';
+import { Product } from '../../db/schemas/product.schema';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { Injectable } from '@nestjs/common';
 

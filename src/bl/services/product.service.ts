@@ -1,6 +1,6 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { ProductRepository } from '../../db/repository/product.repository';
-import { Product } from '../../db/schemas/productSchema';
+import { Product } from '../../db/schemas/product.schema';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
 

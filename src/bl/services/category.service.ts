@@ -1,9 +1,9 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { CategoryRepository } from '../../db/repository/category.repository';
 import { CategoryDto } from '../../api/dto/models/category.dto';
-import { Category } from '../../db/schemas/categorySchema';
 import { CategoryMapper } from '../mappers/category.mapper';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
+import { ServiceResultType } from '../result-wrappers/service-result-type';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CategoryService {
@@ -13,9 +13,13 @@ export class CategoryService {
     ) {}
 
     async getCategoryById(id: string): Promise<CategoryDto> {
-        const category: Category = await this.categoryRepository.getCategoryById(id);
+        const { serviceResultType, data } = await this.categoryRepository.getCategoryById(id);
 
-        return this.categoryMapper.mapToDtoModel(category);
+        if (serviceResultType === ServiceResultType.NotFound) {
+            throw new Error();
+        }
+
+        return this.categoryMapper.mapToDtoModel(data);
     }
 
     async createCategory(category: CreateCategoryDto): Promise<CategoryDto> {
@@ -29,16 +33,27 @@ export class CategoryService {
     async updateCategory(category: CategoryDto): Promise<CategoryDto> {
         const categorySchema = this.categoryMapper.mapToSchema(category);
 
-        const updatedCategorySchema = await this.categoryRepository.updateRepository(categorySchema);
+        const { serviceResultType, data } = await this.categoryRepository.updateCategory(categorySchema);
+        if (serviceResultType === ServiceResultType.NotFound) {
+            throw new Error();
+        }
 
-        return this.categoryMapper.mapToDtoModel(updatedCategorySchema);
+        return this.categoryMapper.mapToDtoModel(data);
     }
 
     async softRemoveCategory(id: string): Promise<void> {
-        await this.categoryRepository.softRemoveCategory(id);
+        const { serviceResultType } = await this.categoryRepository.softRemoveCategory(id);
+
+        if (serviceResultType === ServiceResultType.NotFound) {
+            throw new Error();
+        }
     }
 
     async removeCategory(id: string): Promise<void> {
-        await this.categoryRepository.removeCategory(id);
+        const { serviceResultType } = await this.categoryRepository.removeCategory(id);
+
+        if (serviceResultType === ServiceResultType.NotFound) {
+            throw new Error();
+        }
     }
 }

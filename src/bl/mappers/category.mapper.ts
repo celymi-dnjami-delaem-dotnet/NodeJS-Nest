@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Category } from '../../db/schemas/categorySchema';
+import { Category } from '../../db/schemas/category.schema';
 import { CategoryDto } from '../../api/dto/models/category.dto';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
 
