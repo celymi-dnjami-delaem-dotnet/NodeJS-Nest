@@ -1,7 +1,6 @@
-import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { ProductService } from '../../bl/services/product.service';
 import { ProductDto } from '../dto/models/product.dto';
-import { StatusCodes } from 'http-status-codes';
 
 @Controller('api/product')
 export class ProductsController {
@@ -13,7 +12,7 @@ export class ProductsController {
     }
 
     @Post()
-    @HttpCode(StatusCodes.CREATED)
+    @HttpCode(HttpStatus.CREATED)
     async createProduct(@Body() productDto: ProductDto): Promise<ProductDto> {
         return this.appService.createProduct(productDto);
     }

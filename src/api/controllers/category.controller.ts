@@ -1,7 +1,6 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { CategoryService } from '../../bl/services/category.service';
 import { CategoryDto } from '../dto/models/category.dto';
-import { StatusCodes } from 'http-status-codes';
 import { CreateCategoryDto } from '../dto/actions/create-category.dto';
 
 @Controller('api/category')
@@ -14,7 +13,7 @@ export class CategoryController {
     }
 
     @Post()
-    @HttpCode(StatusCodes.CREATED)
+    @HttpCode(HttpStatus.CREATED)
     async createCategory(@Body() category: CreateCategoryDto): Promise<CategoryDto> {
         return await this.categoryService.createCategory(category);
     }
@@ -25,13 +24,13 @@ export class CategoryController {
     }
 
     @Delete('soft-remove/id/:id')
-    @HttpCode(StatusCodes.NO_CONTENT)
+    @HttpCode(HttpStatus.NO_CONTENT)
     async softRemoveCategory(@Param('id') id: string): Promise<void> {
         await this.categoryService.softRemoveCategory(id);
     }
 
     @Delete('id/:id')
-    @HttpCode(StatusCodes.NO_CONTENT)
+    @HttpCode(HttpStatus.NO_CONTENT)
     async removeCategory(@Param('id') id: string): Promise<void> {
         await this.categoryService.removeCategory(id);
     }
