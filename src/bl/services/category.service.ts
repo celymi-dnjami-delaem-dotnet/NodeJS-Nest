@@ -4,6 +4,7 @@ import { CategoryDto } from '../../api/dto/models/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
 import { ServiceResultType } from '../result-wrappers/service-result-type';
+import { UserFriendlyException } from '../exceptions/user-friendly.exception';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CategoryService {
@@ -15,9 +16,7 @@ export class CategoryService {
     async getCategoryById(id: string): Promise<CategoryDto> {
         const { serviceResultType, data } = await this.categoryRepository.getCategoryById(id);
 
-        if (serviceResultType === ServiceResultType.NotFound) {
-            throw new Error();
-        }
+        CategoryService.validateServiceResultType(serviceResultType);
 
         return this.categoryMapper.mapToDtoModel(data);
     }
@@ -34,9 +33,8 @@ export class CategoryService {
         const categorySchema = this.categoryMapper.mapToSchema(category);
 
         const { serviceResultType, data } = await this.categoryRepository.updateCategory(categorySchema);
-        if (serviceResultType === ServiceResultType.NotFound) {
-            throw new Error();
-        }
+
+        CategoryService.validateServiceResultType(serviceResultType);
 
         return this.categoryMapper.mapToDtoModel(data);
     }
@@ -44,16 +42,18 @@ export class CategoryService {
     async softRemoveCategory(id: string): Promise<void> {
         const { serviceResultType } = await this.categoryRepository.softRemoveCategory(id);
 
-        if (serviceResultType === ServiceResultType.NotFound) {
-            throw new Error();
-        }
+        CategoryService.validateServiceResultType(serviceResultType);
     }
 
     async removeCategory(id: string): Promise<void> {
         const { serviceResultType } = await this.categoryRepository.removeCategory(id);
 
-        if (serviceResultType === ServiceResultType.NotFound) {
-            throw new Error();
+        CategoryService.validateServiceResultType(serviceResultType);
+    }
+
+    private static validateServiceResultType(serviceResultType: ServiceResultType, exceptionMessage?: string): void {
+        if (serviceResultType !== ServiceResultType.Success) {
+            throw new UserFriendlyException(serviceResultType, exceptionMessage);
         }
     }
 }
