@@ -10,6 +10,6 @@ export class SettingsService {
     }
 
     getAppPort(): number {
-        return this.appPort;
+        return Number(this.appPort);
     }
 }

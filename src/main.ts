@@ -2,10 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { INestApplication } from '@nestjs/common';
 import registerFilters from './configuration/filters.configuration';
+import { SettingsService } from './settings.service';
 
 async function bootstrap() {
     const app: INestApplication = await NestFactory.create(AppModule);
-    const startPort: number = Number(process.env.APPLICATION_PORT) || 3000;
+    const settingsService = app.get(SettingsService);
+    const startPort: number = settingsService.getAppPort() || 3000;
 
     registerFilters(app);
 
