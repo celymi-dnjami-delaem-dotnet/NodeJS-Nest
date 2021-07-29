@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ProductService } from '../../bl/services/product.service';
-import { ProductDto } from '../dto/product.dto';
+import { ProductDto } from '../dto/models/product.dto';
 import { StatusCodes } from 'http-status-codes';
 
 @Controller('api/product')
