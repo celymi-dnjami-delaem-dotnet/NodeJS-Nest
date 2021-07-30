@@ -57,8 +57,14 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "{src,test}/**/*.ts": [
+      "eslint -c .eslint.js --fix",
+      "git add"
+    ]
   },
   "jest": {
     "moduleFileExtensions": [
