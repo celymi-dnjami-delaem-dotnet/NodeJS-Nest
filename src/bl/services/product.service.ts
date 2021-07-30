@@ -3,10 +3,16 @@ import { ProductRepository } from '../../db/repository/product.repository';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
 import { Utils } from '../utils';
+import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
+import { CategoryRepository } from '../../db/repository/category.repository';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProductService {
-    constructor(private readonly productRepository: ProductRepository, private readonly productMapper: ProductMapper) {}
+    constructor(
+        private readonly categoryRepository: CategoryRepository,
+        private readonly productRepository: ProductRepository,
+        private readonly productMapper: ProductMapper,
+    ) {}
 
     async getProductById(id: string): Promise<ProductDto> {
         const { serviceResultType, data } = await this.productRepository.getProductById(id);
@@ -16,10 +22,16 @@ export class ProductService {
         return this.productMapper.mapToDto(data);
     }
 
-    async createProduct(product: ProductDto): Promise<ProductDto> {
-        const productSchema = this.productMapper.mapToSchema(product);
+    async createProduct(product: CreateProductDto): Promise<ProductDto> {
+        const productSchema = this.productMapper.mapToCreateSchema(product);
 
         const createdProduct = await this.productRepository.createProduct(productSchema);
+        const { serviceResultType, exceptionMessage } = await this.categoryRepository.addProductToCategory(
+            productSchema.category,
+            createdProduct._id,
+        );
+
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
         return this.productMapper.mapToDto(createdProduct);
     }

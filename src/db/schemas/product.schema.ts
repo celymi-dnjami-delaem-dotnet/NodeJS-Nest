@@ -14,7 +14,7 @@ export class Product {
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Category' })
     category?: Category;
 
-    @Prop({ required: true })
+    @Prop({ default: 0 })
     totalRating: number;
 
     @Prop({ required: true })

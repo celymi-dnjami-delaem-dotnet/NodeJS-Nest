@@ -1,6 +1,8 @@
 import { Product } from '../../db/schemas/product.schema';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { Injectable } from '@nestjs/common';
+import { CreateProductSchema } from '../../db/schemas/create-product.schema';
+import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
 
 @Injectable()
 export class ProductMapper {
@@ -19,11 +21,19 @@ export class ProductMapper {
         return {
             id: product._id,
             displayName: product.displayName,
-            categoryId: product.category._id,
+            categoryId: product.category && product.category._id,
             price: product.price,
             totalRating: product.totalRating,
             createdAt: product.createdAt,
             isDeleted: product.isDeleted,
+        };
+    }
+
+    mapToCreateSchema(product: CreateProductDto): CreateProductSchema {
+        return {
+            displayName: product.displayName,
+            category: product.categoryId,
+            price: product.price,
         };
     }
 }

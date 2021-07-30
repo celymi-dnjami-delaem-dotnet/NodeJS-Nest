@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
 import { Product } from '../schemas/product.schema';
+import { CreateCategorySchema } from '../schemas/create-category.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CategoryRepository {
@@ -20,17 +21,16 @@ export class CategoryRepository {
         return new ServiceResult<Category>(ServiceResultType.NotFound);
     }
 
-    async createCategory(category: Category): Promise<Category> {
+    async createCategory(category: CreateCategorySchema): Promise<Category> {
         const categorySchema = new this.categoryModel(category);
 
         return await categorySchema.save();
     }
 
     async updateCategory(category: Category): Promise<ServiceResult<Category>> {
-        const updateResult = await this.categoryModel.updateOne(
-            { _id: category._id },
-            { $set: { displayName: category.displayName } },
-        );
+        const updateResult = await this.categoryModel
+            .updateOne({ _id: category._id }, { $set: { displayName: category.displayName } })
+            .exec();
 
         if (!updateResult.nModified) {
             return new ServiceResult<Category>(ServiceResultType.NotFound);
@@ -39,6 +39,18 @@ export class CategoryRepository {
         const updatedModel = await this.categoryModel.findById(category._id).exec();
 
         return new ServiceResult<Category>(ServiceResultType.Success, updatedModel);
+    }
+
+    async addProductToCategory(categoryId: string, productId: string): Promise<ServiceResult> {
+        const addProductResult = await this.categoryModel
+            .updateOne({ _id: categoryId }, { $push: { products: productId } })
+            .exec();
+
+        if (!addProductResult.nModified) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
     }
 
     async softRemoveCategory(id: string): Promise<ServiceResult> {

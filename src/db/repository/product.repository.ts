@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
 import { Category } from '../schemas/category.schema';
+import { CreateProductSchema } from '../schemas/create-product.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProductRepository {
@@ -23,19 +24,21 @@ export class ProductRepository {
         return new ServiceResult<Product>(ServiceResultType.Success, productSchema);
     }
 
-    async createProduct(productEntity: Product): Promise<Product> {
+    async createProduct(productEntity: CreateProductSchema): Promise<Product> {
         const createdProduct = new this.productModel(productEntity);
 
         return await createdProduct.save();
     }
 
     async updateProduct(productSchema: Product): Promise<ServiceResult<Product>> {
-        const updateResult = await this.productModel.updateOne(
-            { _id: productSchema._id },
-            {
-                $set: { displayName: productSchema.displayName, price: productSchema.price },
-            },
-        );
+        const updateResult = await this.productModel
+            .updateOne(
+                { _id: productSchema._id },
+                {
+                    $set: { displayName: productSchema.displayName, price: productSchema.price },
+                },
+            )
+            .exec();
 
         if (!updateResult.nModified) {
             return new ServiceResult<Product>(ServiceResultType.NotFound);

@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ProductService } from '../../bl/services/product.service';
 import { ProductDto } from '../dto/models/product.dto';
+import { CreateProductDto } from '../dto/actions/create-product.dto';
 
 @Controller('api/product')
-export class ProductsController {
+export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
     @Get('id/:id')
@@ -13,7 +14,7 @@ export class ProductsController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    async createProduct(@Body() productDto: ProductDto): Promise<ProductDto> {
+    async createProduct(@Body() productDto: CreateProductDto): Promise<ProductDto> {
         return this.productService.createProduct(productDto);
     }
 

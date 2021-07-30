@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SettingsService } from './settings.service';
-import { ProductsController } from './api/controllers/products.controller';
+import { ProductController } from './api/controllers/product.controller';
 import { ProductService } from './bl/services/product.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Category, CategorySchema } from './db/schemas/category.schema';
@@ -30,7 +30,7 @@ import { CategoryController } from './api/controllers/category.controller';
             },
         ]),
     ],
-    controllers: [ProductsController, CategoryController],
+    controllers: [ProductController, CategoryController],
     providers: [
         SettingsService,
         CategoryService,
