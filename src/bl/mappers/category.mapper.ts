@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { Category } from '../../db/schemas/category.schema';
 import { CategoryDto } from '../../api/dto/models/category.dto';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
-import { ProductMapper } from './product.mapper';
 import { CreateCategorySchema } from '../../db/schemas/create-category.schema';
+import { Injectable } from '@nestjs/common';
+import { ProductMapper } from './product.mapper';
 
 @Injectable()
 export class CategoryMapper {

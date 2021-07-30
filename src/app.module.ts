@@ -1,17 +1,17 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { SettingsService } from './settings.service';
-import { ProductController } from './api/controllers/product.controller';
-import { ProductService } from './bl/services/product.service';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Category, CategorySchema } from './db/schemas/category.schema';
+import { CategoryController } from './api/controllers/category.controller';
+import { CategoryMapper } from './bl/mappers/category.mapper';
+import { CategoryRepository } from './db/repository/category.repository';
+import { CategoryService } from './bl/services/category.service';
+import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './db/schemas/product.schema';
+import { ProductController } from './api/controllers/product.controller';
 import { ProductMapper } from './bl/mappers/product.mapper';
 import { ProductRepository } from './db/repository/product.repository';
-import { CategoryRepository } from './db/repository/category.repository';
-import { CategoryMapper } from './bl/mappers/category.mapper';
-import { CategoryService } from './bl/services/category.service';
-import { CategoryController } from './api/controllers/category.controller';
+import { ProductService } from './bl/services/product.service';
+import { SettingsService } from './settings.service';
 
 @Module({
     imports: [

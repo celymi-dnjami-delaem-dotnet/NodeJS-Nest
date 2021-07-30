@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
+import registerFilters from './configuration/filters.configuration';
+import registerPipes from './configuration/pipes.configuration';
 import { AppModule } from './app.module';
 import { INestApplication } from '@nestjs/common';
-import registerFilters from './configuration/filters.configuration';
+import { NestFactory } from '@nestjs/core';
 import { SettingsService } from './settings.service';
-import registerPipes from './configuration/pipes.configuration';
 
 async function bootstrap() {
     const app: INestApplication = await NestFactory.create(AppModule);

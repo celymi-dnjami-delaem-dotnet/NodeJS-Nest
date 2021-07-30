@@ -1,8 +1,8 @@
+import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
+import { CreateProductSchema } from '../../db/schemas/create-product.schema';
+import { Injectable } from '@nestjs/common';
 import { Product } from '../../db/schemas/product.schema';
 import { ProductDto } from '../../api/dto/models/product.dto';
-import { Injectable } from '@nestjs/common';
-import { CreateProductSchema } from '../../db/schemas/create-product.schema';
-import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
 
 @Injectable()
 export class ProductMapper {

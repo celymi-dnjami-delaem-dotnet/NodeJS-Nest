@@ -1,10 +1,10 @@
+import { CategoryRepository } from '../../db/repository/category.repository';
+import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
 import { Injectable, Scope } from '@nestjs/common';
-import { ProductRepository } from '../../db/repository/product.repository';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
+import { ProductRepository } from '../../db/repository/product.repository';
 import { Utils } from '../utils';
-import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
-import { CategoryRepository } from '../../db/repository/category.repository';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProductService {

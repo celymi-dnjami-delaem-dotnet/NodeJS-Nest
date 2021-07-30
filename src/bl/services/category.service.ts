@@ -1,8 +1,8 @@
-import { Injectable, Scope } from '@nestjs/common';
-import { CategoryRepository } from '../../db/repository/category.repository';
 import { CategoryDto } from '../../api/dto/models/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
+import { CategoryRepository } from '../../db/repository/category.repository';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
+import { Injectable, Scope } from '@nestjs/common';
 import { Utils } from '../utils';
 
 @Injectable({ scope: Scope.REQUEST })

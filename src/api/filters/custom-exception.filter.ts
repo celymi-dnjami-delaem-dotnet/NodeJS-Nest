@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
-import { UserFriendlyException } from '../../bl/exceptions/user-friendly.exception';
 import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
+import { UserFriendlyException } from '../../bl/exceptions/user-friendly.exception';
 
 @Catch(UserFriendlyException)
 export class CustomExceptionFilter implements ExceptionFilter {

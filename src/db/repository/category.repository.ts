@@ -1,11 +1,11 @@
-import { Injectable, Scope } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Category, CategoryDocument } from '../schemas/category.schema';
+import { CreateCategorySchema } from '../schemas/create-category.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Injectable, Scope } from '@nestjs/common';
 import { Model } from 'mongoose';
+import { Product } from '../schemas/product.schema';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
-import { Product } from '../schemas/product.schema';
-import { CreateCategorySchema } from '../schemas/create-category.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CategoryRepository {
