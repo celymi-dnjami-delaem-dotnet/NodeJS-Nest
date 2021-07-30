@@ -2,16 +2,15 @@
   "name": "restful-nestjs",
   "version": "1.0.0",
   "description": "NodeJS and Nest learning",
-  "main": "index.ts",
   "author": "Dmitry Yaniuk",
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf build",
     "build": "nest build",
     "format": "prettier --write \\\\\\\"../src/**/*.ts\\\\\\\" \\\\\\\"../test/**/*.ts\\\\\\\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node build/main",
     "lint": "eslint \"{src,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -46,6 +45,7 @@
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^7.0.1",
     "jest": "27.0.6",
     "prettier": "^2.3.2",
     "supertest": "^6.1.3",
@@ -54,6 +54,11 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
   },
   "jest": {
     "moduleFileExtensions": [
