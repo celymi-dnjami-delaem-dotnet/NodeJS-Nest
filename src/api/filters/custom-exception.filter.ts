@@ -23,6 +23,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
             case ServiceResultType.NotFound:
                 errorStatusCode = HttpStatus.NOT_FOUND;
                 break;
+            case ServiceResultType.InternalError:
             default:
                 errorStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
                 break;
