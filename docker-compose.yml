@@ -1,6 +1,22 @@
 version: '3.4'
 
 services:
+  api:
+    depends_on:
+      - mongo_db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run start:prod
+    environment:
+      APPLICATION_PORT: 3006
+      MONGO_DB_HOST: mongo_db
+      MONGO_DB: games
+      MONGO_DB_USER: root
+      MONGO_DB_PASSWORD: Password123
+    ports:
+      - '13610:3006'
+
   mongo_db:
     image: mongo
     restart: always
