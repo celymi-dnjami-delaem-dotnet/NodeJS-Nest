@@ -1,5 +1,6 @@
 import registerFilters from './configuration/filters.configuration';
 import registerPipes from './configuration/pipes.configuration';
+import registerSwagger from './configuration/swagger.configuration';
 import { AppModule } from './app.module';
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -12,6 +13,7 @@ async function bootstrap() {
 
     registerPipes(app);
     registerFilters(app);
+    registerSwagger(app);
 
     await app.listen(startPort);
 }
