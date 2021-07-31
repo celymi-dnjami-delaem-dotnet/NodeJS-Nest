@@ -4,6 +4,7 @@ import { CategoryMapper } from './bl/mappers/category.mapper';
 import { CategoryRepository } from './db/repository/category.repository';
 import { CategoryService } from './bl/services/category.service';
 import { ConfigModule } from '@nestjs/config';
+import { HealthCheckController } from './api/controllers/health-check.controller';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './db/schemas/product.schema';
@@ -12,6 +13,7 @@ import { ProductMapper } from './bl/mappers/product.mapper';
 import { ProductRepository } from './db/repository/product.repository';
 import { ProductService } from './bl/services/product.service';
 import { SettingsService } from './settings.service';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
     imports: [
@@ -29,8 +31,9 @@ import { SettingsService } from './settings.service';
                 schema: ProductSchema,
             },
         ]),
+        TerminusModule,
     ],
-    controllers: [ProductController, CategoryController],
+    controllers: [ProductController, CategoryController, HealthCheckController],
     providers: [
         SettingsService,
         CategoryService,
