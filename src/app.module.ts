@@ -3,7 +3,6 @@ import { CategoryController } from './api/controllers/category.controller';
 import { CategoryMapper } from './bl/mappers/category.mapper';
 import { CategoryRepository } from './db/repository/category.repository';
 import { CategoryService } from './bl/services/category.service';
-import { ConfigModule } from '@nestjs/config';
 import { HealthCheckController } from './api/controllers/health-check.controller';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -12,18 +11,22 @@ import { ProductController } from './api/controllers/product.controller';
 import { ProductMapper } from './bl/mappers/product.mapper';
 import { ProductRepository } from './db/repository/product.repository';
 import { ProductService } from './bl/services/product.service';
+import { SettingsModule } from './settings.module';
 import { SettingsService } from './settings.service';
 import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
     imports: [
-        ConfigModule.forRoot(),
-        MongooseModule.forRoot(
-            `mongodb://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@${process.env.MONGO_DB_HOST}:${process.env.MONGO_DB_PORT}/${process.env.MONGO_DB}?authSource=admin`,
-            {
+        SettingsModule,
+        MongooseModule.forRootAsync({
+            imports: [SettingsModule],
+            useFactory: async (settingsService: SettingsService) => ({
+                uri: settingsService.getMongooseConnectionString(),
+                useNewUrlParser: true,
                 useUnifiedTopology: true,
-            },
-        ),
+            }),
+            inject: [SettingsService],
+        }),
         MongooseModule.forFeature([
             { name: Category.name, schema: CategorySchema },
             {
@@ -34,14 +37,6 @@ import { TerminusModule } from '@nestjs/terminus';
         TerminusModule,
     ],
     controllers: [ProductController, CategoryController, HealthCheckController],
-    providers: [
-        SettingsService,
-        CategoryService,
-        ProductService,
-        ProductMapper,
-        CategoryMapper,
-        ProductRepository,
-        CategoryRepository,
-    ],
+    providers: [CategoryService, ProductService, ProductMapper, CategoryMapper, ProductRepository, CategoryRepository],
 })
 export class AppModule {}
