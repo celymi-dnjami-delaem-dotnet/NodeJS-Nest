@@ -4,7 +4,7 @@ module.exports = {
         project: 'tsconfig.json',
         sourceType: 'module',
     },
-    plugins: ['@typescript-eslint/eslint-plugin'],
+    plugins: ['@typescript-eslint/eslint-plugin', 'sort-imports-es6-autofix'],
     extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
     root: true,
     env: {
@@ -21,5 +21,13 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'error',
         yoda: 'error',
         'newline-before-return': 'error',
+        'sort-imports-es6-autofix/sort-imports-es6': [
+            2,
+            {
+                ignoreCase: false,
+                ignoreMemberSort: false,
+                memberSyntaxSortOrder: ['all', 'single', 'multiple', 'none'],
+            },
+        ],
     },
 };
