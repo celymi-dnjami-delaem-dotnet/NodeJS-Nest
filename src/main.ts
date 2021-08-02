@@ -4,7 +4,7 @@ import registerSwagger from './configuration/swagger.configuration';
 import { AppModule } from './app.module';
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SettingsService } from './settings.service';
+import { SettingsService } from './settings/settings.service';
 
 async function bootstrap() {
     const app: INestApplication = await NestFactory.create(AppModule);

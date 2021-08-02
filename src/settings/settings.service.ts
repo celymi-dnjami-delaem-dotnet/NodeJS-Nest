@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
-import { ServiceResultType } from './bl/result-wrappers/service-result-type';
-import { UserFriendlyException } from './bl/exceptions/user-friendly.exception';
+import { ServiceResultType } from '../bl/result-wrappers/service-result-type';
+import { UserFriendlyException } from '../bl/exceptions/user-friendly.exception';
 
 @Injectable()
 export class SettingsService {
