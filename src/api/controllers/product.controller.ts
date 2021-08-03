@@ -1,3 +1,4 @@
+import { ApiResponse } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { CreateProductDto } from '../dto/actions/create-product.dto';
 import { ProductDto } from '../dto/models/product.dto';
@@ -8,17 +9,20 @@ export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
     @Get('id/:id')
+    @ApiResponse({ type: ProductDto })
     async getProducts(@Param('id') id: string): Promise<ProductDto> {
         return this.productService.getProductById(id);
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @ApiResponse({ type: ProductDto })
     async createProduct(@Body() productDto: CreateProductDto): Promise<ProductDto> {
         return this.productService.createProduct(productDto);
     }
 
     @Put()
+    @ApiResponse({ type: ProductDto })
     async updateCategory(@Body() category: ProductDto): Promise<ProductDto> {
         return await this.productService.updateProduct(category);
     }
