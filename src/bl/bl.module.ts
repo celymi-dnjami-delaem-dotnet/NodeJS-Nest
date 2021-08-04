@@ -6,7 +6,7 @@ import { ProductMapper } from './mappers/product.mapper';
 import { ProductService } from './services/product.service';
 
 @Module({
-    imports: [DbModule],
+    imports: [DbModule.forRoot()],
     providers: [CategoryService, ProductService, ProductMapper, CategoryMapper],
     exports: [CategoryService, ProductService, ProductMapper, CategoryMapper],
 })

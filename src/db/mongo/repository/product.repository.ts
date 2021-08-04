@@ -1,14 +1,15 @@
 import { Category } from '../schemas/category.schema';
 import { CreateProductSchema } from '../schemas/create-product.schema';
+import { IProductRepository } from '../../types/product-repository.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Scope } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from '../schemas/product.schema';
-import { ServiceResult } from '../../bl/result-wrappers/service-result';
-import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
+import { ServiceResult } from '../../../bl/result-wrappers/service-result';
+import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
 @Injectable({ scope: Scope.REQUEST })
-export class ProductRepository {
+export class ProductMongooseRepository implements IProductRepository {
     constructor(@InjectModel(Product.name) private readonly productModel: Model<ProductDocument>) {}
 
     async getProductById(id: string): Promise<ServiceResult<Product>> {

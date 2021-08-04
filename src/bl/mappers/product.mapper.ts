@@ -1,7 +1,7 @@
 import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
-import { CreateProductSchema } from '../../db/schemas/create-product.schema';
+import { CreateProductSchema } from '../../db/mongo/schemas/create-product.schema';
 import { Injectable } from '@nestjs/common';
-import { Product } from '../../db/schemas/product.schema';
+import { Product } from '../../db/mongo/schemas/product.schema';
 import { ProductDto } from '../../api/dto/models/product.dto';
 
 @Injectable()

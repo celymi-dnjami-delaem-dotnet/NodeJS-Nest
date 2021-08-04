@@ -1,16 +1,16 @@
-import { CategoryRepository } from '../../db/repository/category.repository';
+import { CategoryRepositoryName, ICategoryRepository } from '../../db/types/category-repository.type';
 import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
-import { Injectable, Scope } from '@nestjs/common';
+import { IProductRepository, ProductRepositoryName } from '../../db/types/product-repository.type';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
-import { ProductRepository } from '../../db/repository/product.repository';
 import { Utils } from '../utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProductService {
     constructor(
-        private readonly categoryRepository: CategoryRepository,
-        private readonly productRepository: ProductRepository,
+        @Inject(CategoryRepositoryName) private readonly categoryRepository: ICategoryRepository,
+        @Inject(ProductRepositoryName) private readonly productRepository: IProductRepository,
         private readonly productMapper: ProductMapper,
     ) {}
 

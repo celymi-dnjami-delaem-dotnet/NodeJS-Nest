@@ -1,14 +1,14 @@
 import { CategoryDto } from '../../api/dto/models/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
-import { CategoryRepository } from '../../db/repository/category.repository';
+import { CategoryRepositoryName, ICategoryRepository } from '../../db/types/category-repository.type';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
-import { Injectable, Scope } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { Utils } from '../utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CategoryService {
     constructor(
-        private readonly categoryRepository: CategoryRepository,
+        @Inject(CategoryRepositoryName) private readonly categoryRepository: ICategoryRepository,
         private readonly categoryMapper: CategoryMapper,
     ) {}
 

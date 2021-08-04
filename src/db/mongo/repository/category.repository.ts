@@ -1,14 +1,15 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
 import { CreateCategorySchema } from '../schemas/create-category.schema';
+import { ICategoryRepository } from '../../types/category-repository.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Scope } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Product } from '../schemas/product.schema';
-import { ServiceResult } from '../../bl/result-wrappers/service-result';
-import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
+import { ServiceResult } from '../../../bl/result-wrappers/service-result';
+import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
 @Injectable({ scope: Scope.REQUEST })
-export class CategoryRepository {
+export class CategoryMongooseRepository implements ICategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
     async getCategoryById(id: string): Promise<ServiceResult<Category>> {
