@@ -1,12 +1,13 @@
 import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
 import { CreateProductSchema } from '../../db/mongo/schemas/create-product.schema';
 import { Injectable } from '@nestjs/common';
-import { Product } from '../../db/mongo/schemas/product.schema';
 import { ProductDto } from '../../api/dto/models/product.dto';
+import { Product as ProductEntity } from '../../db/postgres/entities/product.entity';
+import { Product as ProductSchema } from '../../db/mongo/schemas/product.schema';
 
 @Injectable()
 export class ProductMapper {
-    mapToSchema(product: ProductDto): Product {
+    mapToSchemaFromDto(product: ProductDto): ProductSchema {
         return {
             _id: product.id,
             price: product.price,
@@ -17,7 +18,18 @@ export class ProductMapper {
         };
     }
 
-    mapToDto(product: Product): ProductDto {
+    mapToEntityFromDto(product: ProductDto): ProductEntity {
+        return {
+            id: product.id,
+            price: product.price,
+            displayName: product.displayName,
+            createdAt: product.createdAt,
+            totalRating: product.totalRating,
+            isDeleted: product.isDeleted,
+        };
+    }
+
+    mapToDtoFromSchema(product: ProductSchema): ProductDto {
         return {
             id: product._id,
             displayName: product.displayName,
@@ -29,7 +41,19 @@ export class ProductMapper {
         };
     }
 
-    mapToCreateSchema(product: CreateProductDto): CreateProductSchema {
+    mapToDtoFromEntity(product: ProductEntity): ProductDto {
+        return {
+            id: product.id,
+            displayName: product.displayName,
+            categoryId: product.category && product.category.id,
+            price: product.price,
+            totalRating: product.totalRating,
+            createdAt: product.createdAt,
+            isDeleted: product.isDeleted,
+        };
+    }
+
+    mapToCreateSchemaFromCreateDto(product: CreateProductDto): CreateProductSchema {
         return {
             displayName: product.displayName,
             category: product.categoryId,

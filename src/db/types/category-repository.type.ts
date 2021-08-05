@@ -1,12 +1,11 @@
-import { Category } from '../mongo/schemas/category.schema';
-import { CreateCategorySchema } from '../mongo/schemas/create-category.schema';
+import { IBaseDb } from './base-db.type';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
 export interface ICategoryRepository {
-    getCategoryById: (id: string) => Promise<ServiceResult<Category>>;
-    createCategory: (category: CreateCategorySchema) => Promise<Category>;
-    updateCategory: (category: Category) => Promise<ServiceResult<Category>>;
-    addProductToCategory: (categoryId: string, productId: string) => Promise<ServiceResult>;
+    getCategoryById: (id: string) => Promise<ServiceResult<IBaseDb>>;
+    createCategory: (category: IBaseDb) => Promise<IBaseDb>;
+    updateCategory: (category: IBaseDb) => Promise<ServiceResult<IBaseDb>>;
+    addProductToCategory: (categoryId: string, productId: string) => Promise<ServiceResult<IBaseDb>>;
     softRemoveCategory: (id: string) => Promise<ServiceResult>;
     removeCategory: (id: string) => Promise<ServiceResult>;
 }

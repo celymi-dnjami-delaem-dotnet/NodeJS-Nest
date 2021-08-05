@@ -1,5 +1,5 @@
+import { CategoryAdapter } from '../adapters/category.adapter';
 import { CategoryDto } from '../../api/dto/models/category.dto';
-import { CategoryMapper } from '../mappers/category.mapper';
 import { CategoryRepositoryName, ICategoryRepository } from '../../db/types/category-repository.type';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
 import { Inject, Injectable, Scope } from '@nestjs/common';
@@ -9,7 +9,7 @@ import { Utils } from '../utils';
 export class CategoryService {
     constructor(
         @Inject(CategoryRepositoryName) private readonly categoryRepository: ICategoryRepository,
-        private readonly categoryMapper: CategoryMapper,
+        private readonly categoryAdapter: CategoryAdapter,
     ) {}
 
     async getCategoryById(id: string): Promise<CategoryDto> {
@@ -17,25 +17,25 @@ export class CategoryService {
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this.categoryMapper.mapToDtoModel(data);
+        return this.categoryAdapter.adaptFromDbToDto(data);
     }
 
     async createCategory(category: CreateCategoryDto): Promise<CategoryDto> {
-        const categorySchema = this.categoryMapper.mapToCreateSchema(category);
+        const categorySchema = this.categoryAdapter.adaptFromDtoToDb(category as any);
 
         const createdCategorySchema = await this.categoryRepository.createCategory(categorySchema);
 
-        return this.categoryMapper.mapToDtoModel(createdCategorySchema);
+        return this.categoryAdapter.adaptFromDbToDto(createdCategorySchema);
     }
 
     async updateCategory(category: CategoryDto): Promise<CategoryDto> {
-        const categorySchema = this.categoryMapper.mapToSchema(category);
+        const categorySchema = this.categoryAdapter.adaptFromDtoToDb(category);
 
         const { serviceResultType, data } = await this.categoryRepository.updateCategory(categorySchema);
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this.categoryMapper.mapToDtoModel(data);
+        return this.categoryAdapter.adaptFromDbToDto(data);
     }
 
     async softRemoveCategory(id: string): Promise<void> {

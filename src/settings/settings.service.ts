@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { DbOptions } from './settings.constants';
 import { Injectable } from '@nestjs/common';
 import { ServiceResultType } from '../bl/result-wrappers/service-result-type';
 import { UserFriendlyException } from '../bl/exceptions/user-friendly.exception';
@@ -47,8 +48,8 @@ export class SettingsService {
         return this._dbPassword;
     }
 
-    get dbType(): string {
-        return this._dbType;
+    get dbType(): DbOptions {
+        return this._dbType as DbOptions;
     }
 
     getMongooseConnectionString(): string {

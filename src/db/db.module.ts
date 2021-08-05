@@ -1,11 +1,13 @@
 import { Category, CategorySchema } from './mongo/schemas/category.schema';
 import { CategoryMongooseRepository } from './mongo/repository/category.repository';
 import { CategoryRepositoryName } from './types/category-repository.type';
+import { CategoryTypeOrmRepository } from './postgres/repository/category.repository';
 import { DynamicModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './mongo/schemas/product.schema';
 import { ProductMongooseRepository } from './mongo/repository/product.repository';
 import { ProductRepositoryName } from './types/product-repository.type';
+import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
 import { SettingsModule } from '../settings/settings.module';
 import { SettingsService } from '../settings/settings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -27,9 +29,18 @@ export class DbModule {
                         username: settingsService.dbUser,
                         password: settingsService.dbPassword,
                         database: settingsService.dbName,
+                        autoLoadEntities: true,
                     }),
                     inject: [SettingsService],
                 }),
+            );
+
+            moduleProviders.push(
+                { provide: CategoryRepositoryName, useClass: CategoryTypeOrmRepository },
+                {
+                    provide: ProductRepositoryName,
+                    useClass: ProductTypeOrmRepository,
+                },
             );
         } else {
             imports.push(

@@ -1,11 +1,12 @@
 import { Document, Schema as MongooseSchema } from 'mongoose';
+import { ICategory } from '../types/category.type';
 import { Product } from './product.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type CategoryDocument = Category & Document;
 
 @Schema({ versionKey: false })
-export class Category {
+export class Category implements ICategory {
     _id: string;
 
     @Prop({ required: true })
