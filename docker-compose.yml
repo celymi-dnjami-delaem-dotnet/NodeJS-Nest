@@ -11,11 +11,11 @@ services:
     command: npm run start:prod
     environment:
       APPLICATION_PORT: 3006
-      DB_HOST: mongo_db
-      DB_NAME: games
-      DB_PORT: 27017
-      DB_USER: root
-      DB_PASSWORD: Password123
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - '13610:3006'
 
@@ -23,8 +23,8 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: Password123
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
       - '27017:27017'
 
@@ -32,8 +32,8 @@ services:
     image: postgres:10.14
     restart: always
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - '5432:5432'
