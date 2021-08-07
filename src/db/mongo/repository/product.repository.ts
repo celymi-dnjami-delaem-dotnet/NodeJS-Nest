@@ -1,5 +1,6 @@
-import { Category } from '../schemas/category.schema';
-import { CreateProductSchema } from '../schemas/create-product.schema';
+import { Category, CategoryDocument } from '../schemas/category.schema';
+import { IBaseDb } from '../../types/base-db.type';
+import { ICreateProductSchema } from '../types/create-product.type';
 import { IProductRepository } from '../../types/product-repository.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Scope } from '@nestjs/common';
@@ -10,7 +11,10 @@ import { ServiceResultType } from '../../../bl/result-wrappers/service-result-ty
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProductMongooseRepository implements IProductRepository {
-    constructor(@InjectModel(Product.name) private readonly productModel: Model<ProductDocument>) {}
+    constructor(
+        @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
+        @InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>,
+    ) {}
 
     async getProductById(id: string): Promise<ServiceResult<Product>> {
         const productSchema = await this.productModel
@@ -25,10 +29,25 @@ export class ProductMongooseRepository implements IProductRepository {
         return new ServiceResult<Product>(ServiceResultType.Success, productSchema);
     }
 
-    async createProduct(productEntity: CreateProductSchema): Promise<Product> {
-        const createdProduct = new this.productModel(productEntity);
+    async createProduct(product: ICreateProductSchema): Promise<ServiceResult<IBaseDb>> {
+        const existingCategory = await this.categoryModel.findOne({ id: product.category });
 
-        return await createdProduct.save();
+        if (!existingCategory) {
+            return new ServiceResult<Category>(ServiceResultType.InvalidData);
+        }
+
+        const createdProduct = new this.productModel(product);
+        const creationResult = await createdProduct.save();
+
+        const updateResult = await this.categoryModel
+            .updateOne({ _id: existingCategory._id }, { $push: { products: existingCategory._id } })
+            .exec();
+
+        if (!updateResult.nModified) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult<Category>(ServiceResultType.Success, creationResult);
     }
 
     async updateProduct(productSchema: Product): Promise<ServiceResult<Product>> {

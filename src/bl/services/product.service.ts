@@ -2,7 +2,7 @@ import { CategoryRepositoryName, ICategoryRepository } from '../../db/types/cate
 import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
 import { IProductRepository, ProductRepositoryName } from '../../db/types/product-repository.type';
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { ProductAdapter } from '../adapters/product.adapter';
+import { ProductAdapter } from '../../db/adapters/product.adapter';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { Utils } from '../utils';
 
@@ -23,17 +23,13 @@ export class ProductService {
     }
 
     async createProduct(product: CreateProductDto): Promise<ProductDto> {
-        const productSchema = this.productAdapted.adaptFromDtoToDb(product as any);
+        const dbProduct = this.productAdapted.adaptCreateFromDtoToDb(product);
 
-        const createdProduct = await this.productRepository.createProduct(productSchema);
-        const { serviceResultType, exceptionMessage } = await this.categoryRepository.addProductToCategory(
-            (productSchema as any).category,
-            (createdProduct as any)._id,
-        );
+        const { serviceResultType, data, exceptionMessage } = await this.productRepository.createProduct(dbProduct);
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this.productAdapted.adaptFromDbToDto(createdProduct);
+        return this.productAdapted.adaptFromDbToDto(data);
     }
 
     async updateProduct(product: ProductDto): Promise<ProductDto> {

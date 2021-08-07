@@ -1,37 +1,65 @@
 import { Category } from '../entities/category.entity';
 import { IBaseDb } from '../../types/base-db.type';
 import { ICategoryRepository } from '../../types/category-repository.type';
+import { ICreateCategory } from '../../types/create-category.type';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
-export class CategoryTypeOrmRepository extends Repository<Category> implements ICategoryRepository {
-    async getCategoryById(id: string): Promise<ServiceResult<IBaseDb>> {
-        const foundResult = await this.findOne(id);
+export class CategoryTypeOrmRepository implements ICategoryRepository {
+    constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
 
-        return foundResult
-            ? new ServiceResult<IBaseDb>(ServiceResultType.Success, foundResult)
-            : new ServiceResult(ServiceResultType.NotFound);
+    async getCategoryById(id: string): Promise<ServiceResult<IBaseDb>> {
+        const foundResult = await this.categoryRepository.findOne(id);
+
+        if (!foundResult) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult<IBaseDb>(ServiceResultType.Success, foundResult);
     }
 
-    async createCategory(category: IBaseDb): Promise<IBaseDb> {
-        return this.create(category);
+    async createCategory(category: ICreateCategory): Promise<IBaseDb> {
+        return this.categoryRepository.save(category);
     }
 
     async updateCategory(category: IBaseDb): Promise<ServiceResult<IBaseDb>> {
-        return Promise.resolve(undefined);
-    }
+        const id: string = (category as Category).id;
+        const foundEntity = await this.categoryRepository.findOne(id);
 
-    async addProductToCategory(categoryId: string, productId: string): Promise<ServiceResult<IBaseDb>> {
-        return null;
+        if (!foundEntity) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        const updateResult = await this.categoryRepository.update(
+            { id },
+            {
+                ...category,
+                createdAt: foundEntity.createdAt,
+                isDeleted: foundEntity.isDeleted,
+            },
+        );
+
+        if (!updateResult.affected) {
+            return new ServiceResult(ServiceResultType.InternalError);
+        }
+
+        return new ServiceResult(ServiceResultType.Success, foundEntity);
     }
 
     async softRemoveCategory(id: string): Promise<ServiceResult> {
-        return Promise.resolve(undefined);
+        const softRemoveResult = await this.categoryRepository.update({ id }, { isDeleted: true });
+
+        if (!softRemoveResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
     }
 
     async removeCategory(id: string): Promise<ServiceResult> {
-        const removeResult = await this.delete(id);
+        const removeResult = await this.categoryRepository.delete(id);
 
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound);

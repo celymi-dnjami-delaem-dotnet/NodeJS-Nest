@@ -1,12 +1,18 @@
-import { Category, CategorySchema } from './mongo/schemas/category.schema';
+import { CategoryAdapter } from './adapters/category.adapter';
+import { CategoryMapper } from '../bl/mappers/category.mapper';
 import { CategoryMongooseRepository } from './mongo/repository/category.repository';
 import { CategoryRepositoryName } from './types/category-repository.type';
+import { CategorySchema, Category as SchemaCategory } from './mongo/schemas/category.schema';
 import { CategoryTypeOrmRepository } from './postgres/repository/category.repository';
 import { DynamicModule, Module } from '@nestjs/common';
+import { Category as EntityCategory } from './postgres/entities/category.entity';
+import { Product as EntityProduct } from './postgres/entities/product.entity';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Product, ProductSchema } from './mongo/schemas/product.schema';
+import { ProductAdapter } from './adapters/product.adapter';
+import { ProductMapper } from '../bl/mappers/product.mapper';
 import { ProductMongooseRepository } from './mongo/repository/product.repository';
 import { ProductRepositoryName } from './types/product-repository.type';
+import { ProductSchema, Product as SchemaProduct } from './mongo/schemas/product.schema';
 import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
 import { SettingsModule } from '../settings/settings.module';
 import { SettingsService } from '../settings/settings.service';
@@ -16,7 +22,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 export class DbModule {
     static forRoot(): DynamicModule {
         const imports: any = [SettingsModule];
-        const moduleProviders: any = [];
+        const moduleProviders: any = [CategoryAdapter, ProductAdapter, CategoryMapper, ProductMapper];
 
         if (process.env.DB_TYPE === 'postgres') {
             imports.push(
@@ -30,9 +36,11 @@ export class DbModule {
                         password: settingsService.dbPassword,
                         database: settingsService.dbName,
                         autoLoadEntities: true,
+                        synchronize: true,
                     }),
                     inject: [SettingsService],
                 }),
+                TypeOrmModule.forFeature([EntityCategory, EntityProduct]),
             );
 
             moduleProviders.push(
@@ -54,9 +62,9 @@ export class DbModule {
                     inject: [SettingsService],
                 }),
                 MongooseModule.forFeature([
-                    { name: Category.name, schema: CategorySchema },
+                    { name: SchemaCategory.name, schema: CategorySchema },
                     {
-                        name: Product.name,
+                        name: SchemaProduct.name,
                         schema: ProductSchema,
                     },
                 ]),

@@ -1,5 +1,5 @@
 import { ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { CategoryDto } from '../dto/models/category.dto';
 import { CategoryService } from '../../bl/services/category.service';
 import { CreateCategoryDto } from '../dto/actions/create-category.dto';
@@ -17,6 +17,7 @@ export class CategoryController {
     }
 
     @Post()
+    @HttpCode(HttpStatus.CREATED)
     @ApiCreatedResponse({ type: CategoryDto, description: 'Created' })
     async createCategory(@Body() category: CreateCategoryDto): Promise<CategoryDto> {
         return await this.categoryService.createCategory(category);
@@ -29,6 +30,7 @@ export class CategoryController {
     }
 
     @Delete('soft-remove/id/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveCategory(@Param('id') id: string): Promise<void> {
@@ -36,6 +38,7 @@ export class CategoryController {
     }
 
     @Delete('id/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async removeCategory(@Param('id') id: string): Promise<void> {

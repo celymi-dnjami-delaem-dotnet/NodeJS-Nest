@@ -1,9 +1,10 @@
 import { CategoryDto } from '../../api/dto/models/category.dto';
-import { Category as CategoryEntity } from '../../db/postgres/entities/category.entity';
-import { CategoryMapper } from '../mappers/category.mapper';
-import { Category as CategorySchema } from '../../db/mongo/schemas/category.schema';
+import { Category as CategoryEntity } from '../postgres/entities/category.entity';
+import { CategoryMapper } from '../../bl/mappers/category.mapper';
+import { Category as CategorySchema } from '../mongo/schemas/category.schema';
+import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
 import { DbOptions } from '../../settings/settings.constants';
-import { IBaseDb } from '../../db/types/base-db.type';
+import { IBaseDb } from '../types/base-db.type';
 import { Injectable } from '@nestjs/common';
 import { SettingsService } from '../../settings/settings.service';
 
@@ -20,12 +21,12 @@ export class CategoryAdapter {
         }
     }
 
-    adaptFromDtoToDb(target: CategoryDto): IBaseDb {
+    adaptFromDtoToDb(target: CreateCategoryDto): IBaseDb {
         switch (this.settingsService.dbType) {
             case DbOptions.Mongo:
-                return this.categoryMapper.mapToSchemaFromDto(target);
+                return this.categoryMapper.mapToSchemaFromDto(target as CategoryDto);
             case DbOptions.Postgres:
-                return this.categoryMapper.mapToEntityFromDto(target);
+                return this.categoryMapper.mapToEntityFromDto(target as CategoryDto);
         }
     }
 }

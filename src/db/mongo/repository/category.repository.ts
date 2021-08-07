@@ -1,6 +1,7 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
-import { CreateCategorySchema } from '../schemas/create-category.schema';
+import { IBaseDb } from '../../types/base-db.type';
 import { ICategoryRepository } from '../../types/category-repository.type';
+import { ICreateCategory } from '../../types/create-category.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Scope } from '@nestjs/common';
 import { Model } from 'mongoose';
@@ -22,7 +23,7 @@ export class CategoryMongooseRepository implements ICategoryRepository {
         return new ServiceResult<Category>(ServiceResultType.NotFound);
     }
 
-    async createCategory(category: CreateCategorySchema): Promise<Category> {
+    async createCategory(category: ICreateCategory): Promise<IBaseDb> {
         const categorySchema = new this.categoryModel(category);
 
         return await categorySchema.save();
@@ -40,18 +41,6 @@ export class CategoryMongooseRepository implements ICategoryRepository {
         const updatedModel = await this.categoryModel.findById(category._id).exec();
 
         return new ServiceResult<Category>(ServiceResultType.Success, updatedModel);
-    }
-
-    async addProductToCategory(categoryId: string, productId: string): Promise<ServiceResult> {
-        const addProductResult = await this.categoryModel
-            .updateOne({ _id: categoryId }, { $push: { products: productId } })
-            .exec();
-
-        if (!addProductResult.nModified) {
-            return new ServiceResult(ServiceResultType.NotFound);
-        }
-
-        return new ServiceResult(ServiceResultType.Success);
     }
 
     async softRemoveCategory(id: string): Promise<ServiceResult> {

@@ -1,5 +1,6 @@
 import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
-import { CreateProductSchema } from '../../db/mongo/schemas/create-product.schema';
+import { ICreateProductEntity } from '../../db/postgres/types/create-product.type';
+import { ICreateProductSchema } from '../../db/mongo/types/create-product.type';
 import { Injectable } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { Product as ProductEntity } from '../../db/postgres/entities/product.entity';
@@ -53,10 +54,18 @@ export class ProductMapper {
         };
     }
 
-    mapToCreateSchemaFromCreateDto(product: CreateProductDto): CreateProductSchema {
+    mapToCreateSchemaFromCreateDto(product: CreateProductDto): ICreateProductSchema {
         return {
             displayName: product.displayName,
             category: product.categoryId,
+            price: product.price,
+        };
+    }
+
+    mapToCreateEntityFromCreateDto(product: CreateProductDto): ICreateProductEntity {
+        return {
+            displayName: product.displayName,
+            categoryId: product.displayName,
             price: product.price,
         };
     }

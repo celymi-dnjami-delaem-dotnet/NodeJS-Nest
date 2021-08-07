@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateCategoryDto } from '../actions/create-category.dto';
+import { IsNotEmpty } from 'class-validator';
 import { ProductDto } from './product.dto';
 
-export class CategoryDto {
-    @ApiProperty({ description: 'Category ID', example: '61031510457ff504f2bdddb1' })
+export class CategoryDto extends CreateCategoryDto {
+    @ApiProperty({ description: 'Category ID' })
+    @IsNotEmpty()
     id: string;
-
-    @ApiProperty({ description: 'Category name', example: 'Shooter' })
-    displayName: string;
 
     @ApiProperty({ description: 'Creation date', example: new Date() })
     createdAt: Date;
