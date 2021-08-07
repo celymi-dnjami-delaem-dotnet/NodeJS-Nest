@@ -8,13 +8,20 @@ import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
 export class CategoryTypeOrmRepository implements ICategoryRepository {
+    private static readonly missingCategoryExceptionMessage: string =
+        'Unable to perform this operation due to missing category by provided parameters';
+
     constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
 
     async getCategoryById(id: string): Promise<ServiceResult<IBaseDb>> {
-        const foundResult = await this.categoryRepository.findOne(id, { relations: ['products'] });
+        const foundResult = await this.findCategoryById(id, true);
 
         if (!foundResult) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(
+                ServiceResultType.NotFound,
+                null,
+                CategoryTypeOrmRepository.missingCategoryExceptionMessage,
+            );
         }
 
         return new ServiceResult<IBaseDb>(ServiceResultType.Success, foundResult);
@@ -24,26 +31,25 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         return this.categoryRepository.save(category);
     }
 
-    async updateCategory(category: IBaseDb): Promise<ServiceResult<IBaseDb>> {
-        const id: string = (category as Category).id;
-        const foundEntity = await this.categoryRepository.findOne(id);
-
-        if (!foundEntity) {
-            return new ServiceResult(ServiceResultType.NotFound);
-        }
+    async updateCategory(category: Category): Promise<ServiceResult<IBaseDb>> {
+        const id: string = category.id;
 
         const updateResult = await this.categoryRepository.update(
             { id },
             {
-                ...category,
-                createdAt: foundEntity.createdAt,
-                isDeleted: foundEntity.isDeleted,
+                displayName: category.displayName,
             },
         );
 
         if (!updateResult.affected) {
-            return new ServiceResult(ServiceResultType.InternalError);
+            return new ServiceResult(
+                ServiceResultType.NotFound,
+                null,
+                CategoryTypeOrmRepository.missingCategoryExceptionMessage,
+            );
         }
+
+        const foundEntity = await this.findCategoryById(id);
 
         return new ServiceResult(ServiceResultType.Success, foundEntity);
     }
@@ -52,7 +58,11 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         const softRemoveResult = await this.categoryRepository.update({ id }, { isDeleted: true });
 
         if (!softRemoveResult.affected) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(
+                ServiceResultType.NotFound,
+                null,
+                CategoryTypeOrmRepository.missingCategoryExceptionMessage,
+            );
         }
 
         return new ServiceResult(ServiceResultType.Success);
@@ -62,9 +72,17 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         const removeResult = await this.categoryRepository.delete(id);
 
         if (!removeResult.affected) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(
+                ServiceResultType.NotFound,
+                null,
+                CategoryTypeOrmRepository.missingCategoryExceptionMessage,
+            );
         }
 
         return new ServiceResult(ServiceResultType.Success);
+    }
+
+    private async findCategoryById(id: string, includeChildren?: boolean): Promise<Category> {
+        return this.categoryRepository.findOne(id, includeChildren ? { relations: ['products'] } : {});
     }
 }

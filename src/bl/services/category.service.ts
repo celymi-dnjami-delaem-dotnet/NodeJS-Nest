@@ -13,9 +13,9 @@ export class CategoryService {
     ) {}
 
     async getCategoryById(id: string): Promise<CategoryDto> {
-        const { serviceResultType, data } = await this.categoryRepository.getCategoryById(id);
+        const { serviceResultType, data, exceptionMessage } = await this.categoryRepository.getCategoryById(id);
 
-        Utils.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
         return this.categoryAdapter.adaptFromDbToDto(data);
     }
@@ -31,22 +31,24 @@ export class CategoryService {
     async updateCategory(category: CategoryDto): Promise<CategoryDto> {
         const categorySchema = this.categoryAdapter.adaptFromDtoToDb(category);
 
-        const { serviceResultType, data } = await this.categoryRepository.updateCategory(categorySchema);
+        const { serviceResultType, data, exceptionMessage } = await this.categoryRepository.updateCategory(
+            categorySchema,
+        );
 
-        Utils.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
         return this.categoryAdapter.adaptFromDbToDto(data);
     }
 
     async softRemoveCategory(id: string): Promise<void> {
-        const { serviceResultType } = await this.categoryRepository.softRemoveCategory(id);
+        const { serviceResultType, exceptionMessage } = await this.categoryRepository.softRemoveCategory(id);
 
-        Utils.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
     }
 
     async removeCategory(id: string): Promise<void> {
-        const { serviceResultType } = await this.categoryRepository.removeCategory(id);
+        const { serviceResultType, exceptionMessage } = await this.categoryRepository.removeCategory(id);
 
-        Utils.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
     }
 }

@@ -9,26 +9,33 @@ import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
 export class ProductTypeOrmRepository implements IProductRepository {
+    private static readonly missingProductExceptionMessage: string =
+        'Unable to perform this operation due to missing product by provided parameters';
+
     constructor(
         @InjectRepository(Product) private readonly productRepository: Repository<Product>,
         @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
     ) {}
 
     async getProductById(id: string): Promise<ServiceResult<IBaseDb>> {
-        const foundProduct = await this.productRepository.findOne(id);
+        const foundProduct = await this.findProductById(id, true);
 
         if (!foundProduct) {
-            return new ServiceResult<Category>(ServiceResultType.NotFound);
+            return new ServiceResult<Category>(
+                ServiceResultType.NotFound,
+                null,
+                ProductTypeOrmRepository.missingProductExceptionMessage,
+            );
         }
 
         return new ServiceResult<Category>(ServiceResultType.Success, foundProduct);
     }
 
     async createProduct(product: ICreateProductEntity): Promise<ServiceResult<IBaseDb>> {
-        const existingCategory = await this.categoryRepository.findOne(product.categoryId, { relations: ['category'] });
+        const existingCategory = await this.categoryRepository.findOne(product.categoryId);
 
         if (!existingCategory) {
-            return new ServiceResult(ServiceResultType.InvalidData);
+            return new ServiceResult(ServiceResultType.InvalidData, null, 'No such category exists by provided id');
         }
 
         const newProductEntity = new Product();
@@ -54,10 +61,14 @@ export class ProductTypeOrmRepository implements IProductRepository {
         );
 
         if (!updateResult.affected) {
-            return new ServiceResult(ServiceResultType.InternalError);
+            return new ServiceResult(
+                ServiceResultType.NotFound,
+                null,
+                ProductTypeOrmRepository.missingProductExceptionMessage,
+            );
         }
 
-        const updatedEntity = await this.productRepository.findOne(id, { relations: ['category'] });
+        const updatedEntity = await this.findProductById(id, true);
 
         return new ServiceResult<Category>(ServiceResultType.Success, updatedEntity);
     }
@@ -66,7 +77,11 @@ export class ProductTypeOrmRepository implements IProductRepository {
         const softRemoveResult = await this.productRepository.update({ id }, { isDeleted: true });
 
         if (!softRemoveResult.affected) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(
+                ServiceResultType.NotFound,
+                null,
+                ProductTypeOrmRepository.missingProductExceptionMessage,
+            );
         }
 
         return new ServiceResult(ServiceResultType.Success);
@@ -76,9 +91,17 @@ export class ProductTypeOrmRepository implements IProductRepository {
         const removeResult = await this.productRepository.delete(id);
 
         if (!removeResult.affected) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(
+                ServiceResultType.NotFound,
+                null,
+                ProductTypeOrmRepository.missingProductExceptionMessage,
+            );
         }
 
         return new ServiceResult(ServiceResultType.Success);
+    }
+
+    private async findProductById(id: string, includeChildren?: boolean): Promise<Category> {
+        return this.productRepository.findOne(id, includeChildren ? { relations: ['category'] } : {});
     }
 }

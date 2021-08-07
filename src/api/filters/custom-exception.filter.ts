@@ -29,10 +29,10 @@ export class CustomExceptionFilter implements ExceptionFilter {
                 break;
         }
 
-        if (!exception.message) {
+        if (!exception.exceptionMessage) {
             delete errorMessageResponse.message;
         } else {
-            errorMessageResponse.message = exception.message;
+            errorMessageResponse.message = exception.exceptionMessage;
         }
 
         response.status(errorStatusCode).json(errorMessageResponse);
