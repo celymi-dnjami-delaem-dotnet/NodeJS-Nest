@@ -21,7 +21,7 @@ export class CategoryService {
     }
 
     async createCategory(category: CreateCategoryDto): Promise<CategoryDto> {
-        const categorySchema = this.categoryAdapter.adaptFromDtoToDb(category);
+        const categorySchema = this.categoryAdapter.adaptCreateFromDtoToDb(category);
 
         const createdCategorySchema = await this.categoryRepository.createCategory(categorySchema);
 

@@ -5,6 +5,7 @@ import { Category as CategorySchema } from '../mongo/schemas/category.schema';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
 import { DbOptions } from '../../settings/settings.constants';
 import { IBaseDb } from '../types/base-db.type';
+import { ICreateCategory } from '../types/create-category.type';
 import { Injectable } from '@nestjs/common';
 import { SettingsService } from '../../settings/settings.service';
 
@@ -28,5 +29,9 @@ export class CategoryAdapter {
             case DbOptions.Postgres:
                 return this.categoryMapper.mapToEntityFromDto(target as CategoryDto);
         }
+    }
+
+    adaptCreateFromDtoToDb(target: CreateCategoryDto): ICreateCategory {
+        return this.categoryMapper.mapToCreateDbFromCreateDto(target as CategoryDto);
     }
 }

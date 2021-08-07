@@ -29,7 +29,7 @@ export class ProductController {
         return await this.productService.updateProduct(category);
     }
 
-    @Delete('id/:id')
+    @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })

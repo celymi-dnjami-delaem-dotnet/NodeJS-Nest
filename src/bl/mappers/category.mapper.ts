@@ -1,7 +1,7 @@
 import { CategoryDto } from '../../api/dto/models/category.dto';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
-import { CreateCategorySchema } from '../../db/mongo/schemas/create-category.schema';
 import { Category as EntityCategory } from '../../db/postgres/entities/category.entity';
+import { ICreateCategory } from '../../db/types/create-category.type';
 import { Injectable } from '@nestjs/common';
 import { ProductMapper } from './product.mapper';
 import { Category as SchemaCategory } from '../../db/mongo/schemas/category.schema';
@@ -54,7 +54,7 @@ export class CategoryMapper {
         };
     }
 
-    mapToCreateSchemaFromCreateDto(createCategory: CreateCategoryDto): CreateCategorySchema {
+    mapToCreateDbFromCreateDto(createCategory: CreateCategoryDto): ICreateCategory {
         return {
             displayName: createCategory.displayName,
         };

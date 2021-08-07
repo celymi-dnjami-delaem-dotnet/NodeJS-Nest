@@ -65,7 +65,7 @@ export class ProductMapper {
     mapToCreateEntityFromCreateDto(product: CreateProductDto): ICreateProductEntity {
         return {
             displayName: product.displayName,
-            categoryId: product.displayName,
+            categoryId: product.categoryId,
             price: product.price,
         };
     }

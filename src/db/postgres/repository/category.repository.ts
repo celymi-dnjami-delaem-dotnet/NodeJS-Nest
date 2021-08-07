@@ -11,7 +11,7 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
     constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
 
     async getCategoryById(id: string): Promise<ServiceResult<IBaseDb>> {
-        const foundResult = await this.categoryRepository.findOne(id);
+        const foundResult = await this.categoryRepository.findOne(id, { relations: ['products'] });
 
         if (!foundResult) {
             return new ServiceResult(ServiceResultType.NotFound);

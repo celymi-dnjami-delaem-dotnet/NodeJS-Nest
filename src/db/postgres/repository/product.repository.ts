@@ -25,7 +25,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
     }
 
     async createProduct(product: ICreateProductEntity): Promise<ServiceResult<IBaseDb>> {
-        const existingCategory = await this.categoryRepository.findOne(product.categoryId);
+        const existingCategory = await this.categoryRepository.findOne(product.categoryId, { relations: ['category'] });
 
         if (!existingCategory) {
             return new ServiceResult(ServiceResultType.InvalidData);
@@ -41,20 +41,15 @@ export class ProductTypeOrmRepository implements IProductRepository {
         return new ServiceResult<Category>(ServiceResultType.Success, creationResult);
     }
 
-    async updateProduct(product: IBaseDb): Promise<ServiceResult<IBaseDb>> {
-        const id: string = (product as Product).id;
-        const foundEntity = await this.productRepository.findOne(id);
-
-        if (!foundEntity) {
-            return new ServiceResult(ServiceResultType.NotFound);
-        }
+    async updateProduct(product: Product): Promise<ServiceResult<IBaseDb>> {
+        const id: string = product.id;
 
         const updateResult = await this.productRepository.update(
             { id },
             {
-                ...product,
-                createdAt: foundEntity.createdAt,
-                isDeleted: foundEntity.isDeleted,
+                displayName: product.displayName,
+                price: product.price,
+                totalRating: product.totalRating,
             },
         );
 
@@ -62,10 +57,12 @@ export class ProductTypeOrmRepository implements IProductRepository {
             return new ServiceResult(ServiceResultType.InternalError);
         }
 
-        return new ServiceResult<Category>(ServiceResultType.Success, foundEntity);
+        const updatedEntity = await this.productRepository.findOne(id, { relations: ['category'] });
+
+        return new ServiceResult<Category>(ServiceResultType.Success, updatedEntity);
     }
 
-    async removeProduct(id: string): Promise<ServiceResult> {
+    async softRemoveProduct(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this.productRepository.update({ id }, { isDeleted: true });
 
         if (!softRemoveResult.affected) {
@@ -75,7 +72,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
-    async softRemoveProduct(id: string): Promise<ServiceResult> {
+    async removeProduct(id: string): Promise<ServiceResult> {
         const removeResult = await this.productRepository.delete(id);
 
         if (!removeResult.affected) {

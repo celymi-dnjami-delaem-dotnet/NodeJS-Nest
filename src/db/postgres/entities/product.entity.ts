@@ -13,7 +13,7 @@ export class Product implements IProduct {
     @Column({ nullable: false })
     price: number;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, default: 0 })
     totalRating: number;
 
     @ManyToOne(() => Category, (category) => category.products)
