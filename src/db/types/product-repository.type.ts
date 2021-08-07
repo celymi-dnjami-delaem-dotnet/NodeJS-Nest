@@ -3,6 +3,7 @@ import { ICreateProduct } from './create-product.type';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
 export interface IProductRepository {
+    getProducts: () => Promise<IBaseDb[]>;
     getProductById: (id: string) => Promise<ServiceResult<IBaseDb>>;
     createProduct: (productEntity: ICreateProduct) => Promise<ServiceResult<IBaseDb>>;
     updateProduct: (productSchema: IBaseDb) => Promise<ServiceResult<IBaseDb>>;

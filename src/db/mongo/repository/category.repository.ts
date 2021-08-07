@@ -13,6 +13,10 @@ import { ServiceResultType } from '../../../bl/result-wrappers/service-result-ty
 export class CategoryMongooseRepository implements ICategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
+    async getCategories(): Promise<IBaseDb[]> {
+        return this.categoryModel.find();
+    }
+
     async getCategoryById(id: string): Promise<ServiceResult<Category>> {
         const category = await this.categoryModel.findOne({ _id: id }).populate('products', null, Product.name).exec();
 

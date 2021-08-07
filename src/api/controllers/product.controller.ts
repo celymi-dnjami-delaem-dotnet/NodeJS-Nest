@@ -16,6 +16,12 @@ import { ProductService } from '../../bl/services/product.service';
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
+    @Get()
+    @ApiOkResponse({ type: [ProductDto], description: 'OK' })
+    async getCategories(): Promise<ProductDto[]> {
+        return this.productService.getProducts();
+    }
+
     @Get('id/:id')
     @ApiOkResponse({ type: ProductDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })

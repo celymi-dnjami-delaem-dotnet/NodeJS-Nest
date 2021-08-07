@@ -13,6 +13,10 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
 
     constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
 
+    getCategories(): Promise<IBaseDb[]> {
+        return this.categoryRepository.find();
+    }
+
     async getCategoryById(id: string): Promise<ServiceResult<IBaseDb>> {
         const foundResult = await this.findCategoryById(id, true);
 

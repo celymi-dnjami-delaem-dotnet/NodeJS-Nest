@@ -11,35 +11,41 @@ export class ProductService {
     constructor(
         @Inject(CategoryRepositoryName) private readonly categoryRepository: ICategoryRepository,
         @Inject(ProductRepositoryName) private readonly productRepository: IProductRepository,
-        private readonly productAdapted: ProductAdapter,
+        private readonly productAdapter: ProductAdapter,
     ) {}
+
+    async getProducts(): Promise<ProductDto[]> {
+        const products = await this.productRepository.getProducts();
+
+        return products.map((x) => this.productAdapter.adaptFromDbToDto(x));
+    }
 
     async getProductById(id: string): Promise<ProductDto> {
         const { serviceResultType, data } = await this.productRepository.getProductById(id);
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this.productAdapted.adaptFromDbToDto(data);
+        return this.productAdapter.adaptFromDbToDto(data);
     }
 
     async createProduct(product: CreateProductDto): Promise<ProductDto> {
-        const dbProduct = this.productAdapted.adaptCreateFromDtoToDb(product);
+        const dbProduct = this.productAdapter.adaptCreateFromDtoToDb(product);
 
         const { serviceResultType, data, exceptionMessage } = await this.productRepository.createProduct(dbProduct);
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this.productAdapted.adaptFromDbToDto(data);
+        return this.productAdapter.adaptFromDbToDto(data);
     }
 
     async updateProduct(product: ProductDto): Promise<ProductDto> {
-        const productSchema = this.productAdapted.adaptFromDtoToDb(product);
+        const productSchema = this.productAdapter.adaptFromDtoToDb(product);
 
         const { serviceResultType, data } = await this.productRepository.updateProduct(productSchema);
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this.productAdapted.adaptFromDbToDto(data);
+        return this.productAdapter.adaptFromDbToDto(data);
     }
 
     async softRemoveProduct(id: string): Promise<void> {

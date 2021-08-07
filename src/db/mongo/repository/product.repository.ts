@@ -16,6 +16,10 @@ export class ProductMongooseRepository implements IProductRepository {
         @InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>,
     ) {}
 
+    async getProducts(): Promise<IBaseDb[]> {
+        return this.productModel.find();
+    }
+
     async getProductById(id: string): Promise<ServiceResult<Product>> {
         const productSchema = await this.productModel
             .findOne({ _id: id })

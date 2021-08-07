@@ -9,6 +9,12 @@ import { CreateCategoryDto } from '../dto/actions/create-category.dto';
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
 
+    @Get()
+    @ApiOkResponse({ type: [CategoryDto], description: 'OK' })
+    async getCategories(): Promise<CategoryDto[]> {
+        return this.categoryService.getCategories();
+    }
+
     @Get('id/:id')
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })

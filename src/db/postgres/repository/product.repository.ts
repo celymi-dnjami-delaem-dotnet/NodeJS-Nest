@@ -17,6 +17,10 @@ export class ProductTypeOrmRepository implements IProductRepository {
         @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
     ) {}
 
+    getProducts(): Promise<IBaseDb[]> {
+        return this.productRepository.find();
+    }
+
     async getProductById(id: string): Promise<ServiceResult<IBaseDb>> {
         const foundProduct = await this.findProductById(id, true);
 

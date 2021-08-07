@@ -12,6 +12,12 @@ export class CategoryService {
         private readonly categoryAdapter: CategoryAdapter,
     ) {}
 
+    async getCategories(): Promise<CategoryDto[]> {
+        const categories = await this.categoryRepository.getCategories();
+
+        return categories.map((x) => this.categoryAdapter.adaptFromDbToDto(x));
+    }
+
     async getCategoryById(id: string): Promise<CategoryDto> {
         const { serviceResultType, data, exceptionMessage } = await this.categoryRepository.getCategoryById(id);
 
