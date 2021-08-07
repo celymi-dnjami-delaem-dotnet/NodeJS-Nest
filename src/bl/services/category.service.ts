@@ -1,4 +1,4 @@
-import { CategoryAdapter } from '../../db/adapters/category.adapter';
+import { CategoryAdapter } from '../adapters/category.adapter';
 import { CategoryDto } from '../../api/dto/models/category.dto';
 import { CategoryRepositoryName, ICategoryRepository } from '../../db/types/category-repository.type';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';

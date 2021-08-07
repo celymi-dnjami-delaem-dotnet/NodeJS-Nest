@@ -2,7 +2,7 @@ import { CategoryRepositoryName, ICategoryRepository } from '../../db/types/cate
 import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
 import { IProductRepository, ProductRepositoryName } from '../../db/types/product-repository.type';
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { ProductAdapter } from '../../db/adapters/product.adapter';
+import { ProductAdapter } from '../adapters/product.adapter';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { Utils } from '../utils';
 

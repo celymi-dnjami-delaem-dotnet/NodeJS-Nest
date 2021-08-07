@@ -1,5 +1,3 @@
-import { CategoryAdapter } from './adapters/category.adapter';
-import { CategoryMapper } from '../bl/mappers/category.mapper';
 import { CategoryMongooseRepository } from './mongo/repository/category.repository';
 import { CategoryRepositoryName } from './types/category-repository.type';
 import { CategorySchema, Category as SchemaCategory } from './mongo/schemas/category.schema';
@@ -8,8 +6,6 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ProductAdapter } from './adapters/product.adapter';
-import { ProductMapper } from '../bl/mappers/product.mapper';
 import { ProductMongooseRepository } from './mongo/repository/product.repository';
 import { ProductRepositoryName } from './types/product-repository.type';
 import { ProductSchema, Product as SchemaProduct } from './mongo/schemas/product.schema';
@@ -22,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 export class DbModule {
     static forRoot(): DynamicModule {
         const imports: any = [SettingsModule];
-        const moduleProviders: any = [CategoryAdapter, ProductAdapter, CategoryMapper, ProductMapper];
+        const moduleProviders: any = [];
 
         if (process.env.DB_TYPE === 'postgres') {
             imports.push(

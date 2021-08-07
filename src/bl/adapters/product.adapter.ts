@@ -1,12 +1,12 @@
 import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
 import { DbOptions } from '../../settings/settings.constants';
-import { IBaseDb } from '../types/base-db.type';
-import { ICreateProduct } from '../types/create-product.type';
+import { IBaseDb } from '../../db/types/base-db.type';
+import { ICreateProduct } from '../../db/types/create-product.type';
 import { Injectable } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/models/product.dto';
-import { Product as ProductEntity } from '../postgres/entities/product.entity';
-import { ProductMapper } from '../../bl/mappers/product.mapper';
-import { Product as ProductSchema } from '../mongo/schemas/product.schema';
+import { Product as ProductEntity } from '../../db/postgres/entities/product.entity';
+import { ProductMapper } from '../mappers/product.mapper';
+import { Product as ProductSchema } from '../../db/mongo/schemas/product.schema';
 import { SettingsService } from '../../settings/settings.service';
 
 @Injectable()
