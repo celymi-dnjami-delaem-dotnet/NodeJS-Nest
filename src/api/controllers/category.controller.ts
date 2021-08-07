@@ -25,6 +25,7 @@ export class CategoryController {
 
     @Put()
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
+    @ApiNotFoundResponse({ description: 'Not Found' })
     async updateCategory(@Body() category: CategoryDto): Promise<CategoryDto> {
         return await this.categoryService.updateCategory(category);
     }

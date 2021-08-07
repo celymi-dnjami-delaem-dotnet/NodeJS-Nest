@@ -1,4 +1,11 @@
-import { ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiCreatedResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { CreateProductDto } from '../dto/actions/create-product.dto';
 import { ProductDto } from '../dto/models/product.dto';
@@ -19,12 +26,14 @@ export class ProductController {
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiCreatedResponse({ type: ProductDto, description: 'Created' })
+    @ApiBadRequestResponse({ description: 'Bad Request' })
     async createProduct(@Body() productDto: CreateProductDto): Promise<ProductDto> {
         return this.productService.createProduct(productDto);
     }
 
     @Put()
     @ApiOkResponse({ type: ProductDto, description: 'OK' })
+    @ApiNotFoundResponse({ description: 'Not Found' })
     async updateCategory(@Body() category: ProductDto): Promise<ProductDto> {
         return await this.productService.updateProduct(category);
     }
