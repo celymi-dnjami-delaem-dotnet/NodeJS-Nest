@@ -2,9 +2,10 @@ import { CategoryMongooseRepository } from './mongo/repository/category.reposito
 import { CategoryRepositoryName } from './types/category-repository.type';
 import { CategorySchema, Category as SchemaCategory } from './mongo/schemas/category.schema';
 import { CategoryTypeOrmRepository } from './postgres/repository/category.repository';
-import { DynamicModule, Logger, Module } from '@nestjs/common';
+import { ConsoleLogger, DynamicModule, Module } from '@nestjs/common';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
+import { LoggingModule } from '../logging/logging.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductMongooseRepository } from './mongo/repository/product.repository';
 import { ProductRepositoryName } from './types/product-repository.type';
@@ -50,11 +51,11 @@ export class DbModule {
         } else {
             imports.push(
                 MongooseModule.forRootAsync({
-                    imports: [SettingsModule],
-                    useFactory: async (settingsService: SettingsService) => {
+                    imports: [SettingsModule, LoggingModule],
+                    useFactory: async (settingsService: SettingsService, consoleLogger: ConsoleLogger) => {
                         if (process.env.NODE_ENV !== 'production') {
                             set('debug', (collection, method, query) => {
-                                Logger.debug(`${collection}.${method}(${JSON.stringify(query)})`);
+                                consoleLogger.debug(`${collection}.${method}(${JSON.stringify(query)})`);
                             });
                         }
 
@@ -64,7 +65,7 @@ export class DbModule {
                             useUnifiedTopology: true,
                         };
                     },
-                    inject: [SettingsService],
+                    inject: [SettingsService, ConsoleLogger],
                 }),
                 MongooseModule.forFeature([
                     { name: SchemaCategory.name, schema: CategorySchema },
