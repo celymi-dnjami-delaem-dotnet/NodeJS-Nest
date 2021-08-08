@@ -2,7 +2,7 @@ import { CategoryMongooseRepository } from './mongo/repository/category.reposito
 import { CategoryRepositoryName } from './types/category-repository.type';
 import { CategorySchema, Category as SchemaCategory } from './mongo/schemas/category.schema';
 import { CategoryTypeOrmRepository } from './postgres/repository/category.repository';
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Logger, Module } from '@nestjs/common';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -13,6 +13,7 @@ import { ProductTypeOrmRepository } from './postgres/repository/product.reposito
 import { SettingsModule } from '../settings/settings.module';
 import { SettingsService } from '../settings/settings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { set } from 'mongoose';
 
 @Module({})
 export class DbModule {
@@ -50,11 +51,19 @@ export class DbModule {
             imports.push(
                 MongooseModule.forRootAsync({
                     imports: [SettingsModule],
-                    useFactory: async (settingsService: SettingsService) => ({
-                        uri: settingsService.getMongooseConnectionString(),
-                        useNewUrlParser: true,
-                        useUnifiedTopology: true,
-                    }),
+                    useFactory: async (settingsService: SettingsService) => {
+                        if (process.env.NODE_ENV !== 'production') {
+                            set('debug', (collection, method, query) => {
+                                Logger.debug(`${collection}.${method}(${JSON.stringify(query)})`);
+                            });
+                        }
+
+                        return {
+                            uri: settingsService.getMongooseConnectionString(),
+                            useNewUrlParser: true,
+                            useUnifiedTopology: true,
+                        };
+                    },
                     inject: [SettingsService],
                 }),
                 MongooseModule.forFeature([
