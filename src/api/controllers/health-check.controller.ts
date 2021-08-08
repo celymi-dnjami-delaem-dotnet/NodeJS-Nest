@@ -1,6 +1,8 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get } from '@nestjs/common';
 import { HealthCheck, HealthCheckService, MongooseHealthIndicator } from '@nestjs/terminus';
 
+@ApiTags('Health-Check')
 @Controller('api/health-check')
 export class HealthCheckController {
     constructor(

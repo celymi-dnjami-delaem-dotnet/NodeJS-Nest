@@ -6,6 +6,9 @@ export default function registerSwagger(app: INestApplication): void {
         .setTitle('Products API')
         .setDescription('This service is responsible for managing games stuff products')
         .setVersion('0.0.1')
+        .addTag('Categories')
+        .addTag('Products')
+        .addTag('Health-Check')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
