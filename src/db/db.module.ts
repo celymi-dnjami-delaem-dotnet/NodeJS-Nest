@@ -1,8 +1,12 @@
+import { CategoryEntityMapper } from './mappers/entities/category-entity.mapper';
+import { CategoryMapperName } from './types/category-mapper.type';
 import { CategoryMongooseRepository } from './mongo/repository/category.repository';
 import { CategoryRepositoryName } from './types/category-repository.type';
 import { CategorySchema, Category as SchemaCategory } from './mongo/schemas/category.schema';
+import { CategorySchemaMapper } from './mappers/schemas/category-schema.mapper';
 import { CategoryTypeOrmRepository } from './postgres/repository/category.repository';
 import { ConsoleLogger, DynamicModule, Module } from '@nestjs/common';
+import { DbOptions } from '../settings/settings.constants';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
 import { LoggingModule } from '../logging/logging.module';
@@ -22,7 +26,7 @@ export class DbModule {
         const imports: any = [SettingsModule];
         const moduleProviders: any = [];
 
-        if (process.env.DB_TYPE === 'postgres') {
+        if (process.env.DB_TYPE === DbOptions.Postgres) {
             imports.push(
                 TypeOrmModule.forRootAsync({
                     imports: [SettingsModule],
@@ -46,6 +50,10 @@ export class DbModule {
                 {
                     provide: ProductRepositoryName,
                     useClass: ProductTypeOrmRepository,
+                },
+                {
+                    provide: CategoryMapperName,
+                    useClass: CategoryEntityMapper,
                 },
             );
         } else {
@@ -81,6 +89,10 @@ export class DbModule {
                 {
                     provide: ProductRepositoryName,
                     useClass: ProductMongooseRepository,
+                },
+                {
+                    provide: CategoryMapperName,
+                    useClass: CategorySchemaMapper,
                 },
             );
         }
