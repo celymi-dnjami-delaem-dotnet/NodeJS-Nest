@@ -1,13 +1,13 @@
 import { ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Put } from '@nestjs/common';
 import { CategoryDto } from '../dto/out/category.dto';
-import { CategoryService } from '../../bl/services/category.service';
+import { CategoryServiceName, ICategoryService } from '../../bl/services/category.service';
 import { CreateCategoryDto } from '../dto/in/create-category.dto';
 
 @ApiTags('Categories')
 @Controller('api/categories')
 export class CategoryController {
-    constructor(private readonly categoryService: CategoryService) {}
+    constructor(@Inject(CategoryServiceName) private readonly categoryService: ICategoryService) {}
 
     @Get()
     @ApiOkResponse({ type: [CategoryDto], description: 'OK' })

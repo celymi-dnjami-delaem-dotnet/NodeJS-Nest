@@ -5,8 +5,19 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/out/product.dto';
 import { Utils } from '../utils';
 
+export interface IProductService {
+    getProducts: () => Promise<ProductDto[]>;
+    getProductById: (id: string) => Promise<ProductDto>;
+    createProduct: (product: CreateProductDto) => Promise<ProductDto>;
+    updateProduct: (product: ProductDto) => Promise<ProductDto>;
+    softRemoveProduct: (id: string) => Promise<void>;
+    removeProduct: (id: string) => Promise<void>;
+}
+
+export const ProductServiceName = Symbol('IProductService');
+
 @Injectable({ scope: Scope.REQUEST })
-export class ProductService {
+export class ProductService implements IProductService {
     constructor(
         @Inject(ProductServiceAdapterName) private readonly _productServiceAdapter: IProductServiceAdapter,
         @Inject(ProductBlMapperName) private readonly _productMapper: IProductBlMapper,

@@ -6,15 +6,15 @@ import {
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Put } from '@nestjs/common';
 import { CreateProductDto } from '../dto/in/create-product.dto';
+import { IProductService, ProductServiceName } from '../../bl/services/product.service';
 import { ProductDto } from '../dto/out/product.dto';
-import { ProductService } from '../../bl/services/product.service';
 
 @ApiTags('Products')
 @Controller('api/products')
 export class ProductController {
-    constructor(private readonly productService: ProductService) {}
+    constructor(@Inject(ProductServiceName) private readonly productService: IProductService) {}
 
     @Get()
     @ApiOkResponse({ type: [ProductDto], description: 'OK' })

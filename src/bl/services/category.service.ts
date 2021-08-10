@@ -5,8 +5,19 @@ import { CreateCategoryDto } from '../../api/dto/in/create-category.dto';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { Utils } from '../utils';
 
+export interface ICategoryService {
+    getCategories: () => Promise<CategoryDto[]>;
+    getCategoryById: (id: string) => Promise<CategoryDto>;
+    createCategory: (categoryDto: CreateCategoryDto) => Promise<CategoryDto>;
+    updateCategory: (category: CategoryDto) => Promise<CategoryDto>;
+    softRemoveCategory: (id: string) => Promise<void>;
+    removeCategory: (id: string) => Promise<void>;
+}
+
+export const CategoryServiceName = Symbol('ICategoryService');
+
 @Injectable({ scope: Scope.REQUEST })
-export class CategoryService {
+export class CategoryService implements ICategoryService {
     constructor(
         @Inject(CategoryServiceAdapterName) private readonly _categoryAdapter: ICategoryServiceAdapter,
         @Inject(CategoryBlMapperName) private readonly _categoryMapper: ICategoryBlMapper,
