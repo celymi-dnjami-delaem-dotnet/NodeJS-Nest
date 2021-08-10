@@ -1,7 +1,7 @@
+import { CategoryDbMapperName } from './mappers/types/category-mapper.type';
 import { CategoryEntityMapper } from './mappers/entities/category-entity.mapper';
-import { CategoryMapperName } from './mappers/types/category-mapper.type';
 import { CategoryMongooseRepository } from './mongo/repository/category.repository';
-import { CategoryRepositoryName } from './types/category-repository.type';
+import { CategoryRepositoryName } from './base-types/category-repository.type';
 import { CategorySchema, Category as SchemaCategory } from './mongo/schemas/category.schema';
 import { CategorySchemaMapper } from './mappers/schemas/category-schema.mapper';
 import { CategoryServiceAdapter, CategoryServiceAdapterName } from './adapter/category-service.adapter';
@@ -12,10 +12,10 @@ import { Category as EntityCategory } from './postgres/entities/category.entity'
 import { Product as EntityProduct } from './postgres/entities/product.entity';
 import { LoggingModule } from '../logging/logging.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ProductDbMapperName } from './mappers/types/product-mapper.type';
 import { ProductEntityMapper } from './mappers/entities/product-entity.mapper';
-import { ProductMapperName } from './mappers/types/product-mapper.type';
 import { ProductMongooseRepository } from './mongo/repository/product.repository';
-import { ProductRepositoryName } from './types/product-repository.type';
+import { ProductRepositoryName } from './base-types/product-repository.type';
 import { ProductSchema, Product as SchemaProduct } from './mongo/schemas/product.schema';
 import { ProductSchemaMapper } from './mappers/schemas/product-schema.mapper';
 import { ProductServiceAdapter, ProductServiceAdapterName } from './adapter/product-service.adapter';
@@ -66,11 +66,11 @@ export class DbModule {
                     useClass: ProductTypeOrmRepository,
                 },
                 {
-                    provide: CategoryMapperName,
+                    provide: CategoryDbMapperName,
                     useClass: CategoryEntityMapper,
                 },
                 {
-                    provide: ProductMapperName,
+                    provide: ProductDbMapperName,
                     useClass: ProductEntityMapper,
                 },
             );
@@ -109,11 +109,11 @@ export class DbModule {
                     useClass: ProductMongooseRepository,
                 },
                 {
-                    provide: CategoryMapperName,
+                    provide: CategoryDbMapperName,
                     useClass: CategorySchemaMapper,
                 },
                 {
-                    provide: ProductMapperName,
+                    provide: ProductDbMapperName,
                     useClass: ProductSchemaMapper,
                 },
             );

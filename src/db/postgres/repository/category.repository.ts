@@ -1,7 +1,7 @@
 import { Category } from '../entities/category.entity';
-import { IBaseDb } from '../../types/base-db.type';
-import { ICategoryRepository } from '../../types/category-repository.type';
-import { ICreateCategoryDb } from '../../types/create-category.type';
+import { IBaseDb } from '../../base-types/base-db.type';
+import { ICategoryRepository } from '../../base-types/category-repository.type';
+import { ICreateCategoryDb } from '../../base-types/create-category.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';

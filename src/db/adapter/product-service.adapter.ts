@@ -1,6 +1,6 @@
 import { CreateProductCommand } from '../../bl/commands/in/create-product.command';
-import { IProductMapper, ProductMapperName } from '../mappers/types/product-mapper.type';
-import { IProductRepository, ProductRepositoryName } from '../types/product-repository.type';
+import { IProductDbMapper, ProductDbMapperName } from '../mappers/types/product-mapper.type';
+import { IProductRepository, ProductRepositoryName } from '../base-types/product-repository.type';
 import { Inject } from '@nestjs/common';
 import { ProductCommand } from '../../bl/commands/out/product.command';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
@@ -19,7 +19,7 @@ export const ProductServiceAdapterName = 'IProductServiceAdapter';
 export class ProductServiceAdapter implements IProductServiceAdapter {
     constructor(
         @Inject(ProductRepositoryName) private readonly _productRepository: IProductRepository,
-        @Inject(ProductMapperName) private readonly _productMapper: IProductMapper,
+        @Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper,
     ) {}
 
     async getProducts(): Promise<ProductCommand[]> {

@@ -1,8 +1,8 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
-import { IBaseDb } from '../../types/base-db.type';
+import { IBaseDb } from '../../base-types/base-db.type';
 import { ICreateProductSchema } from '../types/create-product.type';
 import { IProduct } from '../types/product.type';
-import { IProductRepository } from '../../types/product-repository.type';
+import { IProductRepository } from '../../base-types/product-repository.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Scope } from '@nestjs/common';
 import { Model } from 'mongoose';

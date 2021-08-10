@@ -11,4 +11,4 @@ export interface ICategoryRepository {
     removeCategory: (id: string) => Promise<ServiceResult>;
 }
 
-export const CategoryRepositoryName = 'ICategoryRepository';
+export const CategoryRepositoryName = Symbol('ICategoryRepository');

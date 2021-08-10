@@ -1,8 +1,8 @@
-import { CategoryMapper, CategoryMapperName } from './mappers/category.mapper';
+import { CategoryBlMapperName, CategoryMapper } from './mappers/category.mapper';
 import { CategoryService } from './services/category.service';
 import { DbModule } from '../db/db.module';
 import { DynamicModule, Module } from '@nestjs/common';
-import { ProductMapper, ProductMapperName } from './mappers/product.mapper';
+import { ProductBlMapperName, ProductMapper } from './mappers/product.mapper';
 import { ProductService } from './services/product.service';
 import { SettingsModule } from '../settings/settings.module';
 
@@ -13,10 +13,10 @@ export class BlModule {
             CategoryService,
             ProductService,
             {
-                provide: CategoryMapperName,
+                provide: CategoryBlMapperName,
                 useClass: CategoryMapper,
             },
-            { provide: ProductMapperName, useClass: ProductMapper },
+            { provide: ProductBlMapperName, useClass: ProductMapper },
         ];
 
         return {

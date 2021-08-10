@@ -1,14 +1,14 @@
 import { Category } from '../../postgres/entities/category.entity';
 import { CategoryCommand } from '../../../bl/commands/out/category.command';
 import { CreateCategoryCommand } from '../../../bl/commands/in/create-category.command';
-import { ICategoryMapper } from '../types/category-mapper.type';
-import { ICreateCategoryDb } from '../../types/create-category.type';
-import { IProductMapper, ProductMapperName } from '../types/product-mapper.type';
+import { ICategoryDbMapper } from '../types/category-mapper.type';
+import { ICreateCategoryDb } from '../../base-types/create-category.type';
+import { IProductDbMapper, ProductDbMapperName } from '../types/product-mapper.type';
 import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class CategoryEntityMapper implements ICategoryMapper {
-    constructor(@Inject(ProductMapperName) private readonly _productMapper: IProductMapper) {}
+export class CategoryEntityMapper implements ICategoryDbMapper {
+    constructor(@Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper) {}
 
     mapCreateToDbFromCommand(createCategoryCommand: CreateCategoryCommand): ICreateCategoryDb {
         return {

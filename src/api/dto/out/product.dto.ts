@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateProductDto } from '../actions/create-product.dto';
+import { CreateProductDto } from '../in/create-product.dto';
 
 export class ProductDto extends CreateProductDto {
     @ApiProperty({ description: 'Product ID' })

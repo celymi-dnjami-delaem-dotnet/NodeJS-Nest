@@ -1,12 +1,12 @@
 import { CreateProductCommand } from '../../../bl/commands/in/create-product.command';
 import { ICreateProductSchema } from '../../mongo/types/create-product.type';
-import { IProductMapper } from '../types/product-mapper.type';
+import { IProductDbMapper } from '../types/product-mapper.type';
 import { Injectable } from '@nestjs/common';
 import { Product } from '../../mongo/schemas/product.schema';
 import { ProductCommand } from '../../../bl/commands/out/product.command';
 
 @Injectable()
-export class ProductSchemaMapper implements IProductMapper {
+export class ProductSchemaMapper implements IProductDbMapper {
     mapCreateToDbFromCommand(createProductCommand: CreateProductCommand): ICreateProductSchema {
         return {
             displayName: createProductCommand.displayName,

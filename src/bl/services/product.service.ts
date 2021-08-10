@@ -1,15 +1,15 @@
-import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
-import { IProductMapper, ProductMapperName } from '../mappers/product.mapper';
+import { CreateProductDto } from '../../api/dto/in/create-product.dto';
+import { IProductBlMapper, ProductBlMapperName } from '../mappers/product.mapper';
 import { IProductServiceAdapter, ProductServiceAdapterName } from '../../db/adapter/product-service.adapter';
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { ProductDto } from '../../api/dto/models/product.dto';
+import { ProductDto } from '../../api/dto/out/product.dto';
 import { Utils } from '../utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProductService {
     constructor(
         @Inject(ProductServiceAdapterName) private readonly _productServiceAdapter: IProductServiceAdapter,
-        @Inject(ProductMapperName) private readonly _productMapper: IProductMapper,
+        @Inject(ProductBlMapperName) private readonly _productMapper: IProductBlMapper,
     ) {}
 
     async getProducts(): Promise<ProductDto[]> {

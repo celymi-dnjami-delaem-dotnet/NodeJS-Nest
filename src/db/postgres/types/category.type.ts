@@ -1,4 +1,4 @@
-import { IBaseDb } from '../../types/base-db.type';
+import { IBaseDb } from '../../base-types/base-db.type';
 
 export interface ICategory extends IBaseDb {
     id: string;

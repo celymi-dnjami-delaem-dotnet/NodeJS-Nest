@@ -1,7 +1,7 @@
-import { CategoryDto } from '../../api/dto/models/category.dto';
-import { CategoryMapperName, ICategoryMapper } from '../mappers/category.mapper';
+import { CategoryBlMapperName, ICategoryBlMapper } from '../mappers/category.mapper';
+import { CategoryDto } from '../../api/dto/out/category.dto';
 import { CategoryServiceAdapterName, ICategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
-import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
+import { CreateCategoryDto } from '../../api/dto/in/create-category.dto';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { Utils } from '../utils';
 
@@ -9,7 +9,7 @@ import { Utils } from '../utils';
 export class CategoryService {
     constructor(
         @Inject(CategoryServiceAdapterName) private readonly _categoryAdapter: ICategoryServiceAdapter,
-        @Inject(CategoryMapperName) private readonly _categoryMapper: ICategoryMapper,
+        @Inject(CategoryBlMapperName) private readonly _categoryMapper: ICategoryBlMapper,
     ) {}
 
     async getCategories(): Promise<CategoryDto[]> {

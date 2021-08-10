@@ -11,4 +11,4 @@ export interface IProductRepository {
     removeProduct: (id: string) => Promise<ServiceResult>;
 }
 
-export const ProductRepositoryName = 'IProductRepository';
+export const ProductRepositoryName = Symbol('IProductRepository');

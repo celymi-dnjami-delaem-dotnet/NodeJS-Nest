@@ -1,7 +1,7 @@
 import { Category } from '../entities/category.entity';
-import { IBaseDb } from '../../types/base-db.type';
+import { IBaseDb } from '../../base-types/base-db.type';
 import { ICreateProductEntity } from '../types/create-product.type';
-import { IProductRepository } from '../../types/product-repository.type';
+import { IProductRepository } from '../../base-types/product-repository.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from '../entities/product.entity';
 import { Repository } from 'typeorm';

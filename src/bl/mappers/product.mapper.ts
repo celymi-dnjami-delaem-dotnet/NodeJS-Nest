@@ -1,19 +1,19 @@
 import { CreateProductCommand } from '../commands/in/create-product.command';
-import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
+import { CreateProductDto } from '../../api/dto/in/create-product.dto';
 import { Injectable } from '@nestjs/common';
 import { ProductCommand } from '../commands/out/product.command';
-import { ProductDto } from '../../api/dto/models/product.dto';
+import { ProductDto } from '../../api/dto/out/product.dto';
 
-export interface IProductMapper {
+export interface IProductBlMapper {
     mapToDtoFromCommand: (productCommand: ProductCommand) => ProductDto;
     mapToCommandFromDto: (productDto: ProductDto) => ProductCommand;
     mapCreateToCommandFromDto: (createProductDto: CreateProductDto) => CreateProductCommand;
 }
 
-export const ProductMapperName = Symbol('IProductMapper');
+export const ProductBlMapperName = Symbol('IProductBlMapper');
 
 @Injectable()
-export class ProductMapper implements IProductMapper {
+export class ProductMapper implements IProductBlMapper {
     mapCreateToCommandFromDto(createProductDto: CreateProductDto): CreateProductCommand {
         return {
             categoryId: createProductDto.categoryId,

@@ -1,6 +1,6 @@
 import { CategoryCommand } from '../../bl/commands/out/category.command';
-import { CategoryMapperName, ICategoryMapper } from '../mappers/types/category-mapper.type';
-import { CategoryRepositoryName, ICategoryRepository } from '../types/category-repository.type';
+import { CategoryDbMapperName, ICategoryDbMapper } from '../mappers/types/category-mapper.type';
+import { CategoryRepositoryName, ICategoryRepository } from '../base-types/category-repository.type';
 import { CreateCategoryCommand } from '../../bl/commands/in/create-category.command';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
@@ -20,7 +20,7 @@ export const CategoryServiceAdapterName = Symbol('ICategoryServiceAdapter');
 export class CategoryServiceAdapter implements ICategoryServiceAdapter {
     constructor(
         @Inject(CategoryRepositoryName) private readonly _categoryRepository: ICategoryRepository,
-        @Inject(CategoryMapperName) private readonly _categoryMapper: ICategoryMapper,
+        @Inject(CategoryDbMapperName) private readonly _categoryMapper: ICategoryDbMapper,
     ) {}
 
     async getCategories(): Promise<CategoryCommand[]> {
