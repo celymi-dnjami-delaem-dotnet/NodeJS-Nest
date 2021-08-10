@@ -1,7 +1,7 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
 import { IBaseDb } from '../../types/base-db.type';
 import { ICategoryRepository } from '../../types/category-repository.type';
-import { ICreateCategory } from '../../types/create-category.type';
+import { ICreateCategoryDb } from '../../types/create-category.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Scope } from '@nestjs/common';
 import { Model } from 'mongoose';
@@ -27,7 +27,7 @@ export class CategoryMongooseRepository implements ICategoryRepository {
         return new ServiceResult<Category>(ServiceResultType.NotFound);
     }
 
-    async createCategory(category: ICreateCategory): Promise<IBaseDb> {
+    async createCategory(category: ICreateCategoryDb): Promise<IBaseDb> {
         const categorySchema = new this.categoryModel(category);
 
         return await categorySchema.save();

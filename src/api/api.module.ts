@@ -9,7 +9,7 @@ import { ProductController } from './controllers/product.controller';
 import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
-    imports: [BlModule, LoggingModule, TerminusModule],
+    imports: [BlModule.forRoot(), LoggingModule, TerminusModule],
     controllers: [ProductController, CategoryController, HealthCheckController],
     providers: [
         {

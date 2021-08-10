@@ -1,6 +1,6 @@
-import { CategoryAdapter } from '../adapters/category.adapter';
 import { CategoryDto } from '../../api/dto/models/category.dto';
-import { CategoryRepositoryName, ICategoryRepository } from '../../db/types/category-repository.type';
+import { CategoryMapperName, ICategoryMapper } from '../mappers/category.mapper';
+import { CategoryServiceAdapterName, ICategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { Utils } from '../utils';
@@ -8,52 +8,52 @@ import { Utils } from '../utils';
 @Injectable({ scope: Scope.REQUEST })
 export class CategoryService {
     constructor(
-        @Inject(CategoryRepositoryName) private readonly categoryRepository: ICategoryRepository,
-        private readonly categoryAdapter: CategoryAdapter,
+        @Inject(CategoryServiceAdapterName) private readonly _categoryAdapter: ICategoryServiceAdapter,
+        @Inject(CategoryMapperName) private readonly _categoryMapper: ICategoryMapper,
     ) {}
 
     async getCategories(): Promise<CategoryDto[]> {
-        const categories = await this.categoryRepository.getCategories();
+        const categories = await this._categoryAdapter.getCategories();
 
-        return categories.map((x) => this.categoryAdapter.adaptFromDbToDto(x));
+        return categories.map(this._categoryMapper.mapToDtoFromCommand);
     }
 
     async getCategoryById(id: string): Promise<CategoryDto> {
-        const { serviceResultType, data, exceptionMessage } = await this.categoryRepository.getCategoryById(id);
+        const { serviceResultType, data, exceptionMessage } = await this._categoryAdapter.getCategoryById(id);
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this.categoryAdapter.adaptFromDbToDto(data);
+        return this._categoryMapper.mapToDtoFromCommand(data);
     }
 
-    async createCategory(category: CreateCategoryDto): Promise<CategoryDto> {
-        const categorySchema = this.categoryAdapter.adaptCreateFromDtoToDb(category);
+    async createCategory(categoryDto: CreateCategoryDto): Promise<CategoryDto> {
+        const category = this._categoryMapper.mapCreateToCommandFromDto(categoryDto);
 
-        const createdCategorySchema = await this.categoryRepository.createCategory(categorySchema);
+        const createdCategory = await this._categoryAdapter.createCategory(category);
 
-        return this.categoryAdapter.adaptFromDbToDto(createdCategorySchema);
+        return this._categoryMapper.mapToDtoFromCommand(createdCategory);
     }
 
     async updateCategory(category: CategoryDto): Promise<CategoryDto> {
-        const categorySchema = this.categoryAdapter.adaptFromDtoToDb(category);
+        const categorySchema = this._categoryMapper.mapToCommandFromDto(category);
 
-        const { serviceResultType, data, exceptionMessage } = await this.categoryRepository.updateCategory(
+        const { serviceResultType, data, exceptionMessage } = await this._categoryAdapter.updateCategory(
             categorySchema,
         );
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this.categoryAdapter.adaptFromDbToDto(data);
+        return this._categoryMapper.mapToDtoFromCommand(data);
     }
 
     async softRemoveCategory(id: string): Promise<void> {
-        const { serviceResultType, exceptionMessage } = await this.categoryRepository.softRemoveCategory(id);
+        const { serviceResultType, exceptionMessage } = await this._categoryAdapter.softRemoveCategory(id);
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
     }
 
     async removeCategory(id: string): Promise<void> {
-        const { serviceResultType, exceptionMessage } = await this.categoryRepository.removeCategory(id);
+        const { serviceResultType, exceptionMessage } = await this._categoryAdapter.removeCategory(id);
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
     }

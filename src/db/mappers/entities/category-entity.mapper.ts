@@ -1,19 +1,40 @@
 import { Category } from '../../postgres/entities/category.entity';
-import { ICategoryMapper } from '../../types/category-mapper.type';
-import { ICreateCategory } from '../../types/create-category.type';
-import { Injectable } from '@nestjs/common';
+import { CategoryCommand } from '../../../bl/commands/out/category.command';
+import { CreateCategoryCommand } from '../../../bl/commands/in/create-category.command';
+import { ICategoryMapper } from '../types/category-mapper.type';
+import { ICreateCategoryDb } from '../../types/create-category.type';
+import { IProductMapper, ProductMapperName } from '../types/product-mapper.type';
+import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CategoryEntityMapper implements ICategoryMapper {
-    mapToCommandFromDb(category: Category): any {}
+    constructor(@Inject(ProductMapperName) private readonly _productMapper: IProductMapper) {}
 
-    mapToDbFromCommand(category: any): Category {
-        return undefined;
+    mapCreateToDbFromCommand(createCategoryCommand: CreateCategoryCommand): ICreateCategoryDb {
+        return {
+            displayName: createCategoryCommand.displayName,
+        };
     }
 
-    mapCreateToDbFromCommand(createCategory: any): ICreateCategory {
+    mapToCommandFromDb(categoryDb: Category): CategoryCommand {
         return {
-            displayName: createCategory.displayName,
+            id: categoryDb.id,
+            displayName: categoryDb.displayName,
+            products:
+                categoryDb.products && categoryDb.products.length
+                    ? categoryDb.products.map((x) => this._productMapper.mapToCommandFromDb(x))
+                    : [],
+            createdAt: categoryDb.createdAt,
+            isDeleted: categoryDb.isDeleted,
+        };
+    }
+
+    mapToDbFromCommand(categoryCommand: CategoryCommand): Category {
+        return {
+            id: categoryCommand.id,
+            displayName: categoryCommand.displayName,
+            createdAt: categoryCommand.createdAt,
+            isDeleted: categoryCommand.isDeleted,
         };
     }
 }

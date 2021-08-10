@@ -1,62 +1,51 @@
+import { CategoryCommand } from '../commands/out/category.command';
 import { CategoryDto } from '../../api/dto/models/category.dto';
+import { CreateCategoryCommand } from '../commands/in/create-category.command';
 import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
-import { Category as EntityCategory } from '../../db/postgres/entities/category.entity';
-import { ICreateCategory } from '../../db/types/create-category.type';
-import { Injectable } from '@nestjs/common';
-import { ProductMapper } from './product.mapper';
-import { Category as SchemaCategory } from '../../db/mongo/schemas/category.schema';
+import { IProductMapper, ProductMapperName } from './product.mapper';
+import { Inject, Injectable } from '@nestjs/common';
+
+export interface ICategoryMapper {
+    mapToDtoFromCommand: (categoryCommand: CategoryCommand) => CategoryDto;
+    mapToCommandFromDto: (categoryDto: CategoryDto) => CategoryCommand;
+    mapCreateToCommandFromDto: (createCategoryDto: CreateCategoryDto) => CreateCategoryCommand;
+}
+
+export const CategoryMapperName = Symbol('ICategoryMapper');
 
 @Injectable()
-export class CategoryMapper {
-    constructor(private readonly productMapper: ProductMapper) {}
+export class CategoryMapper implements ICategoryMapper {
+    constructor(@Inject(ProductMapperName) private readonly _productMapper: IProductMapper) {}
 
-    mapToDtoFromSchema(category: SchemaCategory): CategoryDto {
+    mapCreateToCommandFromDto(createCategoryDto: CreateCategoryDto): CreateCategoryCommand {
         return {
-            id: category._id,
-            displayName: category.displayName,
-            createdAt: category.createdAt,
-            isDeleted: category.isDeleted,
+            displayName: createCategoryDto.displayName,
+        };
+    }
+
+    mapToCommandFromDto(categoryDto: CategoryDto): CategoryCommand {
+        return {
+            id: categoryDto.id,
             products:
-                category.products && category.products.length
-                    ? category.products.map(this.productMapper.mapToDtoFromSchema)
+                categoryDto.products && categoryDto.products.length
+                    ? categoryDto.products.map((x) => this._productMapper.mapToCommandFromDto(x))
                     : [],
-        } as CategoryDto;
+            displayName: categoryDto.displayName,
+            createdAt: categoryDto.createdAt,
+            isDeleted: categoryDto.isDeleted,
+        };
     }
 
-    mapToDtoFromEntity(category: EntityCategory): CategoryDto {
+    mapToDtoFromCommand(categoryCommand: CategoryCommand): CategoryDto {
         return {
-            id: category.id,
-            displayName: category.displayName,
-            createdAt: category.createdAt,
-            isDeleted: category.isDeleted,
+            id: categoryCommand.id,
             products:
-                category.products && category.products.length
-                    ? category.products.map(this.productMapper.mapToDtoFromEntity)
+                categoryCommand.products && categoryCommand.products
+                    ? categoryCommand.products.map((x) => this._productMapper.mapToDtoFromCommand(x))
                     : [],
-        };
-    }
-
-    mapToSchemaFromDto(category: CategoryDto): SchemaCategory {
-        return {
-            _id: category.id,
-            displayName: category.displayName,
-            createdAt: category.createdAt,
-            isDeleted: category.isDeleted,
-        };
-    }
-
-    mapToEntityFromDto(category: CategoryDto): EntityCategory {
-        return {
-            id: category.id,
-            displayName: category.displayName,
-            createdAt: category.createdAt,
-            isDeleted: category.isDeleted,
-        };
-    }
-
-    mapToCreateDbFromCreateDto(createCategory: CreateCategoryDto): ICreateCategory {
-        return {
-            displayName: createCategory.displayName,
+            displayName: categoryCommand.displayName,
+            createdAt: categoryCommand.createdAt,
+            isDeleted: categoryCommand.isDeleted,
         };
     }
 }

@@ -1,61 +1,61 @@
-import { CategoryRepositoryName, ICategoryRepository } from '../../db/types/category-repository.type';
 import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
-import { IProductRepository, ProductRepositoryName } from '../../db/types/product-repository.type';
+import { IProductMapper, ProductMapperName } from '../mappers/product.mapper';
+import { IProductServiceAdapter, ProductServiceAdapterName } from '../../db/adapter/product-service.adapter';
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { ProductAdapter } from '../adapters/product.adapter';
 import { ProductDto } from '../../api/dto/models/product.dto';
 import { Utils } from '../utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProductService {
     constructor(
-        @Inject(CategoryRepositoryName) private readonly categoryRepository: ICategoryRepository,
-        @Inject(ProductRepositoryName) private readonly productRepository: IProductRepository,
-        private readonly productAdapter: ProductAdapter,
+        @Inject(ProductServiceAdapterName) private readonly _productServiceAdapter: IProductServiceAdapter,
+        @Inject(ProductMapperName) private readonly _productMapper: IProductMapper,
     ) {}
 
     async getProducts(): Promise<ProductDto[]> {
-        const products = await this.productRepository.getProducts();
+        const products = await this._productServiceAdapter.getProducts();
 
-        return products.map((x) => this.productAdapter.adaptFromDbToDto(x));
+        return products.map(this._productMapper.mapToDtoFromCommand);
     }
 
     async getProductById(id: string): Promise<ProductDto> {
-        const { serviceResultType, data } = await this.productRepository.getProductById(id);
+        const { serviceResultType, data } = await this._productServiceAdapter.getProductById(id);
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this.productAdapter.adaptFromDbToDto(data);
+        return this._productMapper.mapToDtoFromCommand(data);
     }
 
     async createProduct(product: CreateProductDto): Promise<ProductDto> {
-        const dbProduct = this.productAdapter.adaptCreateFromDtoToDb(product);
+        const dbProduct = this._productMapper.mapCreateToCommandFromDto(product);
 
-        const { serviceResultType, data, exceptionMessage } = await this.productRepository.createProduct(dbProduct);
+        const { serviceResultType, data, exceptionMessage } = await this._productServiceAdapter.createProduct(
+            dbProduct,
+        );
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this.productAdapter.adaptFromDbToDto(data);
+        return this._productMapper.mapToDtoFromCommand(data);
     }
 
     async updateProduct(product: ProductDto): Promise<ProductDto> {
-        const productSchema = this.productAdapter.adaptFromDtoToDb(product);
+        const productSchema = this._productMapper.mapToCommandFromDto(product);
 
-        const { serviceResultType, data } = await this.productRepository.updateProduct(productSchema);
+        const { serviceResultType, data } = await this._productServiceAdapter.updateProduct(productSchema);
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this.productAdapter.adaptFromDbToDto(data);
+        return this._productMapper.mapToDtoFromCommand(data);
     }
 
     async softRemoveProduct(id: string): Promise<void> {
-        const { serviceResultType } = await this.productRepository.softRemoveProduct(id);
+        const { serviceResultType } = await this._productServiceAdapter.softRemoveProduct(id);
 
         Utils.validateServiceResultType(serviceResultType);
     }
 
     async removeProduct(id: string): Promise<void> {
-        const { serviceResultType } = await this.productRepository.removeProduct(id);
+        const { serviceResultType } = await this._productServiceAdapter.removeProduct(id);
 
         Utils.validateServiceResultType(serviceResultType);
     }

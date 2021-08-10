@@ -1,7 +1,7 @@
 import { Category } from '../entities/category.entity';
 import { IBaseDb } from '../../types/base-db.type';
 import { ICategoryRepository } from '../../types/category-repository.type';
-import { ICreateCategory } from '../../types/create-category.type';
+import { ICreateCategoryDb } from '../../types/create-category.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
@@ -31,7 +31,7 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         return new ServiceResult<IBaseDb>(ServiceResultType.Success, foundResult);
     }
 
-    async createCategory(category: ICreateCategory): Promise<IBaseDb> {
+    async createCategory(category: ICreateCategoryDb): Promise<IBaseDb> {
         return this.categoryRepository.save(category);
     }
 

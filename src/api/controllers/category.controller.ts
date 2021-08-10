@@ -5,7 +5,7 @@ import { CategoryService } from '../../bl/services/category.service';
 import { CreateCategoryDto } from '../dto/actions/create-category.dto';
 
 @ApiTags('Categories')
-@Controller('api/category')
+@Controller('api/categories')
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
 

@@ -12,7 +12,7 @@ import { ProductDto } from '../dto/models/product.dto';
 import { ProductService } from '../../bl/services/product.service';
 
 @ApiTags('Products')
-@Controller('api/product')
+@Controller('api/products')
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 

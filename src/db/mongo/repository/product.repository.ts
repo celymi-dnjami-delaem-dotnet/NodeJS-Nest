@@ -1,6 +1,7 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
 import { IBaseDb } from '../../types/base-db.type';
 import { ICreateProductSchema } from '../types/create-product.type';
+import { IProduct } from '../types/product.type';
 import { IProductRepository } from '../../types/product-repository.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Scope } from '@nestjs/common';
@@ -21,10 +22,7 @@ export class ProductMongooseRepository implements IProductRepository {
     }
 
     async getProductById(id: string): Promise<ServiceResult<Product>> {
-        const productSchema = await this.productModel
-            .findOne({ _id: id })
-            .populate('category', null, Category.name)
-            .exec();
+        const productSchema = await this.GetProductWithChildren(id, true);
 
         if (!productSchema) {
             return new ServiceResult<Product>(ServiceResultType.NotFound);
@@ -34,7 +32,7 @@ export class ProductMongooseRepository implements IProductRepository {
     }
 
     async createProduct(product: ICreateProductSchema): Promise<ServiceResult<IBaseDb>> {
-        const existingCategory = await this.categoryModel.findOne({ id: product.category });
+        const existingCategory = await this.categoryModel.findOne({ _id: product.category }).exec();
 
         if (!existingCategory) {
             return new ServiceResult<Category>(ServiceResultType.InvalidData);
@@ -68,7 +66,7 @@ export class ProductMongooseRepository implements IProductRepository {
             return new ServiceResult<Product>(ServiceResultType.NotFound);
         }
 
-        const updatedSchema = await this.productModel.findById(productSchema._id);
+        const updatedSchema = await this.GetProductWithChildren(productSchema._id, true);
 
         return new ServiceResult<Product>(ServiceResultType.Success, updatedSchema);
     }
@@ -89,5 +87,11 @@ export class ProductMongooseRepository implements IProductRepository {
         }
 
         return new ServiceResult(ServiceResultType.NotFound);
+    }
+
+    private async GetProductWithChildren(id: string, includeChildren?: boolean): Promise<IProduct> {
+        return includeChildren
+            ? this.productModel.findOne({ _id: id }).populate('category', null, Category.name).exec()
+            : this.productModel.findOne({ _id: id }).exec();
     }
 }
