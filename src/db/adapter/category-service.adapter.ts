@@ -15,7 +15,7 @@ export class CategoryServiceAdapter {
     async getCategories(): Promise<CategoryCommand[]> {
         const categories = await this._categoryRepository.getCategories();
 
-        return categories.map(this._categoryMapper.mapToCommandFromDb);
+        return categories.map((x) => this._categoryMapper.mapToCommandFromDb(x));
     }
 
     async getCategoryById(id: string): Promise<ServiceResult<CategoryCommand>> {
