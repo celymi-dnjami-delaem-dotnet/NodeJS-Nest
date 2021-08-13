@@ -3,10 +3,18 @@ import { IProductBlMapper, ProductBlMapperName } from '../mappers/product.mapper
 import { IProductServiceAdapter, ProductServiceAdapterName } from '../../db/adapter/product-service.adapter';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/out/product.dto';
+import { ProductUtils } from '../utils/product.utils';
 import { Utils } from '../utils';
 
 export interface IProductService {
-    getProducts: () => Promise<ProductDto[]>;
+    getProducts: (
+        displayName: string,
+        minRating: string,
+        sortBy: string,
+        price: string,
+        limit: string,
+        offset: string,
+    ) => Promise<ProductDto[]>;
     getProductById: (id: string) => Promise<ProductDto>;
     createProduct: (product: CreateProductDto) => Promise<ProductDto>;
     updateProduct: (product: ProductDto) => Promise<ProductDto>;
@@ -23,8 +31,17 @@ export class ProductService implements IProductService {
         @Inject(ProductBlMapperName) private readonly _productMapper: IProductBlMapper,
     ) {}
 
-    async getProducts(): Promise<ProductDto[]> {
-        const products = await this._productServiceAdapter.getProducts();
+    async getProducts(
+        displayName: string,
+        minRating: string,
+        sortBy: string,
+        price: string,
+        limit: string,
+        offset: string,
+    ): Promise<ProductDto[]> {
+        const searchParams = ProductUtils.getSearchParams(displayName, minRating, sortBy, price, limit, offset);
+
+        const products = await this._productServiceAdapter.getProducts(searchParams);
 
         return products.map(this._productMapper.mapToDtoFromCommand);
     }

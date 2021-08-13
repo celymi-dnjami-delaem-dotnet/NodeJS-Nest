@@ -3,10 +3,11 @@ import { IProductDbMapper, ProductDbMapperName } from '../mappers/types/product-
 import { IProductRepository, ProductRepositoryName } from '../base-types/product-repository.type';
 import { Inject } from '@nestjs/common';
 import { ProductCommand } from '../../bl/commands/out/product.command';
+import { SearchParamsProductCommand } from '../../bl/commands/in/search-params-product.command';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
 export interface IProductServiceAdapter {
-    getProducts: () => Promise<ProductCommand[]>;
+    getProducts: (searchParams: SearchParamsProductCommand) => Promise<ProductCommand[]>;
     getProductById: (id: string) => Promise<ServiceResult<ProductCommand>>;
     createProduct: (createProductCommand: CreateProductCommand) => Promise<ServiceResult<ProductCommand>>;
     updateProduct: (productCommand: ProductCommand) => Promise<ServiceResult<ProductCommand>>;
@@ -14,7 +15,7 @@ export interface IProductServiceAdapter {
     removeProduct: (id: string) => Promise<ServiceResult>;
 }
 
-export const ProductServiceAdapterName = 'IProductServiceAdapter';
+export const ProductServiceAdapterName = Symbol('IProductServiceAdapter');
 
 export class ProductServiceAdapter implements IProductServiceAdapter {
     constructor(
@@ -22,8 +23,10 @@ export class ProductServiceAdapter implements IProductServiceAdapter {
         @Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper,
     ) {}
 
-    async getProducts(): Promise<ProductCommand[]> {
-        const products = await this._productRepository.getProducts();
+    async getProducts(searchParams: SearchParamsProductCommand): Promise<ProductCommand[]> {
+        const dbSearchParams = this._productMapper.mapSearchParamsToDbFromCommand(searchParams);
+
+        const products = await this._productRepository.getProducts(dbSearchParams);
 
         return products.map(this._productMapper.mapToCommandFromDb);
     }

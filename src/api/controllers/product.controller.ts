@@ -6,20 +6,42 @@ import {
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Put } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Inject,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
 import { CreateProductDto } from '../dto/in/create-product.dto';
 import { IProductService, ProductServiceName } from '../../bl/services/product.service';
 import { ProductDto } from '../dto/out/product.dto';
+import { ProductSearchGuard } from '../guards/product-search.guard';
 
 @ApiTags('Products')
 @Controller('api/products')
 export class ProductController {
     constructor(@Inject(ProductServiceName) private readonly productService: IProductService) {}
 
+    @UseGuards(ProductSearchGuard)
     @Get()
     @ApiOkResponse({ type: [ProductDto], description: 'OK' })
-    async getCategories(): Promise<ProductDto[]> {
-        return this.productService.getProducts();
+    async getCategories(
+        @Query('displayName') displayName: string,
+        @Query('minRating') minRating: string,
+        @Query('sortBy') sortBy: string,
+        @Query('price') price: string,
+        @Query('limit') limit: string,
+        @Query('offset') offset: string,
+    ): Promise<ProductDto[]> {
+        return this.productService.getProducts(displayName, minRating, sortBy, price, limit, offset);
     }
 
     @Get('id/:id')

@@ -14,7 +14,7 @@ export class CategoryMongooseRepository implements ICategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
     async getCategories(): Promise<IBaseDb[]> {
-        return this.categoryModel.find();
+        return this.categoryModel.find().exec();
     }
 
     async getCategoryById(id: string): Promise<ServiceResult<Category>> {
