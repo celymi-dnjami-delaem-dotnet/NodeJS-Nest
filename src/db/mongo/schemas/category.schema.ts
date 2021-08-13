@@ -12,7 +12,7 @@ export class Category implements ICategory {
     @Prop({ required: true })
     displayName: string;
 
-    @Prop({ type: [MongooseSchema.Types.ObjectId], default: [], ref: 'Product' })
+    @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Product' }], default: [] })
     products?: Product[];
 
     @Prop({ default: Date.now() })

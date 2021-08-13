@@ -22,7 +22,7 @@ export class CategorySchemaMapper implements ICategoryDbMapper {
             displayName: categoryDb.displayName,
             products:
                 categoryDb.products && categoryDb.products.length
-                    ? categoryDb.products.map(this._productMapper.mapToCommandFromDb)
+                    ? categoryDb.products.map((x) => this._productMapper.mapToCommandFromDb(x))
                     : [],
             createdAt: categoryDb.createdAt,
             isDeleted: categoryDb.isDeleted,

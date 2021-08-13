@@ -5,7 +5,6 @@ import { ICreateCategoryDb } from '../../base-types/create-category.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Scope } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Product } from '../schemas/product.schema';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
@@ -14,11 +13,15 @@ export class CategoryMongooseRepository implements ICategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
     async getCategories(): Promise<IBaseDb[]> {
-        return this.categoryModel.find();
+        return this.categoryModel.find().populate({ path: 'products', model: 'Product' }).exec();
     }
 
     async getCategoryById(id: string): Promise<ServiceResult<Category>> {
-        const category = await this.categoryModel.findOne({ _id: id }).populate('products', null, Product.name).exec();
+        const category = await this.categoryModel
+            .findOne({ _id: id })
+            .lean()
+            .populate({ path: 'products', model: 'Product' })
+            .exec();
 
         if (category) {
             return new ServiceResult<Category>(ServiceResultType.Success, category);
@@ -42,7 +45,7 @@ export class CategoryMongooseRepository implements ICategoryRepository {
             return new ServiceResult<Category>(ServiceResultType.NotFound);
         }
 
-        const updatedModel = await this.categoryModel.findById(category._id).exec();
+        const updatedModel = await this.categoryModel.findById(category._id).lean().exec();
 
         return new ServiceResult<Category>(ServiceResultType.Success, updatedModel);
     }
