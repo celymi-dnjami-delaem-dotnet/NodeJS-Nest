@@ -1,6 +1,6 @@
-import { CreateProductDto } from '../../api/dto/in/create-product.dto';
+import { CreateProductDto } from '../../api/dto/create-product.dto';
 import { Injectable, Scope } from '@nestjs/common';
-import { ProductDto } from '../../api/dto/out/product.dto';
+import { ProductDto } from '../../api/dto/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
 import { ProductServiceAdapter } from '../../db/adapter/product-service.adapter';
 import { Utils } from '../utils';

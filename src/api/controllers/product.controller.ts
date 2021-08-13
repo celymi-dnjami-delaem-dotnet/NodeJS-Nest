@@ -7,8 +7,8 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { CreateProductDto } from '../dto/in/create-product.dto';
-import { ProductDto } from '../dto/out/product.dto';
+import { CreateProductDto } from '../dto/create-product.dto';
+import { ProductDto } from '../dto/product.dto';
 import { ProductService } from '../../bl/services/product.service';
 
 @ApiTags('Products')

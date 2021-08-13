@@ -1,4 +1,4 @@
-export class CreateProductCommand {
+export interface ICreateProductCommand {
     displayName: string;
     price: number;
     categoryId: string;

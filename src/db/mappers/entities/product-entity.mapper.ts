@@ -1,13 +1,13 @@
-import { CreateProductCommand } from '../../../bl/commands/in/create-product.command';
+import { ICreateProductCommand } from '../../../bl/commands/create-product.command';
 import { ICreateProductEntity } from '../../postgres/types/create-product.type';
+import { IProductCommand } from '../../../bl/commands/product.command';
 import { IProductDbMapper } from '../types/product-mapper.type';
 import { Injectable } from '@nestjs/common';
 import { Product } from '../../postgres/entities/product.entity';
-import { ProductCommand } from '../../../bl/commands/out/product.command';
 
 @Injectable()
 export class ProductEntityMapper implements IProductDbMapper {
-    mapCreateToDbFromCommand(createProductCommand: CreateProductCommand): ICreateProductEntity {
+    mapCreateToDbFromCommand(createProductCommand: ICreateProductCommand): ICreateProductEntity {
         return {
             displayName: createProductCommand.displayName,
             price: createProductCommand.price,
@@ -15,7 +15,7 @@ export class ProductEntityMapper implements IProductDbMapper {
         };
     }
 
-    mapToCommandFromDb(productDb: Product): ProductCommand {
+    mapToCommandFromDb(productDb: Product): IProductCommand {
         return {
             id: productDb.id,
             displayName: productDb.displayName,
@@ -27,7 +27,7 @@ export class ProductEntityMapper implements IProductDbMapper {
         };
     }
 
-    mapToDbFromCommand(productCommand: ProductCommand): Product {
+    mapToDbFromCommand(productCommand: IProductCommand): Product {
         return {
             id: productCommand.id,
             displayName: productCommand.displayName,

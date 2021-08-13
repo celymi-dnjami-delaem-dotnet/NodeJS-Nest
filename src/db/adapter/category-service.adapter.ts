@@ -1,7 +1,7 @@
-import { CategoryCommand } from '../../bl/commands/out/category.command';
 import { CategoryDbMapperName, ICategoryDbMapper } from '../mappers/types/category-mapper.type';
 import { CategoryRepositoryName, ICategoryRepository } from '../base-types/category-repository.type';
-import { CreateCategoryCommand } from '../../bl/commands/in/create-category.command';
+import { ICategoryCommand } from '../../bl/commands/category.command';
+import { ICreateCategoryCommand } from '../../bl/commands/create-category.command';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
@@ -12,23 +12,23 @@ export class CategoryServiceAdapter {
         @Inject(CategoryDbMapperName) private readonly _categoryMapper: ICategoryDbMapper,
     ) {}
 
-    async getCategories(): Promise<CategoryCommand[]> {
+    async getCategories(): Promise<ICategoryCommand[]> {
         const categories = await this._categoryRepository.getCategories();
 
         return categories.map((x) => this._categoryMapper.mapToCommandFromDb(x));
     }
 
-    async getCategoryById(id: string): Promise<ServiceResult<CategoryCommand>> {
+    async getCategoryById(id: string): Promise<ServiceResult<ICategoryCommand>> {
         const { serviceResultType, exceptionMessage, data } = await this._categoryRepository.getCategoryById(id);
 
-        return new ServiceResult<CategoryCommand>(
+        return new ServiceResult<ICategoryCommand>(
             serviceResultType,
             data && this._categoryMapper.mapToCommandFromDb(data),
             exceptionMessage,
         );
     }
 
-    async createCategory(category: CreateCategoryCommand): Promise<CategoryCommand> {
+    async createCategory(category: ICreateCategoryCommand): Promise<ICategoryCommand> {
         const mappedCategory = this._categoryMapper.mapCreateToDbFromCommand(category);
 
         const createdCategory = await this._categoryRepository.createCategory(mappedCategory);
@@ -36,14 +36,14 @@ export class CategoryServiceAdapter {
         return this._categoryMapper.mapToCommandFromDb(createdCategory);
     }
 
-    async updateCategory(category: CategoryCommand): Promise<ServiceResult<CategoryCommand>> {
+    async updateCategory(category: ICategoryCommand): Promise<ServiceResult<ICategoryCommand>> {
         const updateCategoryDb = this._categoryMapper.mapToDbFromCommand(category);
 
         const { exceptionMessage, serviceResultType, data } = await this._categoryRepository.updateCategory(
             updateCategoryDb,
         );
 
-        return new ServiceResult<CategoryCommand>(
+        return new ServiceResult<ICategoryCommand>(
             serviceResultType,
             data && this._categoryMapper.mapToCommandFromDb(data),
             exceptionMessage,

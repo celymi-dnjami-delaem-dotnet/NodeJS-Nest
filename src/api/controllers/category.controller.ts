@@ -1,8 +1,8 @@
 import { ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { CategoryDto } from '../dto/out/category.dto';
+import { CategoryDto } from '../dto/category.dto';
 import { CategoryService } from '../../bl/services/category.service';
-import { CreateCategoryDto } from '../dto/in/create-category.dto';
+import { CreateCategoryDto } from '../dto/create-category.dto';
 
 @ApiTags('Categories')
 @Controller('api/categories')

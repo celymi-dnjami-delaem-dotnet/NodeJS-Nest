@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateCategoryDto } from '../in/create-category.dto';
+import { CreateCategoryDto } from './create-category.dto';
 import { IsNotEmpty } from 'class-validator';
 import { ProductDto } from './product.dto';
 

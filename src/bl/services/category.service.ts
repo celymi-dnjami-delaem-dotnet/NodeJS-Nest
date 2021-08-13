@@ -1,7 +1,7 @@
-import { CategoryDto } from '../../api/dto/out/category.dto';
+import { CategoryDto } from '../../api/dto/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
 import { CategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
-import { CreateCategoryDto } from '../../api/dto/in/create-category.dto';
+import { CreateCategoryDto } from '../../api/dto/create-category.dto';
 import { Injectable, Scope } from '@nestjs/common';
 import { Utils } from '../utils';
 

@@ -1,7 +1,7 @@
-import { CategoryCommand } from '../commands/out/category.command';
-import { CategoryDto } from '../../api/dto/out/category.dto';
-import { CreateCategoryCommand } from '../commands/in/create-category.command';
-import { CreateCategoryDto } from '../../api/dto/in/create-category.dto';
+import { CategoryDto } from '../../api/dto/category.dto';
+import { CreateCategoryDto } from '../../api/dto/create-category.dto';
+import { ICategoryCommand } from '../commands/category.command';
+import { ICreateCategoryCommand } from '../commands/create-category.command';
 import { Injectable } from '@nestjs/common';
 import { ProductMapper } from './product.mapper';
 
@@ -9,13 +9,13 @@ import { ProductMapper } from './product.mapper';
 export class CategoryMapper {
     constructor(private readonly _productMapper: ProductMapper) {}
 
-    mapCreateToCommandFromDto(createCategoryDto: CreateCategoryDto): CreateCategoryCommand {
+    mapCreateToCommandFromDto(createCategoryDto: CreateCategoryDto): ICreateCategoryCommand {
         return {
             displayName: createCategoryDto.displayName,
         };
     }
 
-    mapToCommandFromDto(categoryDto: CategoryDto): CategoryCommand {
+    mapToCommandFromDto(categoryDto: CategoryDto): ICategoryCommand {
         return {
             id: categoryDto.id,
             products:
@@ -28,7 +28,7 @@ export class CategoryMapper {
         };
     }
 
-    mapToDtoFromCommand(categoryCommand: CategoryCommand): CategoryDto {
+    mapToDtoFromCommand(categoryCommand: ICategoryCommand): CategoryDto {
         return {
             id: categoryCommand.id,
             products:
