@@ -26,7 +26,7 @@ export class CategoryService implements ICategoryService {
     async getCategories(): Promise<CategoryDto[]> {
         const categories = await this._categoryAdapter.getCategories();
 
-        return categories.map(this._categoryMapper.mapToDtoFromCommand);
+        return categories.map((x) => this._categoryMapper.mapToDtoFromCommand(x));
     }
 
     async getCategoryById(id: string): Promise<CategoryDto> {
