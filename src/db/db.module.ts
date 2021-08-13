@@ -89,6 +89,7 @@ export class DbModule {
                             uri: settingsService.getMongooseConnectionString(),
                             useNewUrlParser: true,
                             useUnifiedTopology: true,
+                            useCreateIndex: true,
                         };
                     },
                     inject: [SettingsService, ConsoleLogger],

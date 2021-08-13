@@ -9,7 +9,7 @@ export type CategoryDocument = Category & Document;
 export class Category implements ICategory {
     _id: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, index: true })
     displayName: string;
 
     @Prop({ type: [MongooseSchema.Types.ObjectId], default: [], ref: 'Product' })

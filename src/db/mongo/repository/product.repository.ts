@@ -26,7 +26,7 @@ export class ProductMongooseRepository implements IProductRepository {
         }
 
         if (searchParams.minRating) {
-            search.where('rating').gte(searchParams.minRating);
+            search.where('totalRating').gte(searchParams.minRating);
         }
 
         if (searchParams.minPrice) {

@@ -35,7 +35,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
         if (searchParams.minRating) {
             searchOptions = {
                 ...searchOptions,
-                where: { ...(searchOptions.where as any), rating: MoreThanOrEqual(searchParams.minRating) },
+                where: { ...(searchOptions.where as any), totalRating: MoreThanOrEqual(searchParams.minRating) },
             };
         }
 
