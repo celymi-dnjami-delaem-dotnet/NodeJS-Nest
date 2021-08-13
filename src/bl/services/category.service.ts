@@ -1,26 +1,15 @@
-import { CategoryBlMapperName, ICategoryBlMapper } from '../mappers/category.mapper';
 import { CategoryDto } from '../../api/dto/out/category.dto';
-import { CategoryServiceAdapterName, ICategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
+import { CategoryMapper } from '../mappers/category.mapper';
+import { CategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
 import { CreateCategoryDto } from '../../api/dto/in/create-category.dto';
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { Utils } from '../utils';
 
-export interface ICategoryService {
-    getCategories: () => Promise<CategoryDto[]>;
-    getCategoryById: (id: string) => Promise<CategoryDto>;
-    createCategory: (categoryDto: CreateCategoryDto) => Promise<CategoryDto>;
-    updateCategory: (category: CategoryDto) => Promise<CategoryDto>;
-    softRemoveCategory: (id: string) => Promise<void>;
-    removeCategory: (id: string) => Promise<void>;
-}
-
-export const CategoryServiceName = Symbol('ICategoryService');
-
 @Injectable({ scope: Scope.REQUEST })
-export class CategoryService implements ICategoryService {
+export class CategoryService {
     constructor(
-        @Inject(CategoryServiceAdapterName) private readonly _categoryAdapter: ICategoryServiceAdapter,
-        @Inject(CategoryBlMapperName) private readonly _categoryMapper: ICategoryBlMapper,
+        private readonly _categoryAdapter: CategoryServiceAdapter,
+        private readonly _categoryMapper: CategoryMapper,
     ) {}
 
     async getCategories(): Promise<CategoryDto[]> {

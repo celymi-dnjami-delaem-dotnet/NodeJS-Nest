@@ -2,20 +2,12 @@ import { CategoryCommand } from '../commands/out/category.command';
 import { CategoryDto } from '../../api/dto/out/category.dto';
 import { CreateCategoryCommand } from '../commands/in/create-category.command';
 import { CreateCategoryDto } from '../../api/dto/in/create-category.dto';
-import { IProductBlMapper, ProductBlMapperName } from './product.mapper';
-import { Inject, Injectable } from '@nestjs/common';
-
-export interface ICategoryBlMapper {
-    mapToDtoFromCommand: (categoryCommand: CategoryCommand) => CategoryDto;
-    mapToCommandFromDto: (categoryDto: CategoryDto) => CategoryCommand;
-    mapCreateToCommandFromDto: (createCategoryDto: CreateCategoryDto) => CreateCategoryCommand;
-}
-
-export const CategoryBlMapperName = Symbol('ICategoryBlMapper');
+import { Injectable } from '@nestjs/common';
+import { ProductMapper } from './product.mapper';
 
 @Injectable()
-export class CategoryMapper implements ICategoryBlMapper {
-    constructor(@Inject(ProductBlMapperName) private readonly _productMapper: IProductBlMapper) {}
+export class CategoryMapper {
+    constructor(private readonly _productMapper: ProductMapper) {}
 
     mapCreateToCommandFromDto(createCategoryDto: CreateCategoryDto): CreateCategoryCommand {
         return {

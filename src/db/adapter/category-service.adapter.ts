@@ -5,19 +5,8 @@ import { CreateCategoryCommand } from '../../bl/commands/in/create-category.comm
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
-export interface ICategoryServiceAdapter {
-    getCategories: () => Promise<CategoryCommand[]>;
-    getCategoryById: (id: string) => Promise<ServiceResult<CategoryCommand>>;
-    createCategory: (category: CreateCategoryCommand) => Promise<CategoryCommand>;
-    updateCategory: (category: CategoryCommand) => Promise<ServiceResult<CategoryCommand>>;
-    softRemoveCategory: (id: string) => Promise<ServiceResult>;
-    removeCategory: (id: string) => Promise<ServiceResult>;
-}
-
-export const CategoryServiceAdapterName = Symbol('ICategoryServiceAdapter');
-
 @Injectable({ scope: Scope.REQUEST })
-export class CategoryServiceAdapter implements ICategoryServiceAdapter {
+export class CategoryServiceAdapter {
     constructor(
         @Inject(CategoryRepositoryName) private readonly _categoryRepository: ICategoryRepository,
         @Inject(CategoryDbMapperName) private readonly _categoryMapper: ICategoryDbMapper,

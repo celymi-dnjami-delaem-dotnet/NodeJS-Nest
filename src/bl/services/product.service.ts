@@ -1,26 +1,15 @@
 import { CreateProductDto } from '../../api/dto/in/create-product.dto';
-import { IProductBlMapper, ProductBlMapperName } from '../mappers/product.mapper';
-import { IProductServiceAdapter, ProductServiceAdapterName } from '../../db/adapter/product-service.adapter';
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/out/product.dto';
+import { ProductMapper } from '../mappers/product.mapper';
+import { ProductServiceAdapter } from '../../db/adapter/product-service.adapter';
 import { Utils } from '../utils';
 
-export interface IProductService {
-    getProducts: () => Promise<ProductDto[]>;
-    getProductById: (id: string) => Promise<ProductDto>;
-    createProduct: (product: CreateProductDto) => Promise<ProductDto>;
-    updateProduct: (product: ProductDto) => Promise<ProductDto>;
-    softRemoveProduct: (id: string) => Promise<void>;
-    removeProduct: (id: string) => Promise<void>;
-}
-
-export const ProductServiceName = Symbol('IProductService');
-
 @Injectable({ scope: Scope.REQUEST })
-export class ProductService implements IProductService {
+export class ProductService {
     constructor(
-        @Inject(ProductServiceAdapterName) private readonly _productServiceAdapter: IProductServiceAdapter,
-        @Inject(ProductBlMapperName) private readonly _productMapper: IProductBlMapper,
+        private readonly _productServiceAdapter: ProductServiceAdapter,
+        private readonly _productMapper: ProductMapper,
     ) {}
 
     async getProducts(): Promise<ProductDto[]> {

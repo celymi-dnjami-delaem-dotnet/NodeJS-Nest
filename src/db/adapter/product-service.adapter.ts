@@ -5,18 +5,7 @@ import { Inject } from '@nestjs/common';
 import { ProductCommand } from '../../bl/commands/out/product.command';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
-export interface IProductServiceAdapter {
-    getProducts: () => Promise<ProductCommand[]>;
-    getProductById: (id: string) => Promise<ServiceResult<ProductCommand>>;
-    createProduct: (createProductCommand: CreateProductCommand) => Promise<ServiceResult<ProductCommand>>;
-    updateProduct: (productCommand: ProductCommand) => Promise<ServiceResult<ProductCommand>>;
-    softRemoveProduct: (id: string) => Promise<ServiceResult>;
-    removeProduct: (id: string) => Promise<ServiceResult>;
-}
-
-export const ProductServiceAdapterName = 'IProductServiceAdapter';
-
-export class ProductServiceAdapter implements IProductServiceAdapter {
+export class ProductServiceAdapter {
     constructor(
         @Inject(ProductRepositoryName) private readonly _productRepository: IProductRepository,
         @Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper,
