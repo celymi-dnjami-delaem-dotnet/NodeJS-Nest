@@ -42,7 +42,7 @@ export class ProductMongooseRepository implements IProductRepository {
         const creationResult = await createdProduct.save();
 
         const updateResult = await this.categoryModel
-            .updateOne({ _id: existingCategory._id }, { $push: { products: createdProduct._id } })
+            .updateOne({ _id: existingCategory._id }, { $push: { products: creationResult._id } })
             .exec();
 
         if (!updateResult.nModified) {
