@@ -7,15 +7,12 @@ import { Utils } from '../utils';
 
 @Injectable()
 export class CategoryService {
-    constructor(
-        private readonly _categoryAdapter: CategoryServiceAdapter,
-        private readonly _categoryMapper: CategoryMapper,
-    ) {}
+    constructor(private readonly _categoryAdapter: CategoryServiceAdapter) {}
 
     async getCategories(): Promise<CategoryDto[]> {
         const categories = await this._categoryAdapter.getCategories();
 
-        return categories.map((x) => this._categoryMapper.mapToDtoFromCommand(x));
+        return categories.map(CategoryMapper.mapToDtoFromCommand);
     }
 
     async getCategoryById(id: string): Promise<CategoryDto> {
@@ -23,19 +20,19 @@ export class CategoryService {
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this._categoryMapper.mapToDtoFromCommand(data);
+        return CategoryMapper.mapToDtoFromCommand(data);
     }
 
     async createCategory(categoryDto: CreateCategoryDto): Promise<CategoryDto> {
-        const category = this._categoryMapper.mapCreateToCommandFromDto(categoryDto);
+        const category = CategoryMapper.mapCreateToCommandFromDto(categoryDto);
 
         const createdCategory = await this._categoryAdapter.createCategory(category);
 
-        return this._categoryMapper.mapToDtoFromCommand(createdCategory);
+        return CategoryMapper.mapToDtoFromCommand(createdCategory);
     }
 
     async updateCategory(category: CategoryDto): Promise<CategoryDto> {
-        const categorySchema = this._categoryMapper.mapToCommandFromDto(category);
+        const categorySchema = CategoryMapper.mapToCommandFromDto(category);
 
         const { serviceResultType, data, exceptionMessage } = await this._categoryAdapter.updateCategory(
             categorySchema,
@@ -43,7 +40,7 @@ export class CategoryService {
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this._categoryMapper.mapToDtoFromCommand(data);
+        return CategoryMapper.mapToDtoFromCommand(data);
     }
 
     async softRemoveCategory(id: string): Promise<void> {

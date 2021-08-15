@@ -7,15 +7,12 @@ import { Utils } from '../utils';
 
 @Injectable()
 export class ProductService {
-    constructor(
-        private readonly _productServiceAdapter: ProductServiceAdapter,
-        private readonly _productMapper: ProductMapper,
-    ) {}
+    constructor(private readonly _productServiceAdapter: ProductServiceAdapter) {}
 
     async getProducts(): Promise<ProductDto[]> {
         const products = await this._productServiceAdapter.getProducts();
 
-        return products.map(this._productMapper.mapToDtoFromCommand);
+        return products.map(ProductMapper.mapToDtoFromCommand);
     }
 
     async getProductById(id: string): Promise<ProductDto> {
@@ -23,11 +20,11 @@ export class ProductService {
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this._productMapper.mapToDtoFromCommand(data);
+        return ProductMapper.mapToDtoFromCommand(data);
     }
 
     async createProduct(product: CreateProductDto): Promise<ProductDto> {
-        const dbProduct = this._productMapper.mapCreateToCommandFromDto(product);
+        const dbProduct = ProductMapper.mapCreateToCommandFromDto(product);
 
         const { serviceResultType, data, exceptionMessage } = await this._productServiceAdapter.createProduct(
             dbProduct,
@@ -35,17 +32,17 @@ export class ProductService {
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this._productMapper.mapToDtoFromCommand(data);
+        return ProductMapper.mapToDtoFromCommand(data);
     }
 
     async updateProduct(product: ProductDto): Promise<ProductDto> {
-        const productSchema = this._productMapper.mapToCommandFromDto(product);
+        const productSchema = ProductMapper.mapToCommandFromDto(product);
 
         const { serviceResultType, data } = await this._productServiceAdapter.updateProduct(productSchema);
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this._productMapper.mapToDtoFromCommand(data);
+        return ProductMapper.mapToDtoFromCommand(data);
     }
 
     async softRemoveProduct(id: string): Promise<void> {
