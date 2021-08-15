@@ -1,7 +1,7 @@
 import { Category } from '../../mongo/schemas/category.schema';
-import { CategoryCommand } from '../../../bl/commands/out/category.command';
-import { CreateCategoryCommand } from '../../../bl/commands/in/create-category.command';
+import { ICategoryCommand } from '../../../bl/commands/category.command';
 import { ICategoryDbMapper } from '../types/category-mapper.type';
+import { ICreateCategoryCommand } from '../../../bl/commands/create-category.command';
 import { ICreateCategoryDb } from '../../base-types/create-category.type';
 import { IProductDbMapper, ProductDbMapperName } from '../types/product-mapper.type';
 import { Inject, Injectable } from '@nestjs/common';
@@ -10,13 +10,13 @@ import { Inject, Injectable } from '@nestjs/common';
 export class CategorySchemaMapper implements ICategoryDbMapper {
     constructor(@Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper) {}
 
-    mapCreateToDbFromCommand(createCategoryCommand: CreateCategoryCommand): ICreateCategoryDb {
+    mapCreateToDbFromCommand(createCategoryCommand: ICreateCategoryCommand): ICreateCategoryDb {
         return {
             displayName: createCategoryCommand.displayName,
         };
     }
 
-    mapToCommandFromDb(categoryDb: Category): CategoryCommand {
+    mapToCommandFromDb(categoryDb: Category): ICategoryCommand {
         return {
             id: categoryDb._id,
             displayName: categoryDb.displayName,
@@ -29,7 +29,7 @@ export class CategorySchemaMapper implements ICategoryDbMapper {
         };
     }
 
-    mapToDbFromCommand(categoryCommand: CategoryCommand): Category {
+    mapToDbFromCommand(categoryCommand: ICategoryCommand): Category {
         return {
             _id: categoryCommand.id,
             displayName: categoryCommand.displayName,

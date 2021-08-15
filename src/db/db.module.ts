@@ -4,7 +4,7 @@ import { CategoryMongooseRepository } from './mongo/repository/category.reposito
 import { CategoryRepositoryName } from './base-types/category-repository.type';
 import { CategorySchema, Category as SchemaCategory } from './mongo/schemas/category.schema';
 import { CategorySchemaMapper } from './mappers/schemas/category-schema.mapper';
-import { CategoryServiceAdapter, CategoryServiceAdapterName } from './adapter/category-service.adapter';
+import { CategoryServiceAdapter } from './adapter/category-service.adapter';
 import { CategoryTypeOrmRepository } from './postgres/repository/category.repository';
 import { ConsoleLogger, DynamicModule, Module, Provider } from '@nestjs/common';
 import { DbOptions } from '../settings/settings.constants';
@@ -18,7 +18,7 @@ import { ProductMongooseRepository } from './mongo/repository/product.repository
 import { ProductRepositoryName } from './base-types/product-repository.type';
 import { ProductSchema, Product as SchemaProduct } from './mongo/schemas/product.schema';
 import { ProductSchemaMapper } from './mappers/schemas/product-schema.mapper';
-import { ProductServiceAdapter, ProductServiceAdapterName } from './adapter/product-service.adapter';
+import { ProductServiceAdapter } from './adapter/product-service.adapter';
 import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
 import { SettingsModule } from '../settings/settings.module';
 import { SettingsService } from '../settings/settings.service';
@@ -29,16 +29,7 @@ import { set } from 'mongoose';
 export class DbModule {
     static forRoot(): DynamicModule {
         const imports: any = [SettingsModule];
-        const moduleProviders: Provider[] = [
-            {
-                provide: CategoryServiceAdapterName,
-                useClass: CategoryServiceAdapter,
-            } as Provider,
-            {
-                provide: ProductServiceAdapterName,
-                useClass: ProductServiceAdapter,
-            } as Provider,
-        ];
+        const moduleProviders: Provider[] = [CategoryServiceAdapter, ProductServiceAdapter];
 
         if (process.env.DB_TYPE === DbOptions.Postgres) {
             imports.push(

@@ -5,13 +5,13 @@ import { IProduct } from '../types/product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
 import { ISearchParamsProduct } from '../../base-types/search-params-product.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from '../schemas/product.schema';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ProductMongooseRepository implements IProductRepository {
     constructor(
         @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
@@ -65,7 +65,7 @@ export class ProductMongooseRepository implements IProductRepository {
         const creationResult = await createdProduct.save();
 
         const updateResult = await this.categoryModel
-            .updateOne({ _id: existingCategory._id }, { $push: { products: existingCategory._id } })
+            .updateOne({ _id: existingCategory._id }, { $push: { products: creationResult._id } })
             .exec();
 
         if (!updateResult.nModified) {

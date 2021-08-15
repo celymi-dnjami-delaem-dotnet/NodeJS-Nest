@@ -5,10 +5,12 @@ import { ICreateProductEntity } from '../types/create-product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
 import { ISearchParamsProduct } from '../../base-types/search-params-product.type';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import { Product } from '../entities/product.entity';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
+@Injectable()
 export class ProductTypeOrmRepository implements IProductRepository {
     private static readonly missingProductExceptionMessage: string =
         'Unable to perform this operation due to missing product by provided parameters';

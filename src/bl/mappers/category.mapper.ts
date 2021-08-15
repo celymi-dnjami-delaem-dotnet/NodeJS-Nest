@@ -1,34 +1,22 @@
-import { CategoryCommand } from '../commands/out/category.command';
-import { CategoryDto } from '../../api/dto/out/category.dto';
-import { CreateCategoryCommand } from '../commands/in/create-category.command';
-import { CreateCategoryDto } from '../../api/dto/in/create-category.dto';
-import { IProductBlMapper, ProductBlMapperName } from './product.mapper';
-import { Inject, Injectable } from '@nestjs/common';
+import { CategoryDto } from '../../api/dto/category.dto';
+import { CreateCategoryDto } from '../../api/dto/create-category.dto';
+import { ICategoryCommand } from '../commands/category.command';
+import { ICreateCategoryCommand } from '../commands/create-category.command';
+import { ProductMapper } from './product.mapper';
 
-export interface ICategoryBlMapper {
-    mapToDtoFromCommand: (categoryCommand: CategoryCommand) => CategoryDto;
-    mapToCommandFromDto: (categoryDto: CategoryDto) => CategoryCommand;
-    mapCreateToCommandFromDto: (createCategoryDto: CreateCategoryDto) => CreateCategoryCommand;
-}
-
-export const CategoryBlMapperName = Symbol('ICategoryBlMapper');
-
-@Injectable()
-export class CategoryMapper implements ICategoryBlMapper {
-    constructor(@Inject(ProductBlMapperName) private readonly _productMapper: IProductBlMapper) {}
-
-    mapCreateToCommandFromDto(createCategoryDto: CreateCategoryDto): CreateCategoryCommand {
+export class CategoryMapper {
+    static mapCreateToCommandFromDto(createCategoryDto: CreateCategoryDto): ICreateCategoryCommand {
         return {
             displayName: createCategoryDto.displayName,
         };
     }
 
-    mapToCommandFromDto(categoryDto: CategoryDto): CategoryCommand {
+    static mapToCommandFromDto(categoryDto: CategoryDto): ICategoryCommand {
         return {
             id: categoryDto.id,
             products:
                 categoryDto.products && categoryDto.products.length
-                    ? categoryDto.products.map((x) => this._productMapper.mapToCommandFromDto(x))
+                    ? categoryDto.products.map(ProductMapper.mapToCommandFromDto)
                     : [],
             displayName: categoryDto.displayName,
             createdAt: categoryDto.createdAt,
@@ -36,12 +24,12 @@ export class CategoryMapper implements ICategoryBlMapper {
         };
     }
 
-    mapToDtoFromCommand(categoryCommand: CategoryCommand): CategoryDto {
+    static mapToDtoFromCommand(categoryCommand: ICategoryCommand): CategoryDto {
         return {
             id: categoryCommand.id,
             products:
                 categoryCommand.products && categoryCommand.products
-                    ? categoryCommand.products.map((x) => this._productMapper.mapToDtoFromCommand(x))
+                    ? categoryCommand.products.map(ProductMapper.mapToDtoFromCommand)
                     : [],
             displayName: categoryCommand.displayName,
             createdAt: categoryCommand.createdAt,

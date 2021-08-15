@@ -3,10 +3,12 @@ import { IBaseDb } from '../../base-types/base-db.type';
 import { ICategoryRepository } from '../../base-types/category-repository.type';
 import { ICreateCategoryDb } from '../../base-types/create-category.type';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
+@Injectable()
 export class CategoryTypeOrmRepository implements ICategoryRepository {
     private static readonly missingCategoryExceptionMessage: string =
         'Unable to perform this operation due to missing category by provided parameters';

@@ -13,22 +13,21 @@ import {
     Get,
     HttpCode,
     HttpStatus,
-    Inject,
     Param,
     Post,
     Put,
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { CreateProductDto } from '../dto/in/create-product.dto';
-import { IProductService, ProductServiceName } from '../../bl/services/product.service';
-import { ProductDto } from '../dto/out/product.dto';
+import { CreateProductDto } from '../dto/create-product.dto';
+import { ProductDto } from '../dto/product.dto';
 import { ProductSearchGuard } from '../guards/product-search.guard';
+import { ProductService } from '../../bl/services/product.service';
 
 @ApiTags('Products')
 @Controller('api/products')
 export class ProductController {
-    constructor(@Inject(ProductServiceName) private readonly productService: IProductService) {}
+    constructor(private readonly productService: ProductService) {}
 
     @UseGuards(ProductSearchGuard)
     @Get()

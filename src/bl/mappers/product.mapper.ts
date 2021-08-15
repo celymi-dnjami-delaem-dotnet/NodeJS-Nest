@@ -1,20 +1,10 @@
-import { CreateProductCommand } from '../commands/in/create-product.command';
-import { CreateProductDto } from '../../api/dto/in/create-product.dto';
-import { Injectable } from '@nestjs/common';
-import { ProductCommand } from '../commands/out/product.command';
-import { ProductDto } from '../../api/dto/out/product.dto';
+import { CreateProductDto } from '../../api/dto/create-product.dto';
+import { ICreateProductCommand } from '../commands/create-product.command';
+import { IProductCommand } from '../commands/product.command';
+import { ProductDto } from '../../api/dto/product.dto';
 
-export interface IProductBlMapper {
-    mapToDtoFromCommand: (productCommand: ProductCommand) => ProductDto;
-    mapToCommandFromDto: (productDto: ProductDto) => ProductCommand;
-    mapCreateToCommandFromDto: (createProductDto: CreateProductDto) => CreateProductCommand;
-}
-
-export const ProductBlMapperName = Symbol('IProductBlMapper');
-
-@Injectable()
-export class ProductMapper implements IProductBlMapper {
-    mapCreateToCommandFromDto(createProductDto: CreateProductDto): CreateProductCommand {
+export class ProductMapper {
+    static mapCreateToCommandFromDto(createProductDto: CreateProductDto): ICreateProductCommand {
         return {
             categoryId: createProductDto.categoryId,
             displayName: createProductDto.displayName,
@@ -22,7 +12,7 @@ export class ProductMapper implements IProductBlMapper {
         };
     }
 
-    mapToCommandFromDto(productDto: ProductDto): ProductCommand {
+    static mapToCommandFromDto(productDto: ProductDto): IProductCommand {
         return {
             id: productDto.id,
             categoryId: productDto.categoryId,
@@ -34,7 +24,7 @@ export class ProductMapper implements IProductBlMapper {
         };
     }
 
-    mapToDtoFromCommand(productCommand: ProductCommand): ProductDto {
+    static mapToDtoFromCommand(productCommand: IProductCommand): ProductDto {
         return {
             id: productCommand.id,
             categoryId: productCommand.categoryId,

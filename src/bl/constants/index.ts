@@ -1,4 +1,4 @@
-import { CategoryDto } from '../../api/dto/out/category.dto';
+import { CategoryDto } from '../../api/dto/category.dto';
 
 export const defaultCategoryDto: CategoryDto = {
     createdAt: undefined,
