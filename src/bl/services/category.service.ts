@@ -2,10 +2,10 @@ import { CategoryDto } from '../../api/dto/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
 import { CategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
 import { CreateCategoryDto } from '../../api/dto/create-category.dto';
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Utils } from '../utils';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class CategoryService {
     constructor(
         private readonly _categoryAdapter: CategoryServiceAdapter,

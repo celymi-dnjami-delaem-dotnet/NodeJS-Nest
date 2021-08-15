@@ -2,9 +2,10 @@ import { ICreateProductCommand } from '../../bl/commands/create-product.command'
 import { IProductCommand } from '../../bl/commands/product.command';
 import { IProductDbMapper, ProductDbMapperName } from '../mappers/types/product-mapper.type';
 import { IProductRepository, ProductRepositoryName } from '../base-types/product-repository.type';
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
+@Injectable()
 export class ProductServiceAdapter {
     constructor(
         @Inject(ProductRepositoryName) private readonly _productRepository: IProductRepository,

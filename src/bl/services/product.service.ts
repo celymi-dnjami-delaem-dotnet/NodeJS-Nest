@@ -1,11 +1,11 @@
 import { CreateProductDto } from '../../api/dto/create-product.dto';
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
 import { ProductServiceAdapter } from '../../db/adapter/product-service.adapter';
 import { Utils } from '../utils';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ProductService {
     constructor(
         private readonly _productServiceAdapter: ProductServiceAdapter,

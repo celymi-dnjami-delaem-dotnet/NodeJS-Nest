@@ -2,10 +2,10 @@ import { CategoryDbMapperName, ICategoryDbMapper } from '../mappers/types/catego
 import { CategoryRepositoryName, ICategoryRepository } from '../base-types/category-repository.type';
 import { ICategoryCommand } from '../../bl/commands/category.command';
 import { ICreateCategoryCommand } from '../../bl/commands/create-category.command';
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class CategoryServiceAdapter {
     constructor(
         @Inject(CategoryRepositoryName) private readonly _categoryRepository: ICategoryRepository,

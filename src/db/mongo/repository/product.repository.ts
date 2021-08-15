@@ -4,13 +4,13 @@ import { ICreateProductSchema } from '../types/create-product.type';
 import { IProduct } from '../types/product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from '../schemas/product.schema';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ProductMongooseRepository implements IProductRepository {
     constructor(
         @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,

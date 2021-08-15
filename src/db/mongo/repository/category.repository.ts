@@ -3,12 +3,12 @@ import { IBaseDb } from '../../base-types/base-db.type';
 import { ICategoryRepository } from '../../base-types/category-repository.type';
 import { ICreateCategoryDb } from '../../base-types/create-category.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class CategoryMongooseRepository implements ICategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
