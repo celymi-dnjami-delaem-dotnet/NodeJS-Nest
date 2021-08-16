@@ -9,10 +9,10 @@ export class ProductSearchGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const request = context.switchToHttp().getRequest<Request>();
 
-        return ProductSearchGuard.validateSearchParams(request);
+        return ProductSearchGuard.validateRequestQueryParams(request);
     }
 
-    private static validateSearchParams(request: Request): boolean {
+    private static validateRequestQueryParams(request: Request): boolean {
         const minRating: string = request.query.minRating as string;
         const price: string = request.query.price as string;
         const sortBy: string = request.query.sortBy as string;
