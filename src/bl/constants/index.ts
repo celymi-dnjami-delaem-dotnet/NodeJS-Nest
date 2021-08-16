@@ -1,11 +1,13 @@
-import { CategoryDto } from '../../api/dto/category.dto';
+import { ProductDto } from '../../api/dto/product.dto';
 
-export const defaultCategoryDto: CategoryDto = {
+export const defaultCategoryDto: ProductDto = {
+    categoryId: '',
+    price: 0,
+    totalRating: 0,
     createdAt: undefined,
     displayName: '',
     id: '',
     isDeleted: false,
-    products: [],
 };
 
 export enum SortDirection {

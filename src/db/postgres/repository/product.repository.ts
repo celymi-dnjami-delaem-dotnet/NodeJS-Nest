@@ -1,5 +1,5 @@
 import { Category } from '../entities/category.entity';
-import { FindManyOptions, LessThan, Like, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { FindConditions, FindManyOptions, LessThan, Like, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { IBaseDb } from '../../base-types/base-db.type';
 import { ICreateProductEntity } from '../types/create-product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
@@ -22,7 +22,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
 
     getProducts(searchParams: ISearchParamsProduct): Promise<IBaseDb[]> {
         let searchOptions: FindManyOptions = {
-            order: { [searchParams.displayName]: searchParams.sortDirection.toUpperCase() as any },
+            order: { [searchParams.sortField]: searchParams.sortDirection.toUpperCase() as 'ASC' | 'DESC' | 1 | -1 },
             skip: searchParams.offset,
             take: searchParams.limit,
         };
@@ -30,28 +30,34 @@ export class ProductTypeOrmRepository implements IProductRepository {
         if (searchParams.displayName) {
             searchOptions = {
                 ...searchOptions,
-                where: { ...(searchOptions.where as any), displayName: Like(`%${searchParams.displayName}%`) },
+                where: {
+                    ...(searchOptions.where as FindConditions<Product>),
+                    displayName: Like(`%${searchParams.displayName}%`),
+                },
             };
         }
 
         if (searchParams.minRating) {
             searchOptions = {
                 ...searchOptions,
-                where: { ...(searchOptions.where as any), totalRating: MoreThanOrEqual(searchParams.minRating) },
+                where: {
+                    ...(searchOptions.where as FindConditions<Product>),
+                    totalRating: MoreThanOrEqual(searchParams.minRating),
+                },
             };
         }
 
         if (searchParams.minPrice) {
             searchOptions = {
                 ...searchOptions,
-                where: { ...(searchOptions.where as any), price: MoreThan(searchParams.maxPrice) },
+                where: { ...(searchOptions.where as FindConditions<Product>), price: MoreThan(searchParams.maxPrice) },
             };
         }
 
         if (searchParams.maxPrice) {
             searchOptions = {
                 ...searchOptions,
-                where: { ...(searchOptions.where as any), price: LessThan(searchParams.maxPrice) },
+                where: { ...(searchOptions.where as FindConditions<Product>), price: LessThan(searchParams.maxPrice) },
             };
         }
 
