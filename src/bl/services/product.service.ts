@@ -3,14 +3,24 @@ import { Injectable } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
 import { ProductServiceAdapter } from '../../db/adapter/product-service.adapter';
+import { ProductUtils } from '../utils/product.utils';
 import { Utils } from '../utils';
 
 @Injectable()
 export class ProductService {
     constructor(private readonly _productServiceAdapter: ProductServiceAdapter) {}
 
-    async getProducts(): Promise<ProductDto[]> {
-        const products = await this._productServiceAdapter.getProducts();
+    async getProducts(
+        displayName?: string,
+        minRating?: string,
+        sortBy?: string,
+        price?: string,
+        limit?: string,
+        offset?: string,
+    ): Promise<ProductDto[]> {
+        const searchParams = ProductUtils.getSearchParams(displayName, minRating, sortBy, price, limit, offset);
+
+        const products = await this._productServiceAdapter.getProducts(searchParams);
 
         return products.map(ProductMapper.mapToDtoFromCommand);
     }

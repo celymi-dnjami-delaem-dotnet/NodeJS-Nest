@@ -2,6 +2,7 @@ import { Category } from '../entities/category.entity';
 import { IBaseDb } from '../../base-types/base-db.type';
 import { ICategoryRepository } from '../../base-types/category-repository.type';
 import { ICreateCategoryDb } from '../../base-types/create-category.type';
+import { ISearchParamsCategory } from '../../base-types/search-params-category.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -19,8 +20,12 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         return this.categoryRepository.find();
     }
 
-    async getCategoryById(id: string): Promise<ServiceResult<IBaseDb>> {
-        const foundResult = await this.findCategoryById(id, true);
+    async getCategoryById(id: string, searchParams: ISearchParamsCategory): Promise<ServiceResult<IBaseDb>> {
+        // todo: Complete sort and take top N from relations
+        const foundResult = await this.categoryRepository.findOne(
+            id,
+            searchParams.includeProducts ? { relations: ['products'] } : {},
+        );
 
         if (!foundResult) {
             return new ServiceResult(
@@ -55,7 +60,7 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
             );
         }
 
-        const foundEntity = await this.findCategoryById(id);
+        const foundEntity = await this.categoryRepository.findOne(id);
 
         return new ServiceResult(ServiceResultType.Success, foundEntity);
     }
@@ -86,9 +91,5 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         }
 
         return new ServiceResult(ServiceResultType.Success);
-    }
-
-    private async findCategoryById(id: string, includeChildren?: boolean): Promise<Category> {
-        return this.categoryRepository.findOne(id, includeChildren ? { relations: ['products'] } : {});
     }
 }

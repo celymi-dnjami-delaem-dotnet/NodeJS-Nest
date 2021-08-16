@@ -1,11 +1,12 @@
 import { Category } from '../entities/category.entity';
+import { FindConditions, FindManyOptions, LessThan, Like, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { IBaseDb } from '../../base-types/base-db.type';
 import { ICreateProductEntity } from '../types/create-product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
+import { ISearchParamsProduct } from '../../base-types/search-params-product.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Product } from '../entities/product.entity';
-import { Repository } from 'typeorm';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
@@ -19,8 +20,48 @@ export class ProductTypeOrmRepository implements IProductRepository {
         @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
     ) {}
 
-    getProducts(): Promise<IBaseDb[]> {
-        return this.productRepository.find();
+    getProducts(searchParams: ISearchParamsProduct): Promise<IBaseDb[]> {
+        let searchOptions: FindManyOptions = {
+            order: { [searchParams.sortField]: searchParams.sortDirection.toUpperCase() as 'ASC' | 'DESC' | 1 | -1 },
+            skip: searchParams.offset,
+            take: searchParams.limit,
+        };
+
+        if (searchParams.displayName) {
+            searchOptions = {
+                ...searchOptions,
+                where: {
+                    ...(searchOptions.where as FindConditions<Product>),
+                    displayName: Like(`%${searchParams.displayName}%`),
+                },
+            };
+        }
+
+        if (searchParams.minRating) {
+            searchOptions = {
+                ...searchOptions,
+                where: {
+                    ...(searchOptions.where as FindConditions<Product>),
+                    totalRating: MoreThanOrEqual(searchParams.minRating),
+                },
+            };
+        }
+
+        if (searchParams.minPrice) {
+            searchOptions = {
+                ...searchOptions,
+                where: { ...(searchOptions.where as FindConditions<Product>), price: MoreThan(searchParams.maxPrice) },
+            };
+        }
+
+        if (searchParams.maxPrice) {
+            searchOptions = {
+                ...searchOptions,
+                where: { ...(searchOptions.where as FindConditions<Product>), price: LessThan(searchParams.maxPrice) },
+            };
+        }
+
+        return this.productRepository.find(searchOptions);
     }
 
     async getProductById(id: string): Promise<ServiceResult<IBaseDb>> {

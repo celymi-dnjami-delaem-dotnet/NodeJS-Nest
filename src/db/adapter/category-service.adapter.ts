@@ -2,6 +2,7 @@ import { CategoryDbMapperName, ICategoryDbMapper } from '../mappers/types/catego
 import { CategoryRepositoryName, ICategoryRepository } from '../base-types/category-repository.type';
 import { ICategoryCommand } from '../../bl/commands/category.command';
 import { ICreateCategoryCommand } from '../../bl/commands/create-category.command';
+import { ISearchParamsCategoryCommand } from '../../bl/commands/search-params-category.command';
 import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
@@ -18,8 +19,16 @@ export class CategoryServiceAdapter {
         return categories.map((x) => this._categoryMapper.mapToCommandFromDb(x));
     }
 
-    async getCategoryById(id: string): Promise<ServiceResult<ICategoryCommand>> {
-        const { serviceResultType, exceptionMessage, data } = await this._categoryRepository.getCategoryById(id);
+    async getCategoryById(
+        id: string,
+        searchParams: ISearchParamsCategoryCommand,
+    ): Promise<ServiceResult<ICategoryCommand>> {
+        const dbSearchParams = this._categoryMapper.mapSearchToDbFromCommand(searchParams);
+
+        const { serviceResultType, exceptionMessage, data } = await this._categoryRepository.getCategoryById(
+            id,
+            dbSearchParams,
+        );
 
         return new ServiceResult<ICategoryCommand>(
             serviceResultType,

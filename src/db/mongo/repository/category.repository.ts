@@ -2,6 +2,7 @@ import { Category, CategoryDocument } from '../schemas/category.schema';
 import { IBaseDb } from '../../base-types/base-db.type';
 import { ICategoryRepository } from '../../base-types/category-repository.type';
 import { ICreateCategoryDb } from '../../base-types/create-category.type';
+import { ISearchParamsCategory } from '../../base-types/search-params-category.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
@@ -16,11 +17,19 @@ export class CategoryMongooseRepository implements ICategoryRepository {
         return this.categoryModel.find().populate({ path: 'products', model: 'Product' }).exec();
     }
 
-    async getCategoryById(id: string): Promise<ServiceResult<Category>> {
+    async getCategoryById(id: string, search: ISearchParamsCategory): Promise<ServiceResult<Category>> {
         const category = await this.categoryModel
             .findOne({ _id: id })
             .lean()
-            .populate({ path: 'products', model: 'Product' })
+            .populate(
+                search.includeProducts
+                    ? {
+                          path: 'products',
+                          model: 'Product',
+                          options: { sort: { totalRating: 'DESC' }, limit: search.includeTopCategories },
+                      }
+                    : {},
+            )
             .exec();
 
         if (category) {

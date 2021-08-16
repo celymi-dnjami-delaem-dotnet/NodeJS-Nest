@@ -51,19 +51,19 @@ export class DbModule {
             );
 
             moduleProviders.push(
-                { provide: CategoryRepositoryName, useClass: CategoryTypeOrmRepository },
+                { provide: CategoryRepositoryName, useClass: CategoryTypeOrmRepository } as Provider,
                 {
                     provide: ProductRepositoryName,
                     useClass: ProductTypeOrmRepository,
-                },
+                } as Provider,
                 {
                     provide: CategoryDbMapperName,
                     useClass: CategoryEntityMapper,
-                },
+                } as Provider,
                 {
                     provide: ProductDbMapperName,
                     useClass: ProductEntityMapper,
-                },
+                } as Provider,
             );
         } else {
             imports.push(
@@ -80,6 +80,7 @@ export class DbModule {
                             uri: settingsService.getMongooseConnectionString(),
                             useNewUrlParser: true,
                             useUnifiedTopology: true,
+                            useCreateIndex: true,
                         };
                     },
                     inject: [SettingsService, ConsoleLogger],
@@ -94,19 +95,19 @@ export class DbModule {
             );
 
             moduleProviders.push(
-                { provide: CategoryRepositoryName, useClass: CategoryMongooseRepository },
+                { provide: CategoryRepositoryName, useClass: CategoryMongooseRepository } as Provider,
                 {
                     provide: ProductRepositoryName,
                     useClass: ProductMongooseRepository,
-                },
+                } as Provider,
                 {
                     provide: CategoryDbMapperName,
                     useClass: CategorySchemaMapper,
-                },
+                } as Provider,
                 {
                     provide: ProductDbMapperName,
                     useClass: ProductSchemaMapper,
-                },
+                } as Provider,
             );
         }
 

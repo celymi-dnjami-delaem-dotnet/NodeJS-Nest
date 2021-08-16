@@ -2,6 +2,7 @@ import { ICreateProductCommand } from '../../bl/commands/create-product.command'
 import { IProductCommand } from '../../bl/commands/product.command';
 import { IProductDbMapper, ProductDbMapperName } from '../mappers/types/product-mapper.type';
 import { IProductRepository, ProductRepositoryName } from '../base-types/product-repository.type';
+import { ISearchParamsProductCommand } from '../../bl/commands/search-params-product.command';
 import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
@@ -12,8 +13,10 @@ export class ProductServiceAdapter {
         @Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper,
     ) {}
 
-    async getProducts(): Promise<IProductCommand[]> {
-        const products = await this._productRepository.getProducts();
+    async getProducts(searchParams: ISearchParamsProductCommand): Promise<IProductCommand[]> {
+        const dbSearchParams = this._productMapper.mapSearchParamsToDbFromCommand(searchParams);
+
+        const products = await this._productRepository.getProducts(dbSearchParams);
 
         return products.map(this._productMapper.mapToCommandFromDb);
     }

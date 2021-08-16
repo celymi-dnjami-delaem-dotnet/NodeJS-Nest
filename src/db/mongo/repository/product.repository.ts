@@ -3,6 +3,7 @@ import { IBaseDb } from '../../base-types/base-db.type';
 import { ICreateProductSchema } from '../types/create-product.type';
 import { IProduct } from '../types/product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
+import { ISearchParamsProduct } from '../../base-types/search-params-product.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
@@ -17,8 +18,30 @@ export class ProductMongooseRepository implements IProductRepository {
         @InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>,
     ) {}
 
-    async getProducts(): Promise<IBaseDb[]> {
-        return this.productModel.find();
+    async getProducts(searchParams: ISearchParamsProduct): Promise<IBaseDb[]> {
+        const search = this.productModel.find();
+
+        if (searchParams.displayName) {
+            search.where('displayName').regex(searchParams.displayName);
+        }
+
+        if (searchParams.minRating) {
+            search.where('totalRating').gte(searchParams.minRating);
+        }
+
+        if (searchParams.minPrice) {
+            search.where('price').gt(searchParams.minPrice);
+        }
+
+        if (searchParams.maxPrice) {
+            search.where('price').lt(searchParams.maxPrice);
+        }
+
+        return search
+            .limit(searchParams.limit)
+            .skip(searchParams.offset)
+            .sort({ [searchParams.sortField]: searchParams.sortDirection })
+            .exec();
     }
 
     async getProductById(id: string): Promise<ServiceResult<Product>> {
