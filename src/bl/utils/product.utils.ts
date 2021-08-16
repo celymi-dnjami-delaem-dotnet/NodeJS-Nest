@@ -1,5 +1,11 @@
 import { ISearchParamsProductCommand } from '../commands/search-params-product.command';
-import { SortDirection } from '../constants';
+import {
+    SortDirection,
+    defaultProductsLimit,
+    defaultProductsOffset,
+    defaultProductsSortDirection,
+    defaultProductsSortField,
+} from '../constants';
 
 export class ProductUtils {
     static getSearchParams(
@@ -12,8 +18,8 @@ export class ProductUtils {
     ): ISearchParamsProductCommand {
         let minPrice: number,
             maxPrice: number,
-            sortField = 'displayName',
-            sortDirection: SortDirection = SortDirection.Asc;
+            sortField = defaultProductsSortField,
+            sortDirection: SortDirection = defaultProductsSortDirection;
 
         if (sortBy) {
             const sortOptions = sortBy.split(':');
@@ -34,8 +40,8 @@ export class ProductUtils {
             minRating: minRating && Number(minRating),
             sortField,
             sortDirection,
-            limit: Number(limit) || 25,
-            offset: Number(offset) || 0,
+            limit: Number(limit) || defaultProductsLimit,
+            offset: Number(offset) || defaultProductsOffset,
         };
     }
 }

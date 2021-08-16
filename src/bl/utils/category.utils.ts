@@ -1,4 +1,5 @@
 import { ISearchParamsCategoryCommand } from '../commands/search-params-category.command';
+import { defaultIncludeTopProductsAmount } from '../constants';
 
 export class CategoryUtils {
     static getSearchParamsForCategory(
@@ -7,7 +8,7 @@ export class CategoryUtils {
     ): ISearchParamsCategoryCommand {
         return {
             includeProducts: includeProducts === 'true',
-            includeTopProducts: includeTopProducts ? Number(includeTopProducts) : 3,
+            includeTopProducts: includeTopProducts ? Number(includeTopProducts) : defaultIncludeTopProductsAmount,
         };
     }
 }
