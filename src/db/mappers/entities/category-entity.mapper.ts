@@ -4,6 +4,8 @@ import { ICategoryDbMapper } from '../types/category-mapper.type';
 import { ICreateCategoryCommand } from '../../../bl/commands/create-category.command';
 import { ICreateCategoryDb } from '../../base-types/create-category.type';
 import { IProductDbMapper, ProductDbMapperName } from '../types/product-mapper.type';
+import { ISearchParamsCategory } from '../../base-types/search-params-category.type';
+import { ISearchParamsCategoryCommand } from '../../../bl/commands/search-params-category.command';
 import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -35,6 +37,13 @@ export class CategoryEntityMapper implements ICategoryDbMapper {
             displayName: categoryCommand.displayName,
             createdAt: categoryCommand.createdAt,
             isDeleted: categoryCommand.isDeleted,
+        };
+    }
+
+    mapSearchToDbFromCommand(searchParams: ISearchParamsCategoryCommand): ISearchParamsCategory {
+        return {
+            includeProducts: searchParams.includeProducts,
+            includeTopCategories: searchParams.includeTopProducts,
         };
     }
 }

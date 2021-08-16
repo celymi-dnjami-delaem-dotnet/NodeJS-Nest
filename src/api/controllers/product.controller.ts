@@ -33,12 +33,12 @@ export class ProductController {
     @Get()
     @ApiOkResponse({ type: [ProductDto], description: 'OK' })
     async getCategories(
-        @Query('displayName') displayName: string,
-        @Query('minRating') minRating: string,
-        @Query('sortBy') sortBy: string,
-        @Query('price') price: string,
-        @Query('limit') limit: string,
-        @Query('offset') offset: string,
+        @Query('displayName') displayName?: string,
+        @Query('minRating') minRating?: string,
+        @Query('sortBy') sortBy?: string,
+        @Query('price') price?: string,
+        @Query('limit') limit?: string,
+        @Query('offset') offset?: string,
     ): Promise<ProductDto[]> {
         return this.productService.getProducts(displayName, minRating, sortBy, price, limit, offset);
     }

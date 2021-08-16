@@ -11,12 +11,12 @@ export class ProductService {
     constructor(private readonly _productServiceAdapter: ProductServiceAdapter) {}
 
     async getProducts(
-        displayName: string,
-        minRating: string,
-        sortBy: string,
-        price: string,
-        limit: string,
-        offset: string,
+        displayName?: string,
+        minRating?: string,
+        sortBy?: string,
+        price?: string,
+        limit?: string,
+        offset?: string,
     ): Promise<ProductDto[]> {
         const searchParams = ProductUtils.getSearchParams(displayName, minRating, sortBy, price, limit, offset);
 

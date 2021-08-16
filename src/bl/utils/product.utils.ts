@@ -1,15 +1,15 @@
-import { SearchParamsProductCommand } from '../commands/in/search-params-product.command';
+import { ISearchParamsProductCommand } from '../commands/search-params-product.command';
 import { SortDirection } from '../constants';
 
 export class ProductUtils {
     static getSearchParams(
-        displayName: string,
-        minRating: string,
-        sortBy: string,
-        price: string,
-        limit: string,
-        offset: string,
-    ): SearchParamsProductCommand {
+        displayName?: string,
+        minRating?: string,
+        sortBy?: string,
+        price?: string,
+        limit?: string,
+        offset?: string,
+    ): ISearchParamsProductCommand {
         let minPrice: number,
             maxPrice: number,
             sortField = 'displayName',

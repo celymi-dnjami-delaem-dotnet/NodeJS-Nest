@@ -1,6 +1,7 @@
 import { CategoryDto } from '../../api/dto/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
 import { CategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
+import { CategoryUtils } from '../utils/category.utils';
 import { CreateCategoryDto } from '../../api/dto/create-category.dto';
 import { Injectable } from '@nestjs/common';
 import { Utils } from '../utils';
@@ -15,8 +16,13 @@ export class CategoryService {
         return categories.map(CategoryMapper.mapToDtoFromCommand);
     }
 
-    async getCategoryById(id: string): Promise<CategoryDto> {
-        const { serviceResultType, data, exceptionMessage } = await this._categoryAdapter.getCategoryById(id);
+    async getCategoryById(id: string, includeProducts?: string, includeTopProducts?: string): Promise<CategoryDto> {
+        const searchParams = CategoryUtils.getSearchParamsForCategory(includeProducts, includeTopProducts);
+
+        const { serviceResultType, data, exceptionMessage } = await this._categoryAdapter.getCategoryById(
+            id,
+            searchParams,
+        );
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 

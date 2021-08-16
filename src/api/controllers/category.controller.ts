@@ -1,6 +1,19 @@
 import { ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
 import { CategoryDto } from '../dto/category.dto';
+import { CategorySearchGuard } from '../guards/category-search.guard';
 import { CategoryService } from '../../bl/services/category.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 
@@ -15,11 +28,16 @@ export class CategoryController {
         return this.categoryService.getCategories();
     }
 
+    @UseGuards(CategorySearchGuard)
     @Get('id/:id')
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
-    async getCategoryById(@Param('id') id: string): Promise<CategoryDto> {
-        return await this.categoryService.getCategoryById(id);
+    async getCategoryById(
+        @Param('id') id: string,
+        @Query('includeProducts') includeProducts?: string,
+        @Query('includeTopProducts') includeTopProducts?: string,
+    ): Promise<CategoryDto> {
+        return await this.categoryService.getCategoryById(id, includeProducts, includeTopProducts);
     }
 
     @Post()

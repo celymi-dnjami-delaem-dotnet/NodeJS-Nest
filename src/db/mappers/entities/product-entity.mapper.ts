@@ -3,13 +3,13 @@ import { ICreateProductEntity } from '../../postgres/types/create-product.type';
 import { IProductCommand } from '../../../bl/commands/product.command';
 import { IProductDbMapper } from '../types/product-mapper.type';
 import { ISearchParamsProduct } from '../../base-types/search-params-product.type';
+import { ISearchParamsProductCommand } from '../../../bl/commands/search-params-product.command';
 import { Injectable } from '@nestjs/common';
 import { Product } from '../../postgres/entities/product.entity';
-import { SearchParamsProductCommand } from '../../../bl/commands/in/search-params-product.command';
 
 @Injectable()
 export class ProductEntityMapper implements IProductDbMapper {
-    mapSearchParamsToDbFromCommand(searchParams: SearchParamsProductCommand): ISearchParamsProduct {
+    mapSearchParamsToDbFromCommand(searchParams: ISearchParamsProductCommand): ISearchParamsProduct {
         return {
             displayName: searchParams.displayName,
             minPrice: searchParams.minPrice,

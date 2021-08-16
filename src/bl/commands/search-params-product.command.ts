@@ -1,6 +1,6 @@
-import { SortDirection } from '../../constants';
+import { SortDirection } from '../constants';
 
-export class SearchParamsProductCommand {
+export interface ISearchParamsProductCommand {
     displayName?: string;
     minRating?: number;
     minPrice?: number;
