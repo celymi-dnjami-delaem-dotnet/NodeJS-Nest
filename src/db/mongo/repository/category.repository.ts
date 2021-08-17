@@ -1,18 +1,36 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
-import { CreateCategorySchema } from '../schemas/create-category.schema';
+import { IBaseDb } from '../../base-types/base-db.type';
+import { ICategoryRepository } from '../../base-types/category-repository.type';
+import { ICreateCategoryDb } from '../../base-types/create-category.type';
+import { ISearchParamsCategory } from '../../base-types/search-params-category.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Product } from '../schemas/product.schema';
-import { ServiceResult } from '../../bl/result-wrappers/service-result';
-import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
+import { ServiceResult } from '../../../bl/result-wrappers/service-result';
+import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 
-@Injectable({ scope: Scope.REQUEST })
-export class CategoryRepository {
+@Injectable()
+export class CategoryMongooseRepository implements ICategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
-    async getCategoryById(id: string): Promise<ServiceResult<Category>> {
-        const category = await this.categoryModel.findOne({ _id: id }).populate('products', null, Product.name).exec();
+    async getCategories(): Promise<IBaseDb[]> {
+        return this.categoryModel.find().populate({ path: 'products', model: 'Product' }).exec();
+    }
+
+    async getCategoryById(id: string, search: ISearchParamsCategory): Promise<ServiceResult<Category>> {
+        const category = await this.categoryModel
+            .findOne({ _id: id })
+            .lean()
+            .populate(
+                search.includeProducts
+                    ? {
+                          path: 'products',
+                          model: 'Product',
+                          options: { sort: { totalRating: 'DESC' }, limit: search.includeTopCategories },
+                      }
+                    : {},
+            )
+            .exec();
 
         if (category) {
             return new ServiceResult<Category>(ServiceResultType.Success, category);
@@ -21,7 +39,7 @@ export class CategoryRepository {
         return new ServiceResult<Category>(ServiceResultType.NotFound);
     }
 
-    async createCategory(category: CreateCategorySchema): Promise<Category> {
+    async createCategory(category: ICreateCategoryDb): Promise<IBaseDb> {
         const categorySchema = new this.categoryModel(category);
 
         return await categorySchema.save();
@@ -36,21 +54,9 @@ export class CategoryRepository {
             return new ServiceResult<Category>(ServiceResultType.NotFound);
         }
 
-        const updatedModel = await this.categoryModel.findById(category._id).exec();
+        const updatedModel = await this.categoryModel.findById(category._id).lean().exec();
 
         return new ServiceResult<Category>(ServiceResultType.Success, updatedModel);
-    }
-
-    async addProductToCategory(categoryId: string, productId: string): Promise<ServiceResult> {
-        const addProductResult = await this.categoryModel
-            .updateOne({ _id: categoryId }, { $push: { products: productId } })
-            .exec();
-
-        if (!addProductResult.nModified) {
-            return new ServiceResult(ServiceResultType.NotFound);
-        }
-
-        return new ServiceResult(ServiceResultType.Success);
     }
 
     async softRemoveCategory(id: string): Promise<ServiceResult> {

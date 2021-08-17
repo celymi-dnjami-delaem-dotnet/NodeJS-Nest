@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsNumber, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 export class CreateProductDto {
     @ApiProperty({ description: 'Product name', example: 'Call of Duty', required: true })
@@ -11,8 +11,7 @@ export class CreateProductDto {
     @Min(1)
     price: number;
 
-    @ApiProperty({ description: 'Product category id', example: '61031510457ff504f2bdddb1', required: true })
-    @IsMongoId()
+    @ApiProperty({ description: 'Product category id', required: true })
     @IsNotEmpty()
     categoryId: string;
 }

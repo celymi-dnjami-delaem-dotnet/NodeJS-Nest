@@ -1,37 +1,39 @@
-import { Category } from '../../db/schemas/category.schema';
-import { CategoryDto } from '../../api/dto/models/category.dto';
-import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
-import { CreateCategorySchema } from '../../db/schemas/create-category.schema';
-import { Injectable } from '@nestjs/common';
+import { CategoryDto } from '../../api/dto/category.dto';
+import { CreateCategoryDto } from '../../api/dto/create-category.dto';
+import { ICategoryCommand } from '../commands/category.command';
+import { ICreateCategoryCommand } from '../commands/create-category.command';
 import { ProductMapper } from './product.mapper';
 
-@Injectable()
 export class CategoryMapper {
-    constructor(private readonly productMapper: ProductMapper) {}
-
-    mapToDtoModel(category: Category): CategoryDto {
+    static mapCreateToCommandFromDto(createCategoryDto: CreateCategoryDto): ICreateCategoryCommand {
         return {
-            id: category._id,
-            displayName: category.displayName,
-            createdAt: category.createdAt,
-            isDeleted: category.isDeleted,
-            products:
-                category.products && category.products.length ? category.products.map(this.productMapper.mapToDto) : [],
-        } as CategoryDto;
-    }
-
-    mapToSchema(category: CategoryDto): Category {
-        return {
-            _id: category.id,
-            displayName: category.displayName,
-            createdAt: category.createdAt,
-            isDeleted: category.isDeleted,
+            displayName: createCategoryDto.displayName,
         };
     }
 
-    mapToCreateSchema(createCategory: CreateCategoryDto): CreateCategorySchema {
+    static mapToCommandFromDto(categoryDto: CategoryDto): ICategoryCommand {
         return {
-            displayName: createCategory.displayName,
+            id: categoryDto.id,
+            products:
+                categoryDto.products && categoryDto.products.length
+                    ? categoryDto.products.map(ProductMapper.mapToCommandFromDto)
+                    : [],
+            displayName: categoryDto.displayName,
+            createdAt: categoryDto.createdAt,
+            isDeleted: categoryDto.isDeleted,
+        };
+    }
+
+    static mapToDtoFromCommand(categoryCommand: ICategoryCommand): CategoryDto {
+        return {
+            id: categoryCommand.id,
+            products:
+                categoryCommand.products && categoryCommand.products
+                    ? categoryCommand.products.map(ProductMapper.mapToDtoFromCommand)
+                    : [],
+            displayName: categoryCommand.displayName,
+            createdAt: categoryCommand.createdAt,
+            isDeleted: categoryCommand.isDeleted,
         };
     }
 }

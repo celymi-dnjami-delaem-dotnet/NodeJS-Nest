@@ -1,59 +1,68 @@
-import { CategoryRepository } from '../../db/repository/category.repository';
-import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
-import { Injectable, Scope } from '@nestjs/common';
-import { ProductDto } from '../../api/dto/models/product.dto';
+import { CreateProductDto } from '../../api/dto/create-product.dto';
+import { Injectable } from '@nestjs/common';
+import { ProductDto } from '../../api/dto/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
-import { ProductRepository } from '../../db/repository/product.repository';
+import { ProductServiceAdapter } from '../../db/adapter/product-service.adapter';
+import { ProductUtils } from '../utils/product.utils';
 import { Utils } from '../utils';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ProductService {
-    constructor(
-        private readonly categoryRepository: CategoryRepository,
-        private readonly productRepository: ProductRepository,
-        private readonly productMapper: ProductMapper,
-    ) {}
+    constructor(private readonly _productServiceAdapter: ProductServiceAdapter) {}
+
+    async getProducts(
+        displayName?: string,
+        minRating?: string,
+        sortBy?: string,
+        price?: string,
+        limit?: string,
+        offset?: string,
+    ): Promise<ProductDto[]> {
+        const searchParams = ProductUtils.getSearchParams(displayName, minRating, sortBy, price, limit, offset);
+
+        const products = await this._productServiceAdapter.getProducts(searchParams);
+
+        return products.map(ProductMapper.mapToDtoFromCommand);
+    }
 
     async getProductById(id: string): Promise<ProductDto> {
-        const { serviceResultType, data } = await this.productRepository.getProductById(id);
+        const { serviceResultType, data } = await this._productServiceAdapter.getProductById(id);
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this.productMapper.mapToDto(data);
+        return ProductMapper.mapToDtoFromCommand(data);
     }
 
     async createProduct(product: CreateProductDto): Promise<ProductDto> {
-        const productSchema = this.productMapper.mapToCreateSchema(product);
+        const dbProduct = ProductMapper.mapCreateToCommandFromDto(product);
 
-        const createdProduct = await this.productRepository.createProduct(productSchema);
-        const { serviceResultType, exceptionMessage } = await this.categoryRepository.addProductToCategory(
-            productSchema.category,
-            createdProduct._id,
+        const { serviceResultType, data, exceptionMessage } = await this._productServiceAdapter.createProduct(
+            dbProduct,
         );
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this.productMapper.mapToDto(createdProduct);
+        return ProductMapper.mapToDtoFromCommand(data);
     }
 
     async updateProduct(product: ProductDto): Promise<ProductDto> {
-        const productSchema = this.productMapper.mapToSchema(product);
+        const productSchema = ProductMapper.mapToCommandFromDto(product);
 
-        const { serviceResultType, data } = await this.productRepository.updateProduct(productSchema);
+        const { serviceResultType, data } = await this._productServiceAdapter.updateProduct(productSchema);
 
         Utils.validateServiceResultType(serviceResultType);
 
-        return this.productMapper.mapToDto(data);
+        return ProductMapper.mapToDtoFromCommand(data);
     }
 
     async softRemoveProduct(id: string): Promise<void> {
-        const { serviceResultType } = await this.productRepository.softRemoveProduct(id);
+        const { serviceResultType } = await this._productServiceAdapter.softRemoveProduct(id);
 
         Utils.validateServiceResultType(serviceResultType);
     }
 
     async removeProduct(id: string): Promise<void> {
-        const { serviceResultType } = await this.productRepository.removeProduct(id);
+        const { serviceResultType } = await this._productServiceAdapter.removeProduct(id);
 
         Utils.validateServiceResultType(serviceResultType);
     }

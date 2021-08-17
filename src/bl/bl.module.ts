@@ -1,13 +1,19 @@
-import { CategoryMapper } from './mappers/category.mapper';
 import { CategoryService } from './services/category.service';
 import { DbModule } from '../db/db.module';
-import { Module } from '@nestjs/common';
-import { ProductMapper } from './mappers/product.mapper';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { ProductService } from './services/product.service';
+import { SettingsModule } from '../settings/settings.module';
 
-@Module({
-    imports: [DbModule],
-    providers: [CategoryService, ProductService, ProductMapper, CategoryMapper],
-    exports: [CategoryService, ProductService, ProductMapper, CategoryMapper],
-})
-export class BlModule {}
+@Module({})
+export class BlModule {
+    static forRoot(): DynamicModule {
+        const moduleProviders: Provider[] = [CategoryService, ProductService];
+
+        return {
+            module: BlModule,
+            imports: [SettingsModule, DbModule.forRoot()],
+            providers: moduleProviders,
+            exports: moduleProviders,
+        };
+    }
+}

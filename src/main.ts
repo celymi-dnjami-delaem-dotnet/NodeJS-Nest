@@ -9,7 +9,7 @@ import { SettingsService } from './settings/settings.service';
 async function bootstrap() {
     const app: INestApplication = await NestFactory.create(AppModule);
     const settingsService = app.get(SettingsService);
-    const startPort: number = settingsService.getAppPort();
+    const startPort: number = settingsService.appPort;
 
     registerPipes(app);
     registerFilters(app);

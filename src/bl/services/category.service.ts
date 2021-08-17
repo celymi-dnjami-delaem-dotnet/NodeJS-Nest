@@ -1,52 +1,63 @@
-import { CategoryDto } from '../../api/dto/models/category.dto';
+import { CategoryDto } from '../../api/dto/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
-import { CategoryRepository } from '../../db/repository/category.repository';
-import { CreateCategoryDto } from '../../api/dto/actions/create-category.dto';
-import { Injectable, Scope } from '@nestjs/common';
+import { CategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
+import { CategoryUtils } from '../utils/category.utils';
+import { CreateCategoryDto } from '../../api/dto/create-category.dto';
+import { Injectable } from '@nestjs/common';
 import { Utils } from '../utils';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class CategoryService {
-    constructor(
-        private readonly categoryRepository: CategoryRepository,
-        private readonly categoryMapper: CategoryMapper,
-    ) {}
+    constructor(private readonly _categoryAdapter: CategoryServiceAdapter) {}
 
-    async getCategoryById(id: string): Promise<CategoryDto> {
-        const { serviceResultType, data } = await this.categoryRepository.getCategoryById(id);
+    async getCategories(): Promise<CategoryDto[]> {
+        const categories = await this._categoryAdapter.getCategories();
 
-        Utils.validateServiceResultType(serviceResultType);
-
-        return this.categoryMapper.mapToDtoModel(data);
+        return categories.map(CategoryMapper.mapToDtoFromCommand);
     }
 
-    async createCategory(category: CreateCategoryDto): Promise<CategoryDto> {
-        const categorySchema = this.categoryMapper.mapToCreateSchema(category);
+    async getCategoryById(id: string, includeProducts?: string, includeTopProducts?: string): Promise<CategoryDto> {
+        const searchParams = CategoryUtils.getSearchParamsForCategory(includeProducts, includeTopProducts);
 
-        const createdCategorySchema = await this.categoryRepository.createCategory(categorySchema);
+        const { serviceResultType, data, exceptionMessage } = await this._categoryAdapter.getCategoryById(
+            id,
+            searchParams,
+        );
 
-        return this.categoryMapper.mapToDtoModel(createdCategorySchema);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
+
+        return CategoryMapper.mapToDtoFromCommand(data);
+    }
+
+    async createCategory(categoryDto: CreateCategoryDto): Promise<CategoryDto> {
+        const category = CategoryMapper.mapCreateToCommandFromDto(categoryDto);
+
+        const createdCategory = await this._categoryAdapter.createCategory(category);
+
+        return CategoryMapper.mapToDtoFromCommand(createdCategory);
     }
 
     async updateCategory(category: CategoryDto): Promise<CategoryDto> {
-        const categorySchema = this.categoryMapper.mapToSchema(category);
+        const categorySchema = CategoryMapper.mapToCommandFromDto(category);
 
-        const { serviceResultType, data } = await this.categoryRepository.updateCategory(categorySchema);
+        const { serviceResultType, data, exceptionMessage } = await this._categoryAdapter.updateCategory(
+            categorySchema,
+        );
 
-        Utils.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        return this.categoryMapper.mapToDtoModel(data);
+        return CategoryMapper.mapToDtoFromCommand(data);
     }
 
     async softRemoveCategory(id: string): Promise<void> {
-        const { serviceResultType } = await this.categoryRepository.softRemoveCategory(id);
+        const { serviceResultType, exceptionMessage } = await this._categoryAdapter.softRemoveCategory(id);
 
-        Utils.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
     }
 
     async removeCategory(id: string): Promise<void> {
-        const { serviceResultType } = await this.categoryRepository.removeCategory(id);
+        const { serviceResultType, exceptionMessage } = await this._categoryAdapter.removeCategory(id);
 
-        Utils.validateServiceResultType(serviceResultType);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
     }
 }

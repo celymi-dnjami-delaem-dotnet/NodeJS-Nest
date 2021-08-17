@@ -4,16 +4,18 @@ services:
   api:
     depends_on:
       - mongo_db
+      - postgres_db
     build:
       context: .
       dockerfile: Dockerfile
     command: npm run start:prod
     environment:
-      APPLICATION_PORT: 3006
-      MONGO_DB_HOST: mongo_db
-      MONGO_DB: games
-      MONGO_DB_USER: root
-      MONGO_DB_PASSWORD: Password123
+      APPLICATION_PORT: ${APPLICATION_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - '13610:3006'
 
@@ -21,7 +23,17 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: Password123
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
       - '27017:27017'
+
+  postgres_db:
+    image: postgres:10.14
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '5432:5432'

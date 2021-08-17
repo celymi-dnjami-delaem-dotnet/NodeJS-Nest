@@ -1,39 +1,38 @@
-import { CreateProductDto } from '../../api/dto/actions/create-product.dto';
-import { CreateProductSchema } from '../../db/schemas/create-product.schema';
-import { Injectable } from '@nestjs/common';
-import { Product } from '../../db/schemas/product.schema';
-import { ProductDto } from '../../api/dto/models/product.dto';
+import { CreateProductDto } from '../../api/dto/create-product.dto';
+import { ICreateProductCommand } from '../commands/create-product.command';
+import { IProductCommand } from '../commands/product.command';
+import { ProductDto } from '../../api/dto/product.dto';
 
-@Injectable()
 export class ProductMapper {
-    mapToSchema(product: ProductDto): Product {
+    static mapCreateToCommandFromDto(createProductDto: CreateProductDto): ICreateProductCommand {
         return {
-            _id: product.id,
-            price: product.price,
-            displayName: product.displayName,
-            createdAt: product.createdAt,
-            totalRating: product.totalRating,
-            isDeleted: product.isDeleted,
+            categoryId: createProductDto.categoryId,
+            displayName: createProductDto.displayName,
+            price: createProductDto.price,
         };
     }
 
-    mapToDto(product: Product): ProductDto {
+    static mapToCommandFromDto(productDto: ProductDto): IProductCommand {
         return {
-            id: product._id,
-            displayName: product.displayName,
-            categoryId: product.category && product.category._id,
-            price: product.price,
-            totalRating: product.totalRating,
-            createdAt: product.createdAt,
-            isDeleted: product.isDeleted,
+            id: productDto.id,
+            categoryId: productDto.categoryId,
+            displayName: productDto.displayName,
+            price: productDto.price,
+            totalRating: productDto.totalRating,
+            createdAt: productDto.createdAt,
+            isDeleted: productDto.isDeleted,
         };
     }
 
-    mapToCreateSchema(product: CreateProductDto): CreateProductSchema {
+    static mapToDtoFromCommand(productCommand: IProductCommand): ProductDto {
         return {
-            displayName: product.displayName,
-            category: product.categoryId,
-            price: product.price,
+            id: productCommand.id,
+            categoryId: productCommand.categoryId,
+            displayName: productCommand.displayName,
+            price: productCommand.price,
+            totalRating: productCommand.totalRating,
+            createdAt: productCommand.createdAt,
+            isDeleted: productCommand.isDeleted,
         };
     }
 }

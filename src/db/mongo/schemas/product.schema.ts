@@ -1,23 +1,24 @@
 import { Category } from './category.schema';
 import { Document, Schema as MongooseSchema } from 'mongoose';
+import { IProduct } from '../types/product.type';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type ProductDocument = Product & Document;
 
 @Schema({ versionKey: false })
-export class Product {
+export class Product implements IProduct {
     _id: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, index: true })
     displayName: string;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Category' })
     category?: Category;
 
-    @Prop({ default: 0 })
+    @Prop({ default: 0, index: true })
     totalRating: number;
 
-    @Prop({ required: true })
+    @Prop({ required: true, index: true })
     price: number;
 
     @Prop({ default: Date.now() })

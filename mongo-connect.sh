@@ -1,4 +1,1 @@
-echo "Please, enter container id: "
-read dockerId
-
-docker exec -it ${dockerId} mongo
+docker exec -it $(docker ps -aqf "name=mongo_db") mongo
