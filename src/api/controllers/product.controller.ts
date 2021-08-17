@@ -6,6 +6,7 @@ import {
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 import {
     Body,
     Controller,
@@ -31,6 +32,12 @@ export class ProductController {
 
     @UseGuards(ProductSearchGuard)
     @Get()
+    @ApiImplicitQuery({ name: 'displayName', required: false, type: String })
+    @ApiImplicitQuery({ name: 'minRating', required: false, type: Number })
+    @ApiImplicitQuery({ name: 'sortBy', required: false, type: String })
+    @ApiImplicitQuery({ name: 'price', required: false, type: String })
+    @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
+    @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
     @ApiOkResponse({ type: [ProductDto], description: 'OK' })
     async getCategories(
         @Query('displayName') displayName?: string,

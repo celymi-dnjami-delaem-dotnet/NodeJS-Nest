@@ -16,16 +16,17 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
 
     constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
 
-    getCategories(): Promise<IBaseDb[]> {
+    getCategories(): Promise<Category[]> {
         return this.categoryRepository.find();
     }
 
-    async getCategoryById(id: string, searchParams: ISearchParamsCategory): Promise<ServiceResult<IBaseDb>> {
-        // todo: Complete sort and take top N from relations
-        const foundResult = await this.categoryRepository.findOne(
-            id,
-            searchParams.includeProducts ? { relations: ['products'] } : {},
-        );
+    async getCategoryById(id: string, searchParams: ISearchParamsCategory): Promise<ServiceResult<Category>> {
+        const foundResult = await this.categoryRepository
+            .createQueryBuilder('category')
+            .innerJoinAndSelect('category.products', 'product')
+            .orderBy('product.totalRating', 'DESC')
+            .limit(searchParams.includeTopCategories)
+            .getOne();
 
         if (!foundResult) {
             return new ServiceResult(
@@ -35,7 +36,7 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
             );
         }
 
-        return new ServiceResult<IBaseDb>(ServiceResultType.Success, foundResult);
+        return new ServiceResult<Category>(ServiceResultType.Success, foundResult);
     }
 
     async createCategory(category: ICreateCategoryDb): Promise<IBaseDb> {
@@ -62,7 +63,7 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
 
         const foundEntity = await this.categoryRepository.findOne(id);
 
-        return new ServiceResult(ServiceResultType.Success, foundEntity);
+        return new ServiceResult<Category>(ServiceResultType.Success, foundEntity);
     }
 
     async softRemoveCategory(id: string): Promise<ServiceResult> {

@@ -1,4 +1,5 @@
 import { ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 import {
     Body,
     Controller,
@@ -30,6 +31,8 @@ export class CategoryController {
 
     @UseGuards(CategorySearchGuard)
     @Get('id/:id')
+    @ApiImplicitQuery({ name: 'includeProducts', required: false, type: Boolean })
+    @ApiImplicitQuery({ name: 'includeTopProducts', required: false, type: Number })
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async getCategoryById(
