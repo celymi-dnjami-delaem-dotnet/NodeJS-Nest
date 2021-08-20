@@ -7,10 +7,11 @@ import { LoggingModule } from '../logging/logging.module';
 import { Module } from '@nestjs/common';
 import { ProductController } from './controllers/product.controller';
 import { TerminusModule } from '@nestjs/terminus';
+import { UserController } from './controllers/user.controller';
 
 @Module({
     imports: [BlModule.forRoot(), LoggingModule, TerminusModule],
-    controllers: [ProductController, CategoryController, HealthCheckController],
+    controllers: [ProductController, CategoryController, UserController, HealthCheckController],
     providers: [
         {
             provide: APP_INTERCEPTOR,

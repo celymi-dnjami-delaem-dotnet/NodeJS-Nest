@@ -15,7 +15,7 @@ export class Category implements ICategory {
     @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Product' }], default: [] })
     products?: Product[];
 
-    @Prop({ default: Date.now() })
+    @Prop({ default: new Date() })
     createdAt: Date;
 
     @Prop({ default: false })

@@ -10,6 +10,7 @@ import { ConsoleLogger, DynamicModule, Module, Provider } from '@nestjs/common';
 import { DbOptions } from '../settings/settings.constants';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
+import { User as EntityUser } from './postgres/entities/user.entity';
 import { LoggingModule } from '../logging/logging.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductDbMapperName } from './mappers/types/product-mapper.type';
@@ -20,16 +21,24 @@ import { ProductSchema, Product as SchemaProduct } from './mongo/schemas/product
 import { ProductSchemaMapper } from './mappers/schemas/product-schema.mapper';
 import { ProductServiceAdapter } from './adapter/product-service.adapter';
 import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
+import { User as SchemaUser, UserSchema } from './mongo/schemas/user.schema';
 import { SettingsModule } from '../settings/settings.module';
 import { SettingsService } from '../settings/settings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserDbMapperName } from './mappers/types/user-mapper.type';
+import { UserEntityMapper } from './mappers/entities/user-entity.mapper';
+import { UserMongooseRepository } from './mongo/repository/user.repository';
+import { UserRepositoryName } from './base-types/user-repository.type';
+import { UserSchemaMapper } from './mappers/schemas/user-schema.mapper';
+import { UserServiceAdapter } from './adapter/user-service.adapter';
+import { UserTypeOrmRepository } from './postgres/repository/user.repository';
 import { set } from 'mongoose';
 
 @Module({})
 export class DbModule {
     static forRoot(): DynamicModule {
         const imports: any = [SettingsModule];
-        const moduleProviders: Provider[] = [CategoryServiceAdapter, ProductServiceAdapter];
+        const moduleProviders: Provider[] = [CategoryServiceAdapter, ProductServiceAdapter, UserServiceAdapter];
 
         if (process.env.DB_TYPE === DbOptions.Postgres) {
             imports.push(
@@ -47,7 +56,7 @@ export class DbModule {
                     }),
                     inject: [SettingsService],
                 }),
-                TypeOrmModule.forFeature([EntityCategory, EntityProduct]),
+                TypeOrmModule.forFeature([EntityCategory, EntityProduct, EntityUser]),
             );
 
             moduleProviders.push(
@@ -57,12 +66,20 @@ export class DbModule {
                     useClass: ProductTypeOrmRepository,
                 } as Provider,
                 {
+                    provide: UserRepositoryName,
+                    useClass: UserTypeOrmRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategoryEntityMapper,
                 } as Provider,
                 {
                     provide: ProductDbMapperName,
                     useClass: ProductEntityMapper,
+                } as Provider,
+                {
+                    provide: UserDbMapperName,
+                    useClass: UserEntityMapper,
                 } as Provider,
             );
         } else {
@@ -91,6 +108,10 @@ export class DbModule {
                         name: SchemaProduct.name,
                         schema: ProductSchema,
                     },
+                    {
+                        name: SchemaUser.name,
+                        schema: UserSchema,
+                    },
                 ]),
             );
 
@@ -101,12 +122,20 @@ export class DbModule {
                     useClass: ProductMongooseRepository,
                 } as Provider,
                 {
+                    provide: UserRepositoryName,
+                    useClass: UserMongooseRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategorySchemaMapper,
                 } as Provider,
                 {
                     provide: ProductDbMapperName,
                     useClass: ProductSchemaMapper,
+                } as Provider,
+                {
+                    provide: UserDbMapperName,
+                    useClass: UserSchemaMapper,
                 } as Provider,
             );
         }

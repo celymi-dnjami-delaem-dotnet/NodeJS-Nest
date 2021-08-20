@@ -21,7 +21,7 @@ export class Product implements IProduct {
     @Prop({ required: true, index: true })
     price: number;
 
-    @Prop({ default: Date.now() })
+    @Prop({ default: new Date() })
     createdAt: Date;
 
     @Prop({ default: false })

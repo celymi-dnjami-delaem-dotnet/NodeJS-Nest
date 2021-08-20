@@ -16,9 +16,10 @@ import {
 import { CategoryDto } from '../dto/category.dto';
 import { CategorySearchGuard } from '../guards/category-search.guard';
 import { CategoryService } from '../../bl/services/category.service';
+import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 
-@ApiTags('Categories')
+@ApiTags(ControllerTags.Categories)
 @Controller('api/categories')
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}

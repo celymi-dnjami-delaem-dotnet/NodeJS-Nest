@@ -20,12 +20,13 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
+import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { ProductDto } from '../dto/product.dto';
 import { ProductSearchGuard } from '../guards/product-search.guard';
 import { ProductService } from '../../bl/services/product.service';
 
-@ApiTags('Products')
+@ApiTags(ControllerTags.Products)
 @Controller('api/products')
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
@@ -59,7 +60,7 @@ export class ProductController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @ApiCreatedResponse({ type: ProductDto, description: 'Created' })
+    @ApiCreatedResponse({ type: CreateProductDto, description: 'Created' })
     @ApiBadRequestResponse({ description: 'Bad Request' })
     async createProduct(@Body() productDto: CreateProductDto): Promise<ProductDto> {
         return this.productService.createProduct(productDto);
