@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
+import { missingCategoryEntityExceptionMessage } from '../../constants';
 
 @Injectable()
 export class CategoryMongooseRepository implements ICategoryRepository {
@@ -32,11 +33,11 @@ export class CategoryMongooseRepository implements ICategoryRepository {
             )
             .exec();
 
-        if (category) {
-            return new ServiceResult<Category>(ServiceResultType.Success, category);
+        if (!category) {
+            return new ServiceResult<Category>(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
 
-        return new ServiceResult<Category>(ServiceResultType.NotFound);
+        return new ServiceResult<Category>(ServiceResultType.Success, category);
     }
 
     async createCategory(category: ICreateCategoryDb): Promise<IBaseDb> {
@@ -51,7 +52,7 @@ export class CategoryMongooseRepository implements ICategoryRepository {
             .exec();
 
         if (!updateResult.nModified) {
-            return new ServiceResult<Category>(ServiceResultType.NotFound);
+            return new ServiceResult<Category>(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
 
         const updatedModel = await this.categoryModel.findById(category._id).lean().exec();
@@ -61,9 +62,8 @@ export class CategoryMongooseRepository implements ICategoryRepository {
 
     async softRemoveCategory(id: string): Promise<ServiceResult> {
         const removeResult = await this.categoryModel.updateOne({ _id: id }, { $set: { isDeleted: true } }).exec();
-
         if (!removeResult.nModified) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);
@@ -71,9 +71,8 @@ export class CategoryMongooseRepository implements ICategoryRepository {
 
     async removeCategory(id: string): Promise<ServiceResult> {
         const removeResult = await this.categoryModel.deleteOne({ _id: id }).exec();
-
         if (!removeResult.deletedCount) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);

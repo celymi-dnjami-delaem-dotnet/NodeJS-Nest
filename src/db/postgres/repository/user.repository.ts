@@ -6,12 +6,10 @@ import { Repository } from 'typeorm';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 import { User } from '../entities/user.entity';
+import { missingUserEntityExceptionMessage } from '../../constants';
 
 @Injectable()
 export class UserTypeOrmRepository implements IUserRepository {
-    private static readonly missingUserExceptionMessage: string =
-        'Unable to perform this operation due to missing user by provided parameters';
-
     constructor(@InjectRepository(User) private readonly _userRepository: Repository<User>) {}
 
     async getUsers(): Promise<User[]> {
@@ -22,11 +20,7 @@ export class UserTypeOrmRepository implements IUserRepository {
         const foundResult = await this.findUserById(id);
 
         if (!foundResult) {
-            return new ServiceResult<User>(
-                ServiceResultType.NotFound,
-                null,
-                UserTypeOrmRepository.missingUserExceptionMessage,
-            );
+            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
         return new ServiceResult<User>(ServiceResultType.Success, foundResult);
@@ -49,11 +43,7 @@ export class UserTypeOrmRepository implements IUserRepository {
             lastName: user.lastName,
         });
         if (!updatedResult.affected) {
-            return new ServiceResult<User>(
-                ServiceResultType.NotFound,
-                null,
-                UserTypeOrmRepository.missingUserExceptionMessage,
-            );
+            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
         const updatedUser = await this.findUserById(userId);
@@ -65,11 +55,7 @@ export class UserTypeOrmRepository implements IUserRepository {
         const removeResult = await this._userRepository.update({ id }, { isDeleted: true });
 
         if (!removeResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                UserTypeOrmRepository.missingUserExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);
@@ -79,11 +65,7 @@ export class UserTypeOrmRepository implements IUserRepository {
         const removeResult = await this._userRepository.delete(id);
 
         if (!removeResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                UserTypeOrmRepository.missingUserExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);

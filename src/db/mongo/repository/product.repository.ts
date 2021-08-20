@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import { Product, ProductDocument } from '../schemas/product.schema';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
+import { missingProductEntityExceptionMessage } from '../../constants';
 
 @Injectable()
 export class ProductMongooseRepository implements IProductRepository {
@@ -48,7 +49,7 @@ export class ProductMongooseRepository implements IProductRepository {
         const productSchema = await this.GetProductWithChildren(id, true);
 
         if (!productSchema) {
-            return new ServiceResult<Product>(ServiceResultType.NotFound);
+            return new ServiceResult<Product>(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         return new ServiceResult<Product>(ServiceResultType.Success, productSchema);
@@ -69,7 +70,7 @@ export class ProductMongooseRepository implements IProductRepository {
             .exec();
 
         if (!updateResult.nModified) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         return new ServiceResult<Category>(ServiceResultType.Success, creationResult);
@@ -86,7 +87,7 @@ export class ProductMongooseRepository implements IProductRepository {
             .exec();
 
         if (!updateResult.nModified) {
-            return new ServiceResult<Product>(ServiceResultType.NotFound);
+            return new ServiceResult<Product>(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         const updatedSchema = await this.GetProductWithChildren(productSchema._id, true);
@@ -96,20 +97,20 @@ export class ProductMongooseRepository implements IProductRepository {
 
     async softRemoveProduct(id: string): Promise<ServiceResult> {
         const removeResult = await this.productModel.updateOne({ _id: id }, { $set: { isDeleted: true } }).exec();
-        if (removeResult.nModified) {
-            return new ServiceResult(ServiceResultType.Success);
+        if (!removeResult.nModified) {
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
-        return new ServiceResult(ServiceResultType.NotFound);
+        return new ServiceResult(ServiceResultType.Success);
     }
 
     async removeProduct(id: string): Promise<ServiceResult> {
         const removeResult = await this.productModel.deleteOne({ _id: id }).exec();
-        if (removeResult.deletedCount) {
-            return new ServiceResult(ServiceResultType.Success);
+        if (!removeResult.deletedCount) {
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
-        return new ServiceResult(ServiceResultType.NotFound);
+        return new ServiceResult(ServiceResultType.Success);
     }
 
     private async GetProductWithChildren(id: string, includeChildren?: boolean): Promise<IProduct> {

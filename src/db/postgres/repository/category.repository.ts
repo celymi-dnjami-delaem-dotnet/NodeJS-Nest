@@ -8,12 +8,10 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
+import { missingCategoryEntityExceptionMessage } from '../../constants';
 
 @Injectable()
 export class CategoryTypeOrmRepository implements ICategoryRepository {
-    private static readonly missingCategoryExceptionMessage: string =
-        'Unable to perform this operation due to missing category by provided parameters';
-
     constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
 
     getCategories(): Promise<Category[]> {
@@ -29,11 +27,7 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
             .getOne();
 
         if (!foundResult) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                CategoryTypeOrmRepository.missingCategoryExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
 
         return new ServiceResult<Category>(ServiceResultType.Success, foundResult);
@@ -54,11 +48,7 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         );
 
         if (!updateResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                CategoryTypeOrmRepository.missingCategoryExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
 
         const foundEntity = await this.categoryRepository.findOne(id);
@@ -68,13 +58,8 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
 
     async softRemoveCategory(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this.categoryRepository.update({ id }, { isDeleted: true });
-
         if (!softRemoveResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                CategoryTypeOrmRepository.missingCategoryExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);
@@ -82,13 +67,8 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
 
     async removeCategory(id: string): Promise<ServiceResult> {
         const removeResult = await this.categoryRepository.delete(id);
-
         if (!removeResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                CategoryTypeOrmRepository.missingCategoryExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);

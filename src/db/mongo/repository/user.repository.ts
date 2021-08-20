@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 import { User, UserDocument } from '../schemas/user.schema';
+import { missingUserEntityExceptionMessage } from '../../constants';
 
 @Injectable()
 export class UserMongooseRepository implements IUserRepository {
@@ -16,9 +17,9 @@ export class UserMongooseRepository implements IUserRepository {
     }
 
     async getUserById(id: string): Promise<ServiceResult<User>> {
-        const foundUser = await this._userModel.findOne({ _id: id }).exec();
+        const foundUser = await this.findUserById(id);
         if (!foundUser) {
-            return new ServiceResult<User>(ServiceResultType.NotFound);
+            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
         return new ServiceResult<User>(ServiceResultType.Success, foundUser);
@@ -41,29 +42,33 @@ export class UserMongooseRepository implements IUserRepository {
             },
         );
         if (!updateResult.nModified) {
-            return new ServiceResult<User>(ServiceResultType.NotFound);
+            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
-        const updatedUser = await this._userModel.findOne({ _id: user._id });
+        const updatedUser = await this.findUserById(user._id);
 
         return new ServiceResult<User>(ServiceResultType.Success, updatedUser);
     }
 
     async softRemoveUser(id: string): Promise<ServiceResult> {
         const removeResult = await this._userModel.updateOne({ _id: id }, { $set: { isDeleted: true } }).exec();
-        if (removeResult.nModified) {
-            return new ServiceResult(ServiceResultType.Success);
+        if (!removeResult.nModified) {
+            return new ServiceResult(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
-        return new ServiceResult(ServiceResultType.NotFound);
+        return new ServiceResult(ServiceResultType.Success);
     }
 
     async removeUser(id: string): Promise<ServiceResult> {
         const removeResult = await this._userModel.deleteOne({ _id: id }).exec();
-        if (removeResult.deletedCount) {
-            return new ServiceResult(ServiceResultType.Success);
+        if (!removeResult.deletedCount) {
+            return new ServiceResult(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
-        return new ServiceResult(ServiceResultType.NotFound);
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
+    private findUserById(id: string): Promise<User> {
+        return this._userModel.findOne({ _id: id }).exec();
     }
 }

@@ -9,12 +9,10 @@ import { Injectable } from '@nestjs/common';
 import { Product } from '../entities/product.entity';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
+import { missingProductEntityExceptionMessage } from '../../constants';
 
 @Injectable()
 export class ProductTypeOrmRepository implements IProductRepository {
-    private static readonly missingProductExceptionMessage: string =
-        'Unable to perform this operation due to missing product by provided parameters';
-
     constructor(
         @InjectRepository(Product) private readonly productRepository: Repository<Product>,
         @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
@@ -68,11 +66,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
         const foundProduct = await this.findProductById(id, true);
 
         if (!foundProduct) {
-            return new ServiceResult<Category>(
-                ServiceResultType.NotFound,
-                null,
-                ProductTypeOrmRepository.missingProductExceptionMessage,
-            );
+            return new ServiceResult<Category>(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         return new ServiceResult<Category>(ServiceResultType.Success, foundProduct);
@@ -82,7 +76,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
         const existingCategory = await this.categoryRepository.findOne(product.categoryId);
 
         if (!existingCategory) {
-            return new ServiceResult(ServiceResultType.InvalidData, null, 'No such category exists by provided id');
+            return new ServiceResult(ServiceResultType.InvalidData, null, missingProductEntityExceptionMessage);
         }
 
         const newProductEntity = new Product();
@@ -108,11 +102,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
         );
 
         if (!updateResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                ProductTypeOrmRepository.missingProductExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         const updatedEntity = await this.findProductById(id, true);
@@ -124,11 +114,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
         const softRemoveResult = await this.productRepository.update({ id }, { isDeleted: true });
 
         if (!softRemoveResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                ProductTypeOrmRepository.missingProductExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);
@@ -138,11 +124,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
         const removeResult = await this.productRepository.delete(id);
 
         if (!removeResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                ProductTypeOrmRepository.missingProductExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);
