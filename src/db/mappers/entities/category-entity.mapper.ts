@@ -1,3 +1,4 @@
+import { BaseCategoryMapper } from '../base/base-category.mapper';
 import { Category } from '../../postgres/entities/category.entity';
 import { ICategoryCommand } from '../../../bl/commands/category.command';
 import { ICategoryDbMapper } from '../types/category-mapper.type';
@@ -9,41 +10,38 @@ import { ISearchParamsCategoryCommand } from '../../../bl/commands/search-params
 import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class CategoryEntityMapper implements ICategoryDbMapper {
-    constructor(@Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper) {}
+export class CategoryEntityMapper extends BaseCategoryMapper implements ICategoryDbMapper {
+    constructor(@Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper) {
+        super();
+    }
+
+    mapSearchToDbFromCommand(searchParams: ISearchParamsCategoryCommand): ISearchParamsCategory {
+        return super.mapSearchToDbFromCommand(searchParams);
+    }
 
     mapCreateToDbFromCommand(createCategoryCommand: ICreateCategoryCommand): ICreateCategoryDb {
-        return {
-            displayName: createCategoryCommand.displayName,
-        };
+        return super.mapCreateToDbFromCommand(createCategoryCommand);
     }
 
     mapToCommandFromDb(categoryDb: Category): ICategoryCommand {
+        const baseCategory = super.mapToCommandFromDb(categoryDb);
+
         return {
+            ...baseCategory,
             id: categoryDb.id,
-            displayName: categoryDb.displayName,
             products:
                 categoryDb.products && categoryDb.products.length
                     ? categoryDb.products.map((x) => this._productMapper.mapToCommandFromDb(x))
                     : [],
-            createdAt: categoryDb.createdAt,
-            isDeleted: categoryDb.isDeleted,
         };
     }
 
     mapToDbFromCommand(categoryCommand: ICategoryCommand): Category {
-        return {
-            id: categoryCommand.id,
-            displayName: categoryCommand.displayName,
-            createdAt: categoryCommand.createdAt,
-            isDeleted: categoryCommand.isDeleted,
-        };
-    }
+        const baseCategory = super.mapToDbFromCommand(categoryCommand);
 
-    mapSearchToDbFromCommand(searchParams: ISearchParamsCategoryCommand): ISearchParamsCategory {
         return {
-            includeProducts: searchParams.includeProducts,
-            includeTopCategories: searchParams.includeTopProducts,
+            ...baseCategory,
+            id: categoryCommand.id,
         };
     }
 }

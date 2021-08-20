@@ -1,9 +1,9 @@
 import { IProductCommand } from './product.command';
 
 export interface ICategoryCommand {
-    id: string;
+    id?: string;
     displayName: string;
-    products: IProductCommand[];
+    products?: IProductCommand[];
     createdAt: Date;
     isDeleted: boolean;
 }

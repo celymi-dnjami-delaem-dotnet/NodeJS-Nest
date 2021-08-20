@@ -1,7 +1,7 @@
 export interface IProductCommand {
-    id: string;
+    id?: string;
     price: number;
-    categoryId: string;
+    categoryId?: string;
     displayName: string;
     totalRating: number;
     createdAt: Date;
