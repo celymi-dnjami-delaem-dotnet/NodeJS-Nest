@@ -4,6 +4,7 @@ import { ServiceResult } from '../result-wrappers/service-result';
 import { UserDto } from '../../api/dto/user.dto';
 import { UserMapper } from '../mappers/user.mapper';
 import { UserServiceAdapter } from '../../db/adapter/user-service.adapter';
+import { UserUtils } from '../utils/user.utils';
 import { Utils } from '../utils';
 
 @Injectable()
@@ -25,9 +26,10 @@ export class UserService {
     }
 
     async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
-        const creationResult = await this._userServiceAdapter.createUser(
-            UserMapper.mapCreateToCommandFromDto(createUserDto),
-        );
+        const userCommand = UserMapper.mapCreateToCommandFromDto(createUserDto);
+        userCommand.password = UserUtils.hashPassword(userCommand.password);
+
+        const creationResult = await this._userServiceAdapter.createUser(userCommand);
 
         return UserMapper.mapToDtoFromCommand(creationResult);
     }
