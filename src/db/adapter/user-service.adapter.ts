@@ -1,3 +1,4 @@
+import { ICollectionSearchCommand } from '../../bl/commands/collection-search.command';
 import { ICreateUserCommand } from '../../bl/commands/create-user.command';
 import { IUserCommand } from '../../bl/commands/user.command';
 import { IUserDbMapper, UserDbMapperName } from '../mappers/types/user-mapper.type';
@@ -12,8 +13,8 @@ export class UserServiceAdapter {
         @Inject(UserDbMapperName) private readonly _userMapper: IUserDbMapper,
     ) {}
 
-    async getUsers(): Promise<IUserCommand[]> {
-        const users = await this._userRepository.getUsers();
+    async getUsers({ limit, offset }: ICollectionSearchCommand): Promise<IUserCommand[]> {
+        const users = await this._userRepository.getUsers(limit, offset);
 
         return users.map((x) => this._userMapper.mapToCommandFromDb(x));
     }

@@ -3,7 +3,7 @@ import { ICreateUserDb } from './create-user.type';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
 export interface IUserRepository {
-    getUsers: () => Promise<IBaseUser[]>;
+    getUsers: (limit: number, offset: number) => Promise<IBaseUser[]>;
     getUserById: (id: string) => Promise<ServiceResult<IBaseUser>>;
     createUser: (user: ICreateUserDb) => Promise<IBaseUser>;
     updateUser: (user: IBaseUser) => Promise<ServiceResult<IBaseUser>>;

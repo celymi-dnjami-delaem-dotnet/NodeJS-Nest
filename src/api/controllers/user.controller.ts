@@ -6,7 +6,21 @@ import {
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
+import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserDto } from '../dto/user.dto';
@@ -17,10 +31,13 @@ import { UserService } from '../../bl/services/user.service';
 export class UserController {
     constructor(private readonly _userService: UserService) {}
 
+    @UseGuards(CollectionSearchGuard)
     @Get()
+    @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
+    @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
     @ApiOkResponse({ type: [UserDto], description: 'OK' })
-    async getUsers(): Promise<UserDto[]> {
-        return this._userService.getUsers();
+    async getUsers(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<UserDto[]> {
+        return this._userService.getUsers(limit, offset);
     }
 
     @Get('id/:id')

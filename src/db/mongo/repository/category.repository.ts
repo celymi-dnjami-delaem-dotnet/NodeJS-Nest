@@ -14,8 +14,16 @@ import { missingCategoryEntityExceptionMessage } from '../../constants';
 export class CategoryMongooseRepository implements ICategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
-    async getCategories(): Promise<IBaseDb[]> {
-        return this.categoryModel.find().populate({ path: 'products', model: 'Product' }).exec();
+    async getCategories(limit: number, offset: number): Promise<IBaseDb[]> {
+        return this.categoryModel
+            .find()
+            .skip(offset)
+            .limit(limit)
+            .populate({
+                path: 'products',
+                model: 'Product',
+            })
+            .exec();
     }
 
     async getCategoryById(id: string, search: ISearchParamsCategory): Promise<ServiceResult<Category>> {

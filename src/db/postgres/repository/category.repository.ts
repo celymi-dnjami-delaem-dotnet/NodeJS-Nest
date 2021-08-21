@@ -14,8 +14,8 @@ import { missingCategoryEntityExceptionMessage } from '../../constants';
 export class CategoryTypeOrmRepository implements ICategoryRepository {
     constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
 
-    getCategories(): Promise<Category[]> {
-        return this.categoryRepository.find();
+    async getCategories(limit: number, offset: number): Promise<Category[]> {
+        return this.categoryRepository.find({ take: limit, skip: offset });
     }
 
     async getCategoryById(id: string, searchParams: ISearchParamsCategory): Promise<ServiceResult<Category>> {

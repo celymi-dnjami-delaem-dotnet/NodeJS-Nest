@@ -4,7 +4,7 @@ import { ISearchParamsCategory } from './search-params-category.type';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
 export interface ICategoryRepository {
-    getCategories: () => Promise<IBaseDb[]>;
+    getCategories: (limit: number, offset: number) => Promise<IBaseDb[]>;
     getCategoryById: (id: string, dbSearchParams: ISearchParamsCategory) => Promise<ServiceResult<IBaseDb>>;
     createCategory: (category: ICreateCategoryDb) => Promise<IBaseDb>;
     updateCategory: (category: IBaseDb) => Promise<ServiceResult<IBaseDb>>;

@@ -20,6 +20,7 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
+import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { ProductDto } from '../dto/product.dto';
@@ -31,7 +32,7 @@ import { ProductService } from '../../bl/services/product.service';
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
-    @UseGuards(ProductSearchGuard)
+    @UseGuards(ProductSearchGuard, CollectionSearchGuard)
     @Get()
     @ApiImplicitQuery({ name: 'displayName', required: false, type: String })
     @ApiImplicitQuery({ name: 'minRating', required: false, type: Number })

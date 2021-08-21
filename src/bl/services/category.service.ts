@@ -10,8 +10,10 @@ import { Utils } from '../utils';
 export class CategoryService {
     constructor(private readonly _categoryAdapter: CategoryServiceAdapter) {}
 
-    async getCategories(): Promise<CategoryDto[]> {
-        const categories = await this._categoryAdapter.getCategories();
+    async getCategories(limit?: string, offset?: string): Promise<CategoryDto[]> {
+        const categories = await this._categoryAdapter.getCategories(
+            Utils.getCollectionSearchParameters(limit, offset),
+        );
 
         return categories.map(CategoryMapper.mapToDtoFromCommand);
     }

@@ -1,6 +1,7 @@
 import { CategoryDbMapperName, ICategoryDbMapper } from '../mappers/types/category-mapper.type';
 import { CategoryRepositoryName, ICategoryRepository } from '../base-types/category-repository.type';
 import { ICategoryCommand } from '../../bl/commands/category.command';
+import { ICollectionSearchCommand } from '../../bl/commands/collection-search.command';
 import { ICreateCategoryCommand } from '../../bl/commands/create-category.command';
 import { ISearchParamsCategoryCommand } from '../../bl/commands/search-params-category.command';
 import { Inject, Injectable } from '@nestjs/common';
@@ -13,8 +14,8 @@ export class CategoryServiceAdapter {
         @Inject(CategoryDbMapperName) private readonly _categoryMapper: ICategoryDbMapper,
     ) {}
 
-    async getCategories(): Promise<ICategoryCommand[]> {
-        const categories = await this._categoryRepository.getCategories();
+    async getCategories({ limit, offset }: ICollectionSearchCommand): Promise<ICategoryCommand[]> {
+        const categories = await this._categoryRepository.getCategories(limit, offset);
 
         return categories.map((x) => this._categoryMapper.mapToCommandFromDb(x));
     }

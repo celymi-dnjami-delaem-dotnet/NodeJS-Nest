@@ -16,6 +16,7 @@ import {
 import { CategoryDto } from '../dto/category.dto';
 import { CategorySearchGuard } from '../guards/category-search.guard';
 import { CategoryService } from '../../bl/services/category.service';
+import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 
@@ -24,10 +25,13 @@ import { CreateCategoryDto } from '../dto/create-category.dto';
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
 
+    @UseGuards(CollectionSearchGuard)
     @Get()
+    @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
+    @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
     @ApiOkResponse({ type: [CategoryDto], description: 'OK' })
-    async getCategories(): Promise<CategoryDto[]> {
-        return this.categoryService.getCategories();
+    async getCategories(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<CategoryDto[]> {
+        return this.categoryService.getCategories(limit, offset);
     }
 
     @UseGuards(CategorySearchGuard)

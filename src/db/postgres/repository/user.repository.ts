@@ -12,8 +12,8 @@ import { missingUserEntityExceptionMessage } from '../../constants';
 export class UserTypeOrmRepository implements IUserRepository {
     constructor(@InjectRepository(User) private readonly _userRepository: Repository<User>) {}
 
-    async getUsers(): Promise<User[]> {
-        return this._userRepository.find();
+    async getUsers(limit: number, offset: number): Promise<User[]> {
+        return this._userRepository.find({ take: limit, skip: offset });
     }
 
     async getUserById(id: string): Promise<ServiceResult<User>> {

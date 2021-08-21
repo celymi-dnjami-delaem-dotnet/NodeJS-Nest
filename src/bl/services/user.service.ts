@@ -11,8 +11,8 @@ import { Utils } from '../utils';
 export class UserService {
     constructor(private readonly _userServiceAdapter: UserServiceAdapter) {}
 
-    async getUsers(): Promise<UserDto[]> {
-        const users = await this._userServiceAdapter.getUsers();
+    async getUsers(limit?: string, offset?: string): Promise<UserDto[]> {
+        const users = await this._userServiceAdapter.getUsers(Utils.getCollectionSearchParameters(limit, offset));
 
         return users.map(UserMapper.mapToDtoFromCommand);
     }

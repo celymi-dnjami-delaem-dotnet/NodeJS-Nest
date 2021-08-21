@@ -12,8 +12,8 @@ import { missingUserEntityExceptionMessage } from '../../constants';
 export class UserMongooseRepository implements IUserRepository {
     constructor(@InjectModel(User.name) private readonly _userModel: Model<UserDocument>) {}
 
-    async getUsers(): Promise<User[]> {
-        return this._userModel.find().exec();
+    async getUsers(limit: number, offset: number): Promise<User[]> {
+        return this._userModel.find({ take: limit, skip: offset }).exec();
     }
 
     async getUserById(id: string): Promise<ServiceResult<User>> {
