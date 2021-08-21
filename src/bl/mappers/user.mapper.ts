@@ -6,6 +6,7 @@ import { UserDto } from '../../api/dto/user.dto';
 export class UserMapper {
     static mapCreateToCommandFromDto(createUserDto: CreateUserDto): ICreateUserCommand {
         return {
+            username: createUserDto.userName,
             firstName: createUserDto.firstName,
             lastName: createUserDto.lastName,
             password: createUserDto.password,
@@ -15,6 +16,7 @@ export class UserMapper {
     static mapToCommandFromDto(userDto: UserDto): IUserCommand {
         return {
             id: userDto.id,
+            userName: userDto.userName,
             firstName: userDto.firstName,
             lastName: userDto.lastName,
             createdAt: userDto.createdAt,
@@ -25,6 +27,7 @@ export class UserMapper {
     static mapToDtoFromCommand(userCommand: IUserCommand): UserDto {
         return {
             id: userCommand.id,
+            userName: userCommand.userName,
             firstName: userCommand.firstName,
             lastName: userCommand.lastName,
             createdAt: userCommand.createdAt,

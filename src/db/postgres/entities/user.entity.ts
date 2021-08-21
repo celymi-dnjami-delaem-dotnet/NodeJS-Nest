@@ -7,6 +7,9 @@ export class User implements IUser {
     id: string;
 
     @Index()
+    @Column({ nullable: false, unique: true })
+    userName: string;
+
     @Column({ nullable: false })
     firstName: string;
 

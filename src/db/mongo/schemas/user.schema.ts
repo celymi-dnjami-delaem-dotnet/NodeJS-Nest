@@ -8,7 +8,10 @@ export type UserDocument = User & Document;
 export class User implements IUser {
     _id: string;
 
-    @Prop({ required: true, index: true })
+    @Prop({ unique: true, required: true, index: true })
+    userName: string;
+
+    @Prop({ required: true })
     firstName: string;
 
     @Prop({ required: true })

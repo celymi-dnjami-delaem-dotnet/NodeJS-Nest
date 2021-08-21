@@ -1,11 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class UserDto {
-    @ApiProperty({ description: 'User ID', required: true })
-    @IsNotEmpty()
-    id: string;
-
+export class SignUpUserDto {
     @ApiProperty({ description: 'User name', example: 'TestUser', required: true })
     @IsNotEmpty()
     userName: string;
@@ -18,9 +14,7 @@ export class UserDto {
     @IsNotEmpty()
     lastName: string;
 
-    @ApiProperty({ description: 'Creation date', example: new Date() })
-    createdAt: Date;
-
-    @ApiProperty({ description: 'Has user been deleted', example: false })
-    isDeleted: boolean;
+    @ApiProperty({ description: 'Password', example: 'Password123', required: true })
+    @IsNotEmpty()
+    password: string;
 }

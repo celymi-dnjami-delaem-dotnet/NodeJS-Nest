@@ -7,6 +7,7 @@ import { IUserDbMapper } from '../types/user-mapper.type';
 export abstract class BaseUserMapper implements IUserDbMapper {
     mapCreateToDbFromCommand(createCommand: ICreateUserCommand): ICreateUserDb {
         return {
+            username: createCommand.username,
             firstName: createCommand.firstName,
             lastName: createCommand.lastName,
             password: createCommand.password,
@@ -15,6 +16,7 @@ export abstract class BaseUserMapper implements IUserDbMapper {
 
     mapToCommandFromDb(userDb: IBaseUser): IUserCommand {
         return {
+            userName: userDb.userName,
             firstName: userDb.firstName,
             lastName: userDb.lastName,
             createdAt: userDb.createdAt,
@@ -24,6 +26,7 @@ export abstract class BaseUserMapper implements IUserDbMapper {
 
     mapToDbFromCommand(userCommand: IUserCommand): IBaseUser {
         return {
+            userName: userCommand.userName,
             firstName: userCommand.firstName,
             lastName: userCommand.lastName,
             createdAt: userCommand.createdAt,
