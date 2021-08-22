@@ -22,59 +22,59 @@ import {
 } from '@nestjs/common';
 import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UserDto } from '../dto/user.dto';
-import { UserService } from '../../bl/services/user.service';
+import { CreateRoleDto } from '../dto/create-role.dto';
+import { RoleDto } from '../dto/role.dto';
+import { RoleService } from '../../bl/services/role.service';
 
-@ApiTags(ControllerTags.Users)
-@Controller('api/users')
-export class UserController {
-    constructor(private readonly _userService: UserService) {}
+@ApiTags(ControllerTags.Roles)
+@Controller('api/roles')
+export class RoleController {
+    constructor(private readonly _roleService: RoleService) {}
 
     @UseGuards(CollectionSearchGuard)
     @Get()
     @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
     @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
-    @ApiOkResponse({ type: [UserDto], description: 'OK' })
-    async getUsers(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<UserDto[]> {
-        return this._userService.getUsers(limit, offset);
+    @ApiOkResponse({ type: [RoleDto], description: 'OK' })
+    async getRoles(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<RoleDto[]> {
+        return this._roleService.getRoles(limit, offset);
     }
 
     @Get('id/:id')
-    @ApiOkResponse({ type: UserDto, description: 'OK' })
+    @ApiOkResponse({ type: RoleDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
-    async getUserById(@Query('id') id: string): Promise<UserDto> {
-        return this._userService.getUserById(id);
+    async getRoleById(@Query('id') id: string): Promise<RoleDto> {
+        return this._roleService.getRoleById(id);
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @ApiCreatedResponse({ type: UserDto, description: 'Created' })
+    @ApiCreatedResponse({ type: RoleDto, description: 'Created' })
     @ApiBadRequestResponse({ description: 'Bad Request' })
-    async createUser(@Body() createUser: CreateUserDto): Promise<UserDto> {
-        return this._userService.createUser(createUser);
+    async createRole(@Body() createRole: CreateRoleDto): Promise<RoleDto> {
+        return this._roleService.createRole(createRole);
     }
 
     @Put()
-    @ApiOkResponse({ type: UserDto, description: 'OK' })
+    @ApiOkResponse({ type: RoleDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
-    async updateUser(@Body() user: UserDto): Promise<UserDto> {
-        return this._userService.updateUser(user);
+    async updateRole(@Body() role: RoleDto): Promise<RoleDto> {
+        return this._roleService.updateRole(role);
     }
 
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
-    async softRemoveUser(@Param('id') id: string): Promise<void> {
-        return this._userService.softRemoveUser(id);
+    async softRemoveRole(@Param('id') id: string): Promise<void> {
+        return this._roleService.softRemoveRole(id);
     }
 
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
-    async removeUser(@Param('id') id: string): Promise<void> {
-        return this._userService.removeUser(id);
+    async removeRole(@Param('id') id: string): Promise<void> {
+        return this._roleService.removeRole(id);
     }
 }

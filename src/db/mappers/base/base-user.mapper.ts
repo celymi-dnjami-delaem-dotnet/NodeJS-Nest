@@ -11,6 +11,7 @@ export abstract class BaseUserMapper implements IUserDbMapper {
             firstName: createCommand.firstName,
             lastName: createCommand.lastName,
             password: createCommand.password,
+            roleName: createCommand.roleName,
         };
     }
 

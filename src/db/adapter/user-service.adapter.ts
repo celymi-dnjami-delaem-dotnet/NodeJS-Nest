@@ -29,12 +29,16 @@ export class UserServiceAdapter {
         );
     }
 
-    async createUser(createUserCommand: ICreateUserCommand): Promise<IUserCommand> {
+    async createUser(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
         const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
 
-        const creationResult = await this._userRepository.createUser(dbUser);
+        const { serviceResultType, exceptionMessage, data } = await this._userRepository.createUser(dbUser);
 
-        return this._userMapper.mapToCommandFromDb(creationResult);
+        return new ServiceResult(
+            serviceResultType,
+            data && this._userMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 
     async updateUser(userCommand: IUserCommand): Promise<ServiceResult<IUserCommand>> {

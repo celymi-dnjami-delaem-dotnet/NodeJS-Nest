@@ -5,6 +5,7 @@ export enum ControllerTags {
     Categories = 'Categories',
     Products = 'Products',
     Users = 'Users',
+    Roles = 'Roles',
     HealthCheck = 'Health-Check',
 }
 

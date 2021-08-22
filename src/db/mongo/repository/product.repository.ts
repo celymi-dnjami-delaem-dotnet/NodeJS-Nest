@@ -1,5 +1,5 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
-import { IBaseDb } from '../../base-types/base-db.type';
+import { IBaseProduct } from '../../base-types/base-product.type';
 import { ICreateProductSchema } from '../types/create-product.type';
 import { IProduct } from '../types/product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
@@ -19,7 +19,7 @@ export class ProductMongooseRepository implements IProductRepository {
         @InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>,
     ) {}
 
-    async getProducts(searchParams: ISearchParamsProduct): Promise<IBaseDb[]> {
+    async getProducts(searchParams: ISearchParamsProduct): Promise<IBaseProduct[]> {
         const search = this.productModel.find();
 
         if (searchParams.displayName) {
@@ -55,11 +55,11 @@ export class ProductMongooseRepository implements IProductRepository {
         return new ServiceResult<Product>(ServiceResultType.Success, productSchema);
     }
 
-    async createProduct(product: ICreateProductSchema): Promise<ServiceResult<IBaseDb>> {
+    async createProduct(product: ICreateProductSchema): Promise<ServiceResult<IBaseProduct>> {
         const existingCategory = await this.categoryModel.findOne({ _id: product.category }).exec();
 
         if (!existingCategory) {
-            return new ServiceResult<Category>(ServiceResultType.InvalidData);
+            return new ServiceResult<IBaseProduct>(ServiceResultType.InvalidData);
         }
 
         const createdProduct = new this.productModel(product);
@@ -73,7 +73,7 @@ export class ProductMongooseRepository implements IProductRepository {
             return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
-        return new ServiceResult<Category>(ServiceResultType.Success, creationResult);
+        return new ServiceResult<IBaseProduct>(ServiceResultType.Success, creationResult);
     }
 
     async updateProduct(productSchema: Product): Promise<ServiceResult<Product>> {

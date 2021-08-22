@@ -25,10 +25,11 @@ export class UserMongooseRepository implements IUserRepository {
         return new ServiceResult<User>(ServiceResultType.Success, foundUser);
     }
 
-    async createUser(user: ICreateUserDb): Promise<User> {
+    async createUser(user: ICreateUserDb): Promise<ServiceResult<User>> {
         const userSchema = new this._userModel(user);
+        const createdUser = await userSchema.save();
 
-        return await userSchema.save();
+        return new ServiceResult<User>(ServiceResultType.Success, createdUser);
     }
 
     async updateUser(user: User): Promise<ServiceResult<User>> {

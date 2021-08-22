@@ -10,6 +10,7 @@ import { ConsoleLogger, DynamicModule, Module, Provider } from '@nestjs/common';
 import { DbOptions } from '../settings/settings.constants';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
+import { Role as EntityRole } from './postgres/entities/role.entity';
 import { User as EntityUser } from './postgres/entities/user.entity';
 import { LoggingModule } from '../logging/logging.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -21,6 +22,11 @@ import { ProductSchema, Product as SchemaProduct } from './mongo/schemas/product
 import { ProductSchemaMapper } from './mappers/schemas/product-schema.mapper';
 import { ProductServiceAdapter } from './adapter/product-service.adapter';
 import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
+import { RoleDbMapperName } from './mappers/types/role-mapper.type';
+import { RoleEntityMapper } from './mappers/entities/role-entity.mapper';
+import { RoleRepositoryName } from './base-types/role-repository.type';
+import { RoleServiceAdapter } from './adapter/role-service.adapter';
+import { RoleTypeOrmRepository } from './postgres/repository/role.repository';
 import { User as SchemaUser, UserSchema } from './mongo/schemas/user.schema';
 import { SettingsModule } from '../settings/settings.module';
 import { SettingsService } from '../settings/settings.service';
@@ -38,7 +44,12 @@ import { set } from 'mongoose';
 export class DbModule {
     static forRoot(): DynamicModule {
         const imports: any = [SettingsModule];
-        const moduleProviders: Provider[] = [CategoryServiceAdapter, ProductServiceAdapter, UserServiceAdapter];
+        const moduleProviders: Provider[] = [
+            CategoryServiceAdapter,
+            ProductServiceAdapter,
+            UserServiceAdapter,
+            RoleServiceAdapter,
+        ];
 
         if (process.env.DB_TYPE === DbOptions.Postgres) {
             imports.push(
@@ -56,7 +67,7 @@ export class DbModule {
                     }),
                     inject: [SettingsService],
                 }),
-                TypeOrmModule.forFeature([EntityCategory, EntityProduct, EntityUser]),
+                TypeOrmModule.forFeature([EntityCategory, EntityProduct, EntityUser, EntityRole]),
             );
 
             moduleProviders.push(
@@ -70,6 +81,10 @@ export class DbModule {
                     useClass: UserTypeOrmRepository,
                 } as Provider,
                 {
+                    provide: RoleRepositoryName,
+                    useClass: RoleTypeOrmRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategoryEntityMapper,
                 } as Provider,
@@ -80,6 +95,10 @@ export class DbModule {
                 {
                     provide: UserDbMapperName,
                     useClass: UserEntityMapper,
+                } as Provider,
+                {
+                    provide: RoleDbMapperName,
+                    useClass: RoleEntityMapper,
                 } as Provider,
             );
         } else {

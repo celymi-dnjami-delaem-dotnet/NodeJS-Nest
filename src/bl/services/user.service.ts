@@ -29,9 +29,11 @@ export class UserService {
         const userCommand = UserMapper.mapCreateToCommandFromDto(createUserDto);
         userCommand.password = UserUtils.hashPassword(userCommand.password);
 
-        const creationResult = await this._userServiceAdapter.createUser(userCommand);
+        const { serviceResultType, exceptionMessage, data } = await this._userServiceAdapter.createUser(userCommand);
 
-        return UserMapper.mapToDtoFromCommand(creationResult);
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
+
+        return UserMapper.mapToDtoFromCommand(data);
     }
 
     async updateUser(userDto: UserDto): Promise<UserDto> {

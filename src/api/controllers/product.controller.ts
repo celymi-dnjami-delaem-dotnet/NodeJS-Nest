@@ -30,7 +30,7 @@ import { ProductService } from '../../bl/services/product.service';
 @ApiTags(ControllerTags.Products)
 @Controller('api/products')
 export class ProductController {
-    constructor(private readonly productService: ProductService) {}
+    constructor(private readonly _productService: ProductService) {}
 
     @UseGuards(ProductSearchGuard, CollectionSearchGuard)
     @Get()
@@ -49,29 +49,29 @@ export class ProductController {
         @Query('limit') limit?: string,
         @Query('offset') offset?: string,
     ): Promise<ProductDto[]> {
-        return this.productService.getProducts(displayName, minRating, sortBy, price, limit, offset);
+        return this._productService.getProducts(displayName, minRating, sortBy, price, limit, offset);
     }
 
     @Get('id/:id')
     @ApiOkResponse({ type: ProductDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async getProducts(@Param('id') id: string): Promise<ProductDto> {
-        return this.productService.getProductById(id);
+        return this._productService.getProductById(id);
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @ApiCreatedResponse({ type: CreateProductDto, description: 'Created' })
+    @ApiCreatedResponse({ type: ProductDto, description: 'Created' })
     @ApiBadRequestResponse({ description: 'Bad Request' })
     async createProduct(@Body() productDto: CreateProductDto): Promise<ProductDto> {
-        return this.productService.createProduct(productDto);
+        return this._productService.createProduct(productDto);
     }
 
     @Put()
     @ApiOkResponse({ type: ProductDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async updateCategory(@Body() category: ProductDto): Promise<ProductDto> {
-        return await this.productService.updateProduct(category);
+        return await this._productService.updateProduct(category);
     }
 
     @Delete('soft-remove/id/:id')
@@ -79,7 +79,7 @@ export class ProductController {
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveCategory(@Param('id') id: string): Promise<void> {
-        await this.productService.softRemoveProduct(id);
+        await this._productService.softRemoveProduct(id);
     }
 
     @Delete('id/:id')
@@ -87,6 +87,6 @@ export class ProductController {
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async removeCategory(@Param('id') id: string): Promise<void> {
-        await this.productService.removeProduct(id);
+        await this._productService.removeProduct(id);
     }
 }

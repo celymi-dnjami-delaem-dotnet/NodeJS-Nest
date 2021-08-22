@@ -23,7 +23,7 @@ import { CreateCategoryDto } from '../dto/create-category.dto';
 @ApiTags(ControllerTags.Categories)
 @Controller('api/categories')
 export class CategoryController {
-    constructor(private readonly categoryService: CategoryService) {}
+    constructor(private readonly _categoryService: CategoryService) {}
 
     @UseGuards(CollectionSearchGuard)
     @Get()
@@ -31,7 +31,7 @@ export class CategoryController {
     @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
     @ApiOkResponse({ type: [CategoryDto], description: 'OK' })
     async getCategories(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<CategoryDto[]> {
-        return this.categoryService.getCategories(limit, offset);
+        return this._categoryService.getCategories(limit, offset);
     }
 
     @UseGuards(CategorySearchGuard)
@@ -45,21 +45,21 @@ export class CategoryController {
         @Query('includeProducts') includeProducts?: string,
         @Query('includeTopProducts') includeTopProducts?: string,
     ): Promise<CategoryDto> {
-        return await this.categoryService.getCategoryById(id, includeProducts, includeTopProducts);
+        return await this._categoryService.getCategoryById(id, includeProducts, includeTopProducts);
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiCreatedResponse({ type: CategoryDto, description: 'Created' })
     async createCategory(@Body() category: CreateCategoryDto): Promise<CategoryDto> {
-        return await this.categoryService.createCategory(category);
+        return await this._categoryService.createCategory(category);
     }
 
     @Put()
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async updateCategory(@Body() category: CategoryDto): Promise<CategoryDto> {
-        return await this.categoryService.updateCategory(category);
+        return await this._categoryService.updateCategory(category);
     }
 
     @Delete('soft-remove/id/:id')
@@ -67,7 +67,7 @@ export class CategoryController {
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveCategory(@Param('id') id: string): Promise<void> {
-        await this.categoryService.softRemoveCategory(id);
+        await this._categoryService.softRemoveCategory(id);
     }
 
     @Delete('id/:id')
@@ -75,6 +75,6 @@ export class CategoryController {
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async removeCategory(@Param('id') id: string): Promise<void> {
-        await this.categoryService.removeCategory(id);
+        await this._categoryService.removeCategory(id);
     }
 }

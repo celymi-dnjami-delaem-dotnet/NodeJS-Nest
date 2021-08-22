@@ -4,3 +4,4 @@ const getMissingEntityExceptionMessage = (entity: string): string =>
 export const missingCategoryEntityExceptionMessage: string = getMissingEntityExceptionMessage('category');
 export const missingProductEntityExceptionMessage: string = getMissingEntityExceptionMessage('product');
 export const missingUserEntityExceptionMessage: string = getMissingEntityExceptionMessage('user');
+export const missingRoleEntityExceptionMessage: string = getMissingEntityExceptionMessage('role');

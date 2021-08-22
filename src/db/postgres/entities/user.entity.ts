@@ -1,10 +1,15 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { IUser } from '../types/user.type';
+import { Role } from './role.entity';
 
 @Entity()
 export class User implements IUser {
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
+    @ManyToMany(() => Role, (role) => role.users)
+    @JoinTable()
+    roles?: Role[];
 
     @Index()
     @Column({ nullable: false, unique: true })

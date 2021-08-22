@@ -1,5 +1,5 @@
 import { Category } from '../entities/category.entity';
-import { IBaseDb } from '../../base-types/base-db.type';
+import { IBaseCategory } from '../../base-types/base-category.type';
 import { ICategoryRepository } from '../../base-types/category-repository.type';
 import { ICreateCategoryDb } from '../../base-types/create-category.type';
 import { ISearchParamsCategory } from '../../base-types/search-params-category.type';
@@ -33,11 +33,11 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         return new ServiceResult<Category>(ServiceResultType.Success, foundResult);
     }
 
-    async createCategory(category: ICreateCategoryDb): Promise<IBaseDb> {
+    async createCategory(category: ICreateCategoryDb): Promise<IBaseCategory> {
         return this.categoryRepository.save(category);
     }
 
-    async updateCategory(category: Category): Promise<ServiceResult<IBaseDb>> {
+    async updateCategory(category: Category): Promise<ServiceResult<IBaseCategory>> {
         const id: string = category.id;
 
         const updateResult = await this.categoryRepository.update(

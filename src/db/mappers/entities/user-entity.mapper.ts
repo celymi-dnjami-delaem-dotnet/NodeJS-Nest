@@ -18,6 +18,13 @@ export class UserEntityMapper extends BaseUserMapper implements IUserDbMapper {
         return {
             ...baseMap,
             id: userDb.id,
+            roles:
+                userDb.roles && userDb.roles.length
+                    ? userDb.roles.map((x) => ({
+                          id: x.id,
+                          displayName: x.displayName,
+                      }))
+                    : [],
         };
     }
 

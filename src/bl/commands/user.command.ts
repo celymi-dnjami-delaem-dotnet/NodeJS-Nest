@@ -5,4 +5,10 @@ export interface IUserCommand {
     lastName: string;
     createdAt: Date;
     isDeleted: boolean;
+    roles?: IUserRoleCommand[];
+}
+
+export interface IUserRoleCommand {
+    id: string;
+    displayName: string;
 }

@@ -1,7 +1,7 @@
 import { CreateUserDto } from '../../api/dto/create-user.dto';
 import { ICreateUserCommand } from '../commands/create-user.command';
 import { IUserCommand } from '../commands/user.command';
-import { UserDto } from '../../api/dto/user.dto';
+import { UserDto, UserRoleDto } from '../../api/dto/user.dto';
 
 export class UserMapper {
     static mapCreateToCommandFromDto(createUserDto: CreateUserDto): ICreateUserCommand {
@@ -10,6 +10,7 @@ export class UserMapper {
             firstName: createUserDto.firstName,
             lastName: createUserDto.lastName,
             password: createUserDto.password,
+            roleName: createUserDto.role,
         };
     }
 
@@ -27,6 +28,16 @@ export class UserMapper {
     static mapToDtoFromCommand(userCommand: IUserCommand): UserDto {
         return {
             id: userCommand.id,
+            roles:
+                userCommand.roles && userCommand.roles.length
+                    ? userCommand.roles.map(
+                          (x) =>
+                              ({
+                                  id: x.id,
+                                  displayName: x.displayName,
+                              } as UserRoleDto),
+                      )
+                    : [],
             userName: userCommand.userName,
             firstName: userCommand.firstName,
             lastName: userCommand.lastName,

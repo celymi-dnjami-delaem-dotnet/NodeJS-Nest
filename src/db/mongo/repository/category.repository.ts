@@ -1,5 +1,5 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
-import { IBaseDb } from '../../base-types/base-db.type';
+import { IBaseCategory } from '../../base-types/base-category.type';
 import { ICategoryRepository } from '../../base-types/category-repository.type';
 import { ICreateCategoryDb } from '../../base-types/create-category.type';
 import { ISearchParamsCategory } from '../../base-types/search-params-category.type';
@@ -14,7 +14,7 @@ import { missingCategoryEntityExceptionMessage } from '../../constants';
 export class CategoryMongooseRepository implements ICategoryRepository {
     constructor(@InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>) {}
 
-    async getCategories(limit: number, offset: number): Promise<IBaseDb[]> {
+    async getCategories(limit: number, offset: number): Promise<IBaseCategory[]> {
         return this.categoryModel
             .find()
             .skip(offset)
@@ -48,7 +48,7 @@ export class CategoryMongooseRepository implements ICategoryRepository {
         return new ServiceResult<Category>(ServiceResultType.Success, category);
     }
 
-    async createCategory(category: ICreateCategoryDb): Promise<IBaseDb> {
+    async createCategory(category: ICreateCategoryDb): Promise<IBaseCategory> {
         const categorySchema = new this.categoryModel(category);
 
         return await categorySchema.save();
