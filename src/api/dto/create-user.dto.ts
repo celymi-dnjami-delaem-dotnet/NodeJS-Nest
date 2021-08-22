@@ -6,6 +6,10 @@ export class CreateUserDto {
     @IsNotEmpty()
     userName: string;
 
+    @ApiProperty({ description: 'User role', example: 'Buyer', required: true })
+    @IsNotEmpty()
+    roleId: string;
+
     @ApiProperty({ description: 'User firstname', example: 'Igor', required: true })
     @IsNotEmpty()
     firstName: string;
@@ -17,8 +21,4 @@ export class CreateUserDto {
     @ApiProperty({ description: 'User password', example: 'TestPassword123', required: true })
     @IsNotEmpty()
     password: string;
-
-    @ApiProperty({ description: 'User role', example: 'Buyer', required: true })
-    @IsNotEmpty()
-    role: string;
 }

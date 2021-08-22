@@ -49,6 +49,14 @@ export class RoleServiceAdapter {
         );
     }
 
+    async grantRole(roleId: string, userId: string): Promise<ServiceResult> {
+        return this._roleRepository.grantRole(roleId, userId);
+    }
+
+    async revokeRole(roleId: string, userId: string): Promise<ServiceResult> {
+        return this._roleRepository.revokeRole(roleId, userId);
+    }
+
     async softRemoveRole(id: string): Promise<ServiceResult> {
         return this._roleRepository.softRemoveRole(id);
     }

@@ -30,12 +30,13 @@ export class UserTypeOrmRepository implements IUserRepository {
     }
 
     async createUser(createUser: ICreateUserDb): Promise<ServiceResult<User>> {
-        const existingRole = await this._roleRepository.findOne({ displayName: createUser.roleName });
+        const existingRole = await this._roleRepository.findOne({ id: createUser.roleId });
         if (!existingRole) {
             return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
         }
 
         const newUser = new User();
+        newUser.userName = createUser.userName;
         newUser.firstName = createUser.firstName;
         newUser.lastName = createUser.lastName;
         newUser.password = createUser.password;

@@ -1,6 +1,7 @@
 import { CreateRoleDto } from '../../api/dto/create-role.dto';
 import { Injectable } from '@nestjs/common';
 import { RoleDto } from '../../api/dto/role.dto';
+import { RoleManageDto } from '../../api/dto/role-manage.dto';
 import { RoleMapper } from '../mappers/role.mapper';
 import { RoleServiceAdapter } from '../../db/adapter/role-service.adapter';
 import { Utils } from '../utils';
@@ -39,6 +40,18 @@ export class RoleService {
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
         return RoleMapper.mapToDtoFromCommand(data);
+    }
+
+    async grantRole({ roleId, userId }: RoleManageDto): Promise<void> {
+        const { serviceResultType, exceptionMessage } = await this._roleServiceAdapter.grantRole(roleId, userId);
+
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
+    }
+
+    async revokeRole({ roleId, userId }: RoleManageDto): Promise<void> {
+        const { serviceResultType, exceptionMessage } = await this._roleServiceAdapter.revokeRole(roleId, userId);
+
+        Utils.validateServiceResultType(serviceResultType, exceptionMessage);
     }
 
     async softRemoveRole(id: string): Promise<void> {

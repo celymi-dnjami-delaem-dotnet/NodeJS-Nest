@@ -3,5 +3,5 @@ export interface ICreateUserCommand {
     firstName: string;
     lastName: string;
     password: string;
-    roleName: string;
+    roleId: string;
 }

@@ -10,7 +10,7 @@ export class UserMapper {
             firstName: createUserDto.firstName,
             lastName: createUserDto.lastName,
             password: createUserDto.password,
-            roleName: createUserDto.role,
+            roleId: createUserDto.roleId,
         };
     }
 

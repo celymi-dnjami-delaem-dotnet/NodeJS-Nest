@@ -7,11 +7,11 @@ import { IUserDbMapper } from '../types/user-mapper.type';
 export abstract class BaseUserMapper implements IUserDbMapper {
     mapCreateToDbFromCommand(createCommand: ICreateUserCommand): ICreateUserDb {
         return {
-            username: createCommand.username,
+            userName: createCommand.username,
             firstName: createCommand.firstName,
             lastName: createCommand.lastName,
             password: createCommand.password,
-            roleName: createCommand.roleName,
+            roleId: createCommand.roleId,
         };
     }
 

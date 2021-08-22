@@ -24,6 +24,7 @@ import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { RoleDto } from '../dto/role.dto';
+import { RoleManageDto } from '../dto/role-manage.dto';
 import { RoleService } from '../../bl/services/role.service';
 
 @ApiTags(ControllerTags.Roles)
@@ -68,6 +69,22 @@ export class RoleController {
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveRole(@Param('id') id: string): Promise<void> {
         return this._roleService.softRemoveRole(id);
+    }
+
+    @Post('grant')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiNoContentResponse({ description: 'No Content' })
+    @ApiNotFoundResponse({ description: 'Not Found' })
+    async grantRole(@Body() roleManagement: RoleManageDto): Promise<void> {
+        return this._roleService.grantRole(roleManagement);
+    }
+
+    @Post('revoke')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiNoContentResponse({ description: 'No Content' })
+    @ApiNotFoundResponse({ description: 'Not Found' })
+    async revokeRole(@Body() roleManagement: RoleManageDto): Promise<void> {
+        return this._roleService.revokeRole(roleManagement);
     }
 
     @Delete('id/:id')
