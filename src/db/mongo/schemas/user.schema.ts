@@ -1,6 +1,7 @@
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { IUser } from '../types/user.type';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Role } from './role.schema';
 
 export type UserDocument = User & Document;
 
@@ -11,6 +12,9 @@ export class User implements IUser {
     @Prop({ unique: true, required: true, index: true })
     userName: string;
 
+    @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Role' }], default: [] })
+    roles?: Role[];
+
     @Prop({ required: true })
     firstName: string;
 
@@ -20,7 +24,7 @@ export class User implements IUser {
     @Prop({ required: true })
     password?: string;
 
-    @Prop({ required: new Date() })
+    @Prop({ default: new Date() })
     createdAt: Date;
 
     @Prop({ default: false })

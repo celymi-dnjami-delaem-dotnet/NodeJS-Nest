@@ -1,7 +1,7 @@
 import { BaseUserMapper } from '../base/base-user.mapper';
 import { ICreateUserCommand } from '../../../bl/commands/create-user.command';
 import { ICreateUserDb } from '../../base-types/create-user.type';
-import { IUserCommand } from '../../../bl/commands/user.command';
+import { IUserCommand, IUserRoleCommand } from '../../../bl/commands/user.command';
 import { IUserDbMapper } from '../types/user-mapper.type';
 import { Injectable } from '@nestjs/common';
 import { User } from '../../mongo/schemas/user.schema';
@@ -16,6 +16,16 @@ export class UserSchemaMapper extends BaseUserMapper implements IUserDbMapper {
         return {
             ...super.mapToCommandFromDb(userDb),
             id: userDb._id,
+            roles:
+                userDb.roles && userDb.roles.length
+                    ? userDb.roles.map(
+                          (x) =>
+                              ({
+                                  id: x._id,
+                                  displayName: x.displayName,
+                              } as IUserRoleCommand),
+                      )
+                    : [],
         };
     }
 

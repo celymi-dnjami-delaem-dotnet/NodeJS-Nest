@@ -17,6 +17,7 @@ export class CategoryMongooseRepository implements ICategoryRepository {
     async getCategories(limit: number, offset: number): Promise<IBaseCategory[]> {
         return this.categoryModel
             .find()
+            .lean()
             .skip(offset)
             .limit(limit)
             .populate({

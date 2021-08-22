@@ -24,7 +24,10 @@ import { ProductServiceAdapter } from './adapter/product-service.adapter';
 import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
 import { RoleDbMapperName } from './mappers/types/role-mapper.type';
 import { RoleEntityMapper } from './mappers/entities/role-entity.mapper';
+import { RoleMongooseRepository } from './mongo/repository/role.repository';
 import { RoleRepositoryName } from './base-types/role-repository.type';
+import { RoleSchema, Role as SchemaRole } from './mongo/schemas/role.schema';
+import { RoleSchemaMapper } from './mappers/schemas/role-schema.mapper';
 import { RoleServiceAdapter } from './adapter/role-service.adapter';
 import { RoleTypeOrmRepository } from './postgres/repository/role.repository';
 import { User as SchemaUser, UserSchema } from './mongo/schemas/user.schema';
@@ -131,6 +134,10 @@ export class DbModule {
                         name: SchemaUser.name,
                         schema: UserSchema,
                     },
+                    {
+                        name: SchemaRole.name,
+                        schema: RoleSchema,
+                    },
                 ]),
             );
 
@@ -145,6 +152,10 @@ export class DbModule {
                     useClass: UserMongooseRepository,
                 } as Provider,
                 {
+                    provide: RoleRepositoryName,
+                    useClass: RoleMongooseRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategorySchemaMapper,
                 } as Provider,
@@ -155,6 +166,10 @@ export class DbModule {
                 {
                     provide: UserDbMapperName,
                     useClass: UserSchemaMapper,
+                } as Provider,
+                {
+                    provide: RoleDbMapperName,
+                    useClass: RoleSchemaMapper,
                 } as Provider,
             );
         }

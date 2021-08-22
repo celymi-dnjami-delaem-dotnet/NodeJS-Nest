@@ -39,6 +39,7 @@ export class ProductMongooseRepository implements IProductRepository {
         }
 
         return search
+            .lean()
             .limit(searchParams.limit)
             .skip(searchParams.offset)
             .sort({ [searchParams.sortField]: searchParams.sortDirection })
