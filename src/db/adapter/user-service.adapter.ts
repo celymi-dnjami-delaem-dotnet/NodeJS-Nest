@@ -1,3 +1,4 @@
+import { IAuthUserCommand } from '../../bl/commands/auth-user.command';
 import { ICollectionSearchCommand } from '../../bl/commands/collection-search.command';
 import { ICreateUserCommand } from '../../bl/commands/create-user.command';
 import { IUserCommand } from '../../bl/commands/user.command';
@@ -29,16 +30,24 @@ export class UserServiceAdapter {
         );
     }
 
-    async createUser(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
-        const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
+    async signInUser(signInCommand: IAuthUserCommand): Promise<ServiceResult<IUserCommand>> {
+        const signInUserDb = this._userMapper.mapSignInToDbFromCommand(signInCommand);
 
-        const { serviceResultType, exceptionMessage, data } = await this._userRepository.createUser(dbUser);
+        const { serviceResultType, exceptionMessage, data } = await this._userRepository.signInUser(signInUserDb);
 
-        return new ServiceResult(
+        return new ServiceResult<IUserCommand>(
             serviceResultType,
             data && this._userMapper.mapToCommandFromDb(data),
             exceptionMessage,
         );
+    }
+
+    async signUpUser(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
+        return this.handleUserCreation(createUserCommand);
+    }
+
+    async createUser(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
+        return this.handleUserCreation(createUserCommand);
     }
 
     async updateUser(userCommand: IUserCommand): Promise<ServiceResult<IUserCommand>> {
@@ -63,5 +72,17 @@ export class UserServiceAdapter {
 
     private static async handleUserRemove(id: string, callback: (id: string) => Promise<ServiceResult>) {
         return callback(id);
+    }
+
+    private async handleUserCreation(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
+        const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
+
+        const { serviceResultType, exceptionMessage, data } = await this._userRepository.createUser(dbUser);
+
+        return new ServiceResult(
+            serviceResultType,
+            data && this._userMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 }

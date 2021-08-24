@@ -1,8 +1,11 @@
+import { DefaultRoles } from '../../../bl/constants';
+import { FindConditions, Repository } from 'typeorm';
+import { IBaseUser } from 'src/db/base-types/base-user.type';
 import { ICreateUserDb } from '../../base-types/create-user.type';
+import { ISignInDb } from 'src/db/base-types/sign-in.type';
 import { IUserRepository } from '../../base-types/user-repository.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
 import { Role } from '../entities/role.entity';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
@@ -29,22 +32,24 @@ export class UserTypeOrmRepository implements IUserRepository {
         return new ServiceResult<User>(ServiceResultType.Success, foundResult);
     }
 
-    async createUser(createUser: ICreateUserDb): Promise<ServiceResult<User>> {
-        const existingRole = await this._roleRepository.findOne({ id: createUser.roleId });
-        if (!existingRole) {
-            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+    async signInUser(signInUser: ISignInDb): Promise<ServiceResult<IBaseUser>> {
+        const foundResult = await this._userRepository.findOne({
+            userName: signInUser.userName,
+            password: signInUser.password,
+        });
+        if (!foundResult) {
+            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
-        const newUser = new User();
-        newUser.userName = createUser.userName;
-        newUser.firstName = createUser.firstName;
-        newUser.lastName = createUser.lastName;
-        newUser.password = createUser.password;
-        newUser.roles = [existingRole];
+        return new ServiceResult<User>(ServiceResultType.Success, foundResult);
+    }
 
-        const createdUser = await this._userRepository.save(newUser);
+    async signUpUser(createUserDb: ICreateUserDb): Promise<ServiceResult<IBaseUser>> {
+        return this.handleUserCreation(createUserDb, { displayName: DefaultRoles.Buyer });
+    }
 
-        return new ServiceResult<User>(ServiceResultType.Success, createdUser);
+    async createUser(createUserDb: ICreateUserDb): Promise<ServiceResult<User>> {
+        return this.handleUserCreation(createUserDb, { id: createUserDb.roleId });
     }
 
     async updateUser(user: User): Promise<ServiceResult<User>> {
@@ -81,7 +86,28 @@ export class UserTypeOrmRepository implements IUserRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
-    private findUserById(id: string, includeChildren?: boolean): Promise<User> {
+    private async findUserById(id: string, includeChildren?: boolean): Promise<User> {
         return this._userRepository.findOne(id, includeChildren ? { relations: ['roles'] } : {});
+    }
+
+    private async handleUserCreation(
+        createUser: ICreateUserDb,
+        searchRoleCondition: FindConditions<Role>,
+    ): Promise<ServiceResult<User>> {
+        const existingRole = await this._roleRepository.findOne(searchRoleCondition);
+        if (!existingRole) {
+            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+        }
+
+        const newUser = new User();
+        newUser.userName = createUser.userName;
+        newUser.firstName = createUser.firstName;
+        newUser.lastName = createUser.lastName;
+        newUser.password = createUser.password;
+        newUser.roles = [existingRole];
+
+        const createdUser = await this._userRepository.save(newUser);
+
+        return new ServiceResult<User>(ServiceResultType.Success, createdUser);
     }
 }

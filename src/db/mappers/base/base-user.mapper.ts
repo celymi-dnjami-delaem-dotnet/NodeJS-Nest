@@ -1,6 +1,8 @@
+import { IAuthUserCommand } from '../../../bl/commands/auth-user.command';
 import { IBaseUser } from '../../base-types/base-user.type';
 import { ICreateUserCommand } from '../../../bl/commands/create-user.command';
 import { ICreateUserDb } from '../../base-types/create-user.type';
+import { ISignInDb } from '../../base-types/sign-in.type';
 import { IUserCommand } from '../../../bl/commands/user.command';
 import { IUserDbMapper } from '../types/user-mapper.type';
 
@@ -12,6 +14,13 @@ export abstract class BaseUserMapper implements IUserDbMapper {
             lastName: createCommand.lastName,
             password: createCommand.password,
             roleId: createCommand.roleId,
+        };
+    }
+
+    mapSignInToDbFromCommand(signInCommand: IAuthUserCommand): ISignInDb {
+        return {
+            userName: signInCommand.userName,
+            password: signInCommand.password,
         };
     }
 

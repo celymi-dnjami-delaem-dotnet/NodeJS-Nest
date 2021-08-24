@@ -7,6 +7,7 @@ export enum ControllerTags {
     Users = 'Users',
     Roles = 'Roles',
     HealthCheck = 'Health-Check',
+    Auth = 'Authentication',
 }
 
 export default function registerSwagger(app: INestApplication): void {

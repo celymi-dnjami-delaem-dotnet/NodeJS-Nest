@@ -1,8 +1,10 @@
+import { DefaultRoles } from '../../../bl/constants';
+import { FilterQuery, Model } from 'mongoose';
+import { IAuthUserCommand } from '../../../bl/commands/auth-user.command';
 import { ICreateUserDb } from '../../base-types/create-user.type';
 import { IUserRepository } from '../../base-types/user-repository.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
 import { Role, RoleDocument } from '../schemas/role.schema';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
@@ -29,25 +31,26 @@ export class UserMongooseRepository implements IUserRepository {
         return new ServiceResult<User>(ServiceResultType.Success, foundUser);
     }
 
-    async createUser(user: ICreateUserDb): Promise<ServiceResult<User>> {
-        const existingRole = await this._roleModel.findOne({ _id: user.roleId });
-        if (!existingRole) {
-            return new ServiceResult<User>(ServiceResultType.NotFound);
+    async signInUser(authUserCommand: IAuthUserCommand): Promise<ServiceResult<User>> {
+        const foundUser = await this._userModel
+            .findOne({
+                userName: authUserCommand.userName,
+                password: authUserCommand.password,
+            })
+            .exec();
+        if (!foundUser) {
+            return new ServiceResult<User>(ServiceResultType.InvalidData, null, missingUserEntityExceptionMessage);
         }
 
-        const newUser = new User();
-        newUser.userName = user.userName;
-        newUser.firstName = user.firstName;
-        newUser.lastName = user.lastName;
-        newUser.password = user.password;
-        newUser.roles = [existingRole._id];
+        return new ServiceResult<User>(ServiceResultType.Success, foundUser);
+    }
 
-        const userSchema = new this._userModel(newUser);
-        const createdUser = await userSchema.save();
+    async signUpUser(user: ICreateUserDb): Promise<ServiceResult<User>> {
+        return this.handleUserCreation(user, { displayName: DefaultRoles.Buyer });
+    }
 
-        await this._roleModel.updateOne({ _id: user.roleId }, { $push: { users: createdUser._id } });
-
-        return new ServiceResult<User>(ServiceResultType.Success, createdUser);
+    async createUser(user: ICreateUserDb): Promise<ServiceResult<User>> {
+        return this.handleUserCreation(user, { _id: user.roleId });
     }
 
     async updateUser(user: User): Promise<ServiceResult<User>> {
@@ -87,9 +90,33 @@ export class UserMongooseRepository implements IUserRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
-    private findUserById(id: string, includeChildren?: boolean): Promise<User> {
+    private async findUserById(id: string, includeChildren?: boolean): Promise<User> {
         return includeChildren
             ? this._userModel.findOne({ _id: id }).populate({ path: 'roles', model: 'Role' }).exec()
             : this._userModel.findOne({ _id: id }).exec();
+    }
+
+    private async handleUserCreation(
+        user: ICreateUserDb,
+        roleSearchFilter: FilterQuery<RoleDocument>,
+    ): Promise<ServiceResult<User>> {
+        const existingRole = await this._roleModel.findOne(roleSearchFilter);
+        if (!existingRole) {
+            return new ServiceResult<User>(ServiceResultType.NotFound);
+        }
+
+        const newUser = new User();
+        newUser.userName = user.userName;
+        newUser.firstName = user.firstName;
+        newUser.lastName = user.lastName;
+        newUser.password = user.password;
+        newUser.roles = [existingRole._id];
+
+        const userSchema = new this._userModel(newUser);
+        const createdUser = await userSchema.save();
+
+        await this._roleModel.updateOne({ _id: user.roleId }, { $push: { users: createdUser._id } });
+
+        return new ServiceResult<User>(ServiceResultType.Success, createdUser);
     }
 }

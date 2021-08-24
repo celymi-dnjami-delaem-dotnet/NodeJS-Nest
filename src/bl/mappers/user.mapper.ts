@@ -1,6 +1,9 @@
 import { CreateUserDto } from '../../api/dto/create-user.dto';
+import { IAuthUserCommand } from '../commands/auth-user.command';
 import { ICreateUserCommand } from '../commands/create-user.command';
 import { IUserCommand } from '../commands/user.command';
+import { SignInUserDto } from '../../api/dto/sign-in-user.dto';
+import { SignUpUserDto } from '../../api/dto/sign-up-user.dto';
 import { UserDto, UserRoleDto } from '../../api/dto/user.dto';
 
 export class UserMapper {
@@ -11,6 +14,22 @@ export class UserMapper {
             lastName: createUserDto.lastName,
             password: createUserDto.password,
             roleId: createUserDto.roleId,
+        };
+    }
+
+    static mapSignUpToCommandFromDto(signUpUser: SignUpUserDto): ICreateUserCommand {
+        return {
+            username: signUpUser.userName,
+            firstName: signUpUser.firstName,
+            lastName: signUpUser.lastName,
+            password: signUpUser.password,
+        };
+    }
+
+    static mapSignInToCommandFromDto(signInUser: SignInUserDto): IAuthUserCommand {
+        return {
+            userName: signInUser.userName,
+            password: signInUser.password,
         };
     }
 

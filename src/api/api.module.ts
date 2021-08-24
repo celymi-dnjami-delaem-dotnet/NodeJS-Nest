@@ -1,4 +1,5 @@
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AuthController } from './controllers/auth.controller';
 import { BlModule } from '../bl/bl.module';
 import { CategoryController } from './controllers/category.controller';
 import { HealthCheckController } from './controllers/health-check.controller';
@@ -12,7 +13,14 @@ import { UserController } from './controllers/user.controller';
 
 @Module({
     imports: [BlModule.forRoot(), LoggingModule, TerminusModule],
-    controllers: [ProductController, CategoryController, UserController, RoleController, HealthCheckController],
+    controllers: [
+        AuthController,
+        ProductController,
+        CategoryController,
+        UserController,
+        RoleController,
+        HealthCheckController,
+    ],
     providers: [
         {
             provide: APP_INTERCEPTOR,

@@ -15,6 +15,11 @@ export enum SortDirection {
     Desc = 'desc',
 }
 
+export enum DefaultRoles {
+    Admin = 'Admin',
+    Buyer = 'Buyer',
+}
+
 export const defaultIncludeTopProductsAmount = 3;
 export const defaultCollectionLimit = 25;
 export const defaultCollectionOffset = 0;

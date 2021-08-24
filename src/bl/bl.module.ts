@@ -1,3 +1,4 @@
+import { AuthService } from './services/auth.service';
 import { CategoryService } from './services/category.service';
 import { DbModule } from '../db/db.module';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
@@ -9,7 +10,7 @@ import { UserService } from './services/user.service';
 @Module({})
 export class BlModule {
     static forRoot(): DynamicModule {
-        const moduleProviders: Provider[] = [CategoryService, ProductService, UserService, RoleService];
+        const moduleProviders: Provider[] = [AuthService, CategoryService, ProductService, UserService, RoleService];
 
         return {
             module: BlModule,
