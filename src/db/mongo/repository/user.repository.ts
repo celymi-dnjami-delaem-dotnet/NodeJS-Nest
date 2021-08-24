@@ -37,6 +37,7 @@ export class UserMongooseRepository implements IUserRepository {
                 userName: authUserCommand.userName,
                 password: authUserCommand.password,
             })
+            .populate('roles', null, Role.name)
             .exec();
         if (!foundUser) {
             return new ServiceResult<User>(ServiceResultType.InvalidData, null, missingUserEntityExceptionMessage);
