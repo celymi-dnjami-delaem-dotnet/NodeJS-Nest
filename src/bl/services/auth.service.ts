@@ -20,9 +20,10 @@ export class AuthService {
     }
 
     async signUp(signUpUser: SignUpUserDto): Promise<void> {
-        const { serviceResultType, exceptionMessage } = await this._userServiceAdapter.signUpUser(
-            UserMapper.mapSignUpToCommandFromDto(signUpUser),
-        );
+        const signUpUserCommand = UserMapper.mapSignUpToCommandFromDto(signUpUser);
+        signUpUserCommand.password = UserUtils.hashPassword(signUpUserCommand.password);
+
+        const { serviceResultType, exceptionMessage } = await this._userServiceAdapter.signUpUser(signUpUserCommand);
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
     }

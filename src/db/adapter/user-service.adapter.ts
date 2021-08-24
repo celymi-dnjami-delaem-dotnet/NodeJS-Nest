@@ -43,11 +43,27 @@ export class UserServiceAdapter {
     }
 
     async signUpUser(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
-        return this.handleUserCreation(createUserCommand);
+        const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
+
+        const { serviceResultType, exceptionMessage, data } = await this._userRepository.signUpUser(dbUser);
+
+        return new ServiceResult(
+            serviceResultType,
+            data && this._userMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 
     async createUser(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
-        return this.handleUserCreation(createUserCommand);
+        const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
+
+        const { serviceResultType, exceptionMessage, data } = await this._userRepository.createUser(dbUser);
+
+        return new ServiceResult(
+            serviceResultType,
+            data && this._userMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 
     async updateUser(userCommand: IUserCommand): Promise<ServiceResult<IUserCommand>> {
@@ -63,26 +79,10 @@ export class UserServiceAdapter {
     }
 
     async softRemoveUser(id: string): Promise<ServiceResult> {
-        return UserServiceAdapter.handleUserRemove(id, this._userRepository.softRemoveUser);
+        return this._userRepository.softRemoveUser(id);
     }
 
     async removeUser(id: string): Promise<ServiceResult> {
-        return UserServiceAdapter.handleUserRemove(id, this._userRepository.removeUser);
-    }
-
-    private static async handleUserRemove(id: string, callback: (id: string) => Promise<ServiceResult>) {
-        return callback(id);
-    }
-
-    private async handleUserCreation(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
-        const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
-
-        const { serviceResultType, exceptionMessage, data } = await this._userRepository.createUser(dbUser);
-
-        return new ServiceResult(
-            serviceResultType,
-            data && this._userMapper.mapToCommandFromDb(data),
-            exceptionMessage,
-        );
+        return this._userRepository.removeUser(id);
     }
 }

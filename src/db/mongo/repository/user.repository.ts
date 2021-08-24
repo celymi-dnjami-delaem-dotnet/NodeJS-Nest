@@ -9,7 +9,7 @@ import { Role, RoleDocument } from '../schemas/role.schema';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 import { User, UserDocument } from '../schemas/user.schema';
-import { missingUserEntityExceptionMessage } from '../../constants';
+import { missingRoleEntityExceptionMessage, missingUserEntityExceptionMessage } from '../../constants';
 
 @Injectable()
 export class UserMongooseRepository implements IUserRepository {
@@ -102,7 +102,7 @@ export class UserMongooseRepository implements IUserRepository {
     ): Promise<ServiceResult<User>> {
         const existingRole = await this._roleModel.findOne(roleSearchFilter);
         if (!existingRole) {
-            return new ServiceResult<User>(ServiceResultType.NotFound);
+            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
         }
 
         const newUser = new User();
