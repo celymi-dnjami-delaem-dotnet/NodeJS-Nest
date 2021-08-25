@@ -13,7 +13,9 @@ export class AuthModule {
             useFactory: async (settings: SettingsService) => ({
                 secret: settings.jwtSecret,
                 signOptions: {
-                    expiresIn: '3600s',
+                    expiresIn: settings.jwtExpirationTime,
+                    audience: settings.jwtAudience,
+                    issuer: settings.jwtIssuer,
                 },
             }),
             inject: [SettingsService],
