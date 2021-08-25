@@ -19,6 +19,8 @@ import { CategoryService } from '../../bl/services/category.service';
 import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateCategoryDto } from '../dto/create-category.dto';
+import { DefaultRoles } from '../../bl/constants';
+import { RolesGuard } from '../guards/role.guard';
 
 @ApiTags(ControllerTags.Categories)
 @Controller('api/categories')
@@ -48,6 +50,7 @@ export class CategoryController {
         return await this._categoryService.getCategoryById(id, includeProducts, includeTopProducts);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiCreatedResponse({ type: CategoryDto, description: 'Created' })
@@ -55,6 +58,7 @@ export class CategoryController {
         return await this._categoryService.createCategory(category);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Put()
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
@@ -62,6 +66,7 @@ export class CategoryController {
         return await this._categoryService.updateCategory(category);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
@@ -70,6 +75,7 @@ export class CategoryController {
         await this._categoryService.softRemoveCategory(id);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })

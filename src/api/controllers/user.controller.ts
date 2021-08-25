@@ -23,6 +23,8 @@ import {
 import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { DefaultRoles } from '../../bl/constants';
+import { RolesGuard } from '../guards/role.guard';
 import { UserDto } from '../dto/user.dto';
 import { UserService } from '../../bl/services/user.service';
 
@@ -31,7 +33,7 @@ import { UserService } from '../../bl/services/user.service';
 export class UserController {
     constructor(private readonly _userService: UserService) {}
 
-    @UseGuards(CollectionSearchGuard)
+    @UseGuards(CollectionSearchGuard, new RolesGuard([DefaultRoles.Admin]))
     @Get()
     @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
     @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
@@ -40,6 +42,7 @@ export class UserController {
         return this._userService.getUsers(limit, offset);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin, DefaultRoles.Buyer]))
     @Get('id/:id')
     @ApiOkResponse({ type: UserDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
@@ -47,6 +50,7 @@ export class UserController {
         return this._userService.getUserById(id);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiCreatedResponse({ type: UserDto, description: 'Created' })
@@ -55,6 +59,7 @@ export class UserController {
         return this._userService.createUser(createUser);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Put()
     @ApiOkResponse({ type: UserDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
@@ -62,6 +67,7 @@ export class UserController {
         return this._userService.updateUser(user);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
@@ -70,6 +76,7 @@ export class UserController {
         return this._userService.softRemoveUser(id);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })

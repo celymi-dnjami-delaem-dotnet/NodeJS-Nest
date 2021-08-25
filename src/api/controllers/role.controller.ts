@@ -23,16 +23,18 @@ import {
 import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateRoleDto } from '../dto/create-role.dto';
+import { DefaultRoles } from '../../bl/constants';
 import { RoleDto } from '../dto/role.dto';
 import { RoleManageDto } from '../dto/role-manage.dto';
 import { RoleService } from '../../bl/services/role.service';
+import { RolesGuard } from '../guards/role.guard';
 
 @ApiTags(ControllerTags.Roles)
 @Controller('api/roles')
 export class RoleController {
     constructor(private readonly _roleService: RoleService) {}
 
-    @UseGuards(CollectionSearchGuard)
+    @UseGuards(CollectionSearchGuard, new RolesGuard([DefaultRoles.Admin]))
     @Get()
     @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
     @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
@@ -41,6 +43,7 @@ export class RoleController {
         return this._roleService.getRoles(limit, offset);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Get('id/:id')
     @ApiOkResponse({ type: RoleDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
@@ -48,6 +51,7 @@ export class RoleController {
         return this._roleService.getRoleById(id);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiCreatedResponse({ type: RoleDto, description: 'Created' })
@@ -56,6 +60,7 @@ export class RoleController {
         return this._roleService.createRole(createRole);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Put()
     @ApiOkResponse({ type: RoleDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
@@ -63,6 +68,7 @@ export class RoleController {
         return this._roleService.updateRole(role);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
@@ -71,6 +77,7 @@ export class RoleController {
         return this._roleService.softRemoveRole(id);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post('grant')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
@@ -79,6 +86,7 @@ export class RoleController {
         return this._roleService.grantRole(roleManagement);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post('revoke')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
@@ -87,6 +95,7 @@ export class RoleController {
         return this._roleService.revokeRole(roleManagement);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })

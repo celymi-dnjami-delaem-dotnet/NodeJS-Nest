@@ -23,9 +23,11 @@ import {
 import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateProductDto } from '../dto/create-product.dto';
+import { DefaultRoles } from '../../bl/constants';
 import { ProductDto } from '../dto/product.dto';
 import { ProductSearchGuard } from '../guards/product-search.guard';
 import { ProductService } from '../../bl/services/product.service';
+import { RolesGuard } from '../guards/role.guard';
 
 @ApiTags(ControllerTags.Products)
 @Controller('api/products')
@@ -59,6 +61,7 @@ export class ProductController {
         return this._productService.getProductById(id);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiCreatedResponse({ type: ProductDto, description: 'Created' })
@@ -67,6 +70,7 @@ export class ProductController {
         return this._productService.createProduct(productDto);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Put()
     @ApiOkResponse({ type: ProductDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
@@ -74,6 +78,7 @@ export class ProductController {
         return await this._productService.updateProduct(category);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
@@ -82,6 +87,7 @@ export class ProductController {
         await this._productService.softRemoveProduct(id);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse({ description: 'No Content' })
