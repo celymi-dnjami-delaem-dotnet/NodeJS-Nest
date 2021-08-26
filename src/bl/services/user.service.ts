@@ -1,15 +1,15 @@
 import { CreateUserDto } from '../../api/dto/create-user.dto';
-import { Injectable } from '@nestjs/common';
+import { IUserServiceAdapter, UserServiceAdapterName } from '../../db/adapter/user-service.adapter';
+import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../result-wrappers/service-result';
 import { UserDto } from '../../api/dto/user.dto';
 import { UserMapper } from '../mappers/user.mapper';
-import { UserServiceAdapter } from '../../db/adapter/user-service.adapter';
 import { UserUtils } from '../utils/user.utils';
 import { Utils } from '../utils';
 
 @Injectable()
 export class UserService {
-    constructor(private readonly _userServiceAdapter: UserServiceAdapter) {}
+    constructor(@Inject(UserServiceAdapterName) private readonly _userServiceAdapter: IUserServiceAdapter) {}
 
     async getUsers(limit?: string, offset?: string): Promise<UserDto[]> {
         const users = await this._userServiceAdapter.getUsers(Utils.getCollectionSearchParameters(limit, offset));

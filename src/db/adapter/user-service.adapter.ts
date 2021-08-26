@@ -7,8 +7,21 @@ import { IUserRepository, UserRepositoryName } from '../base-types/user-reposito
 import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
+export interface IUserServiceAdapter {
+    getUsers: (collectionSearchCommand: ICollectionSearchCommand) => Promise<IUserCommand[]>;
+    getUserById: (id: string) => Promise<ServiceResult<IUserCommand>>;
+    signInUser: (signInCommand: IAuthUserCommand) => Promise<ServiceResult<IUserCommand>>;
+    signUpUser: (createUserCommand: ICreateUserCommand) => Promise<ServiceResult<IUserCommand>>;
+    createUser: (createUserCommand: ICreateUserCommand) => Promise<ServiceResult<IUserCommand>>;
+    updateUser: (userCommand: IUserCommand) => Promise<ServiceResult<IUserCommand>>;
+    softRemoveUser: (id: string) => Promise<ServiceResult>;
+    removeUser: (id: string) => Promise<ServiceResult>;
+}
+
+export const UserServiceAdapterName = Symbol('IUserServiceAdapter');
+
 @Injectable()
-export class UserServiceAdapter {
+export class UserServiceAdapter implements IUserServiceAdapter {
     constructor(
         @Inject(UserRepositoryName) private readonly _userRepository: IUserRepository,
         @Inject(UserDbMapperName) private readonly _userMapper: IUserDbMapper,

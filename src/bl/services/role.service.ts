@@ -1,14 +1,14 @@
 import { CreateRoleDto } from '../../api/dto/create-role.dto';
-import { Injectable } from '@nestjs/common';
+import { IRoleServiceAdapter, RoleServiceAdapterName } from '../../db/adapter/role-service.adapter';
+import { Inject, Injectable } from '@nestjs/common';
 import { RoleDto } from '../../api/dto/role.dto';
 import { RoleManageDto } from '../../api/dto/role-manage.dto';
 import { RoleMapper } from '../mappers/role.mapper';
-import { RoleServiceAdapter } from '../../db/adapter/role-service.adapter';
 import { Utils } from '../utils';
 
 @Injectable()
 export class RoleService {
-    constructor(private readonly _roleServiceAdapter: RoleServiceAdapter) {}
+    constructor(@Inject(RoleServiceAdapterName) private readonly _roleServiceAdapter: IRoleServiceAdapter) {}
 
     async getRoles(limit?: string, offset?: string): Promise<RoleDto[]> {
         const roles = await this._roleServiceAdapter.getRoles(Utils.getCollectionSearchParameters(limit, offset));

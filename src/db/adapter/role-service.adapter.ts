@@ -6,8 +6,21 @@ import { IRoleRepository, RoleRepositoryName } from '../base-types/role-reposito
 import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
+export interface IRoleServiceAdapter {
+    getRoles: (collectionSearchCommand: ICollectionSearchCommand) => Promise<IRoleCommand[]>;
+    getRoleById: (id: string) => Promise<ServiceResult<IRoleCommand>>;
+    createRole: (createRole: ICreateRoleCommand) => Promise<IRoleCommand>;
+    updateRole: (role: IRoleCommand) => Promise<ServiceResult<IRoleCommand>>;
+    grantRole: (roleId: string, userId: string) => Promise<ServiceResult>;
+    revokeRole: (roleId: string, userId: string) => Promise<ServiceResult>;
+    softRemoveRole: (id: string) => Promise<ServiceResult>;
+    removeRole: (id: string) => Promise<ServiceResult>;
+}
+
+export const RoleServiceAdapterName = Symbol('IRoleServiceAdapter');
+
 @Injectable()
-export class RoleServiceAdapter {
+export class RoleServiceAdapter implements IRoleServiceAdapter {
     constructor(
         @Inject(RoleRepositoryName) private readonly _roleRepository: IRoleRepository,
         @Inject(RoleDbMapperName) private readonly _roleMapper: IRoleDbMapper,
