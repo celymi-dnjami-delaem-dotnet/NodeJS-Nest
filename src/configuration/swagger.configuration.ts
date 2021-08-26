@@ -19,6 +19,8 @@ export default function registerSwagger(app: INestApplication): void {
         .addTag(ControllerTags.Products)
         .addTag(ControllerTags.Users)
         .addTag(ControllerTags.HealthCheck)
+        .addTag(ControllerTags.Roles)
+        .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
         .build();
 
     const document = SwaggerModule.createDocument(app, config);

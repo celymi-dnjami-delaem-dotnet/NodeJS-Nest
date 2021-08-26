@@ -1,5 +1,6 @@
 import {
     ApiBadRequestResponse,
+    ApiBearerAuth,
     ApiCreatedResponse,
     ApiNoContentResponse,
     ApiNotFoundResponse,
@@ -36,6 +37,7 @@ export class RoleController {
 
     @UseGuards(CollectionSearchGuard, new RolesGuard([DefaultRoles.Admin]))
     @Get()
+    @ApiBearerAuth()
     @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
     @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
     @ApiOkResponse({ type: [RoleDto], description: 'OK' })
@@ -45,6 +47,7 @@ export class RoleController {
 
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Get('id/:id')
+    @ApiBearerAuth()
     @ApiOkResponse({ type: RoleDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async getRoleById(@Query('id') id: string): Promise<RoleDto> {
@@ -54,6 +57,7 @@ export class RoleController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @ApiBearerAuth()
     @ApiCreatedResponse({ type: RoleDto, description: 'Created' })
     @ApiBadRequestResponse({ description: 'Bad Request' })
     async createRole(@Body() createRole: CreateRoleDto): Promise<RoleDto> {
@@ -62,6 +66,7 @@ export class RoleController {
 
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Put()
+    @ApiBearerAuth()
     @ApiOkResponse({ type: RoleDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async updateRole(@Body() role: RoleDto): Promise<RoleDto> {
@@ -71,6 +76,7 @@ export class RoleController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveRole(@Param('id') id: string): Promise<void> {
@@ -80,6 +86,7 @@ export class RoleController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post('grant')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async grantRole(@Body() roleManagement: RoleManageDto): Promise<void> {
@@ -89,6 +96,7 @@ export class RoleController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post('revoke')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async revokeRole(@Body() roleManagement: RoleManageDto): Promise<void> {
@@ -98,6 +106,7 @@ export class RoleController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async removeRole(@Param('id') id: string): Promise<void> {

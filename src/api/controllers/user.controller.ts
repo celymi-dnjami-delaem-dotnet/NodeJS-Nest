@@ -1,5 +1,6 @@
 import {
     ApiBadRequestResponse,
+    ApiBearerAuth,
     ApiCreatedResponse,
     ApiNoContentResponse,
     ApiNotFoundResponse,
@@ -33,8 +34,9 @@ import { UserService } from '../../bl/services/user.service';
 export class UserController {
     constructor(private readonly _userService: UserService) {}
 
-    @UseGuards(CollectionSearchGuard, new RolesGuard([DefaultRoles.Admin]))
+    @UseGuards(CollectionSearchGuard, new RolesGuard([DefaultRoles.Admin, DefaultRoles.Buyer]))
     @Get()
+    @ApiBearerAuth()
     @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
     @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
     @ApiOkResponse({ type: [UserDto], description: 'OK' })
@@ -44,6 +46,7 @@ export class UserController {
 
     @UseGuards(new RolesGuard([DefaultRoles.Admin, DefaultRoles.Buyer]))
     @Get('id/:id')
+    @ApiBearerAuth()
     @ApiOkResponse({ type: UserDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async getUserById(@Query('id') id: string): Promise<UserDto> {
@@ -53,6 +56,7 @@ export class UserController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @ApiBearerAuth()
     @ApiCreatedResponse({ type: UserDto, description: 'Created' })
     @ApiBadRequestResponse({ description: 'Bad Request' })
     async createUser(@Body() createUser: CreateUserDto): Promise<UserDto> {
@@ -70,6 +74,7 @@ export class UserController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveUser(@Param('id') id: string): Promise<void> {
@@ -79,6 +84,7 @@ export class UserController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async removeUser(@Param('id') id: string): Promise<void> {

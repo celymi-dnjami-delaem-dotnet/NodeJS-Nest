@@ -1,4 +1,11 @@
-import { ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 import {
     Body,
@@ -53,6 +60,7 @@ export class CategoryController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @ApiBearerAuth()
     @ApiCreatedResponse({ type: CategoryDto, description: 'Created' })
     async createCategory(@Body() category: CreateCategoryDto): Promise<CategoryDto> {
         return await this._categoryService.createCategory(category);
@@ -60,6 +68,7 @@ export class CategoryController {
 
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Put()
+    @ApiBearerAuth()
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async updateCategory(@Body() category: CategoryDto): Promise<CategoryDto> {
@@ -69,6 +78,7 @@ export class CategoryController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveCategory(@Param('id') id: string): Promise<void> {
@@ -78,6 +88,7 @@ export class CategoryController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async removeCategory(@Param('id') id: string): Promise<void> {

@@ -1,5 +1,6 @@
 import {
     ApiBadRequestResponse,
+    ApiBearerAuth,
     ApiCreatedResponse,
     ApiNoContentResponse,
     ApiNotFoundResponse,
@@ -64,6 +65,7 @@ export class ProductController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @ApiBearerAuth()
     @ApiCreatedResponse({ type: ProductDto, description: 'Created' })
     @ApiBadRequestResponse({ description: 'Bad Request' })
     async createProduct(@Body() productDto: CreateProductDto): Promise<ProductDto> {
@@ -72,6 +74,7 @@ export class ProductController {
 
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Put()
+    @ApiBearerAuth()
     @ApiOkResponse({ type: ProductDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async updateCategory(@Body() category: ProductDto): Promise<ProductDto> {
@@ -81,6 +84,7 @@ export class ProductController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveCategory(@Param('id') id: string): Promise<void> {
@@ -90,6 +94,7 @@ export class ProductController {
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async removeCategory(@Param('id') id: string): Promise<void> {
