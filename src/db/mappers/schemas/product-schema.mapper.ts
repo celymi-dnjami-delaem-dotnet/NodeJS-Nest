@@ -3,17 +3,11 @@ import { ICreateProductCommand } from '../../../bl/commands/create-product.comma
 import { ICreateProductSchema } from '../../mongo/types/create-product.type';
 import { IProductCommand } from '../../../bl/commands/product.command';
 import { IProductDbMapper } from '../types/product-mapper.type';
-import { ISearchParamsProduct } from 'src/db/base-types/search-params-product.type';
-import { ISearchParamsProductCommand } from 'src/bl/commands/search-params-product.command';
 import { Injectable } from '@nestjs/common';
 import { Product } from '../../mongo/schemas/product.schema';
 
 @Injectable()
 export class ProductSchemaMapper extends BaseProductMapper implements IProductDbMapper {
-    mapSearchParamsToDbFromCommand(searchParams: ISearchParamsProductCommand): ISearchParamsProduct {
-        return super.mapSearchParamsToDbFromCommand(searchParams);
-    }
-
     mapCreateToDbFromCommand(createProductCommand: ICreateProductCommand): ICreateProductSchema {
         const baseProduct = super.mapCreateToDbFromCommand(createProductCommand);
 
