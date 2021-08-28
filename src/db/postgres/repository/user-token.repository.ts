@@ -27,7 +27,9 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
         const currentDate = new Date();
 
         await this._userTokenRepository.delete({
-            updatedAt: LessThan(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDay())),
+            updatedAt: LessThan(
+                new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getUTCDate()),
+            ),
         });
 
         return new ServiceResult(ServiceResultType.Success);

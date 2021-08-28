@@ -29,7 +29,7 @@ export class UserTokenMongooseRepository implements IUserTokenRepository {
         await this._userTokenModel
             .deleteMany({
                 updatedAt: {
-                    $lt: new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDay()),
+                    $lt: new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate()),
                 },
             })
             .exec();
