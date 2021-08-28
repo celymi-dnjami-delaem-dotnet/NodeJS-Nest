@@ -1,4 +1,6 @@
+import { ISetUserTokensCommand } from '../commands/set-user-tokens.command';
 import { IUserServiceAdapter, UserServiceAdapterName } from '../../db/adapter/user-service.adapter';
+import { IUserTokenServiceAdapter, UserTokenServiceAdapterName } from '../../db/adapter/user-token-service.adapter';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtUtils } from '../utils/jwt.utils';
@@ -13,6 +15,7 @@ import { Utils } from '../utils';
 export class AuthService {
     constructor(
         @Inject(UserServiceAdapterName) private readonly _userServiceAdapter: IUserServiceAdapter,
+        @Inject(UserTokenServiceAdapterName) private readonly _userTokenServiceAdapter: IUserTokenServiceAdapter,
         private readonly _jwtService: JwtService,
     ) {}
 
@@ -26,8 +29,15 @@ export class AuthService {
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
+        const accessToken = this._jwtService.sign(JwtUtils.createJwtPayload(data));
+        const refreshToken = JwtUtils.createRefreshToken();
+
+        const tokenPairCommand: ISetUserTokensCommand = { accessToken, refreshToken, user: data };
+        await this._userTokenServiceAdapter.setUserTokensPair(tokenPairCommand);
+
         return {
-            accessToken: this._jwtService.sign(JwtUtils.createJwtPayload(data)),
+            accessToken,
+            refreshToken,
         };
     }
 

@@ -2,6 +2,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 import { IUser } from '../types/user.type';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Role } from './role.schema';
+import { UserToken } from './user-token.schema';
 
 export type UserDocument = User & Document;
 
@@ -14,6 +15,9 @@ export class User implements IUser {
 
     @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Role' }], default: [] })
     roles?: Role[];
+
+    @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'UserToken' }], default: [] })
+    tokens?: UserToken[];
 
     @Prop({ required: true })
     firstName: string;

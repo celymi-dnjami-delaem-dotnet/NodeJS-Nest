@@ -1,6 +1,7 @@
-import { Column, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { IUser } from '../types/user.type';
 import { Role } from './role.entity';
+import { UserToken } from './user-token.entity';
 
 @Entity()
 export class User implements IUser {
@@ -10,6 +11,9 @@ export class User implements IUser {
     @ManyToMany(() => Role, (role) => role.users)
     @JoinTable()
     roles?: Role[];
+
+    @OneToMany(() => UserToken, (x) => x.user)
+    tokens?: UserToken;
 
     @Index()
     @Column({ nullable: false, unique: true })
