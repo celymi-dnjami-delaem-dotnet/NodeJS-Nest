@@ -24,8 +24,16 @@ export class UserTokenMongooseRepository implements IUserTokenRepository {
     }
 
     async removeUserTokensPair(): Promise<ServiceResult> {
-        //const removeResult = await this._userTokenModel.remove({ updatedAt: { $eq } });
+        const currentDate = new Date();
 
-        return Promise.resolve(undefined);
+        await this._userTokenModel
+            .deleteMany({
+                updatedAt: {
+                    $lt: new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDay()),
+                },
+            })
+            .exec();
+
+        return new ServiceResult(ServiceResultType.Success);
     }
 }
