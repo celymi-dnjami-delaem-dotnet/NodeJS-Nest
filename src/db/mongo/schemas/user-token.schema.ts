@@ -10,7 +10,7 @@ export class UserToken implements IUserToken {
     _id: string;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
-    user: User;
+    user?: User;
 
     @Prop({ required: true })
     accessToken: string;

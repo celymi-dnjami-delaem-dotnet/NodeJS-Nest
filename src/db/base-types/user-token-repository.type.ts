@@ -1,8 +1,11 @@
-import { ISetUserTokensDb } from './set-user-tokens.type';
+import { IBaseUserToken } from './base-user-token.type';
+import { ISetUserTokenDb } from './set-user-tokens.type';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
 export interface IUserTokenRepository {
-    setUserTokensPair: (tokenPair: ISetUserTokensDb) => Promise<ServiceResult>;
+    userTokensPairExist: (accessToken: string, refreshToken: string) => Promise<ServiceResult<IBaseUserToken>>;
+    createUserTokensPair: (tokenPair: ISetUserTokenDb) => Promise<ServiceResult>;
+    updateUserTokensPair: (tokenPair: IBaseUserToken) => Promise<ServiceResult>;
     removeUserTokensPair: () => Promise<ServiceResult>;
 }
 

@@ -1,4 +1,3 @@
-import { ISetUserTokensCommand } from '../commands/set-user-tokens.command';
 import { IUserServiceAdapter, UserServiceAdapterName } from '../../db/adapter/user-service.adapter';
 import { IUserTokenServiceAdapter, UserTokenServiceAdapterName } from '../../db/adapter/user-token-service.adapter';
 import { Inject, Injectable } from '@nestjs/common';
@@ -19,6 +18,28 @@ export class AuthService {
         private readonly _jwtService: JwtService,
     ) {}
 
+    async updateTokens(userId: string, accessToken: string, refreshToken: string): Promise<TokenResultDto> {
+        const foundUserToken = await this._userTokenServiceAdapter.userTokenExists(accessToken, refreshToken);
+        Utils.validateServiceResultType(foundUserToken.serviceResultType, foundUserToken.exceptionMessage);
+
+        const foundUser = await this._userServiceAdapter.getUserById(userId);
+        Utils.validateServiceResultType(foundUser.serviceResultType, foundUser.exceptionMessage);
+
+        const newAccessToken = this._jwtService.sign(JwtUtils.createJwtPayload(foundUser.data));
+        const newRefreshToken = JwtUtils.createRefreshToken();
+
+        await this._userTokenServiceAdapter.updateUserToken({
+            id: foundUserToken.data.id,
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+        });
+
+        return {
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+        };
+    }
+
     async signIn(signInUser: SignInUserDto): Promise<TokenResultDto> {
         const signInUserCommand = UserMapper.mapSignInToCommandFromDto(signInUser);
         signInUserCommand.password = UserUtils.hashPassword(signInUserCommand.password);
@@ -32,8 +53,7 @@ export class AuthService {
         const accessToken = this._jwtService.sign(JwtUtils.createJwtPayload(data));
         const refreshToken = JwtUtils.createRefreshToken();
 
-        const tokenPairCommand: ISetUserTokensCommand = { accessToken, refreshToken, user: data };
-        await this._userTokenServiceAdapter.setUserTokensPair(tokenPairCommand);
+        await this._userTokenServiceAdapter.createUserToken({ accessToken, refreshToken, user: data });
 
         return {
             accessToken,

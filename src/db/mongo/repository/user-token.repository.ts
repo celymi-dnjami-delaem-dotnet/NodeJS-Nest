@@ -1,4 +1,4 @@
-import { ISetUserTokensDb } from '../../base-types/set-user-tokens.type';
+import { ISetUserTokenDb } from '../../base-types/set-user-tokens.type';
 import { IUserTokenRepository } from '../../base-types/user-token-repository.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
@@ -12,7 +12,37 @@ import { UserToken, UserTokenDocument } from '../schemas/user-token.schema';
 export class UserTokenMongooseRepository implements IUserTokenRepository {
     constructor(@InjectModel(UserToken.name) private readonly _userTokenModel: Model<UserTokenDocument>) {}
 
-    async setUserTokensPair({ user, refreshToken, accessToken }: ISetUserTokensDb): Promise<ServiceResult> {
+    async userTokensPairExist(accessToken: string, refreshToken: string): Promise<ServiceResult<UserToken>> {
+        const foundResult = await this._userTokenModel.findOne({ accessToken, refreshToken }).exec();
+        if (!foundResult) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success, foundResult);
+    }
+
+    async updateUserTokensPair({ _id, accessToken, refreshToken }: UserToken): Promise<ServiceResult> {
+        const updatedResult = await this._userTokenModel
+            .updateOne(
+                { _id },
+                {
+                    $set: {
+                        refreshToken,
+                        accessToken,
+                        updatedAt: new Date(),
+                    },
+                },
+            )
+            .exec();
+
+        if (!updatedResult.nModified) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
+    async createUserTokensPair({ user, refreshToken, accessToken }: ISetUserTokenDb): Promise<ServiceResult> {
         const userTokenSchema = new this._userTokenModel();
         userTokenSchema.accessToken = accessToken;
         userTokenSchema.refreshToken = refreshToken;

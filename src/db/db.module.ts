@@ -47,7 +47,7 @@ import { UserTokenEntityMapper } from './mappers/entities/user-token-entity.mapp
 import { UserTokenMongooseRepository } from './mongo/repository/user-token.repository';
 import { UserTokenRepositoryName } from './base-types/user-token-repository.type';
 import { UserTokenSchemaMapper } from './mappers/schemas/user-token-schema.mapper';
-import { UserTokenServiceAdapterName } from './adapter/user-token-service.adapter';
+import { UserTokenServiceAdapter, UserTokenServiceAdapterName } from './adapter/user-token-service.adapter';
 import { UserTokenTypeOrmRepository } from './postgres/repository/user-token.repository';
 import { UserTypeOrmRepository } from './postgres/repository/user.repository';
 import { set } from 'mongoose';
@@ -75,7 +75,7 @@ export class DbModule {
             } as Provider,
             {
                 provide: UserTokenServiceAdapterName,
-                useClass: UserServiceAdapter,
+                useClass: UserTokenServiceAdapter,
             } as Provider,
         ];
 

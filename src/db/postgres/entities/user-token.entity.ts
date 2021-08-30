@@ -9,7 +9,7 @@ export class UserToken implements IUserToken {
 
     @Index()
     @ManyToOne(() => User, (x) => x.tokens)
-    user: User;
+    user?: User;
 
     @Index()
     @Column({ nullable: false })

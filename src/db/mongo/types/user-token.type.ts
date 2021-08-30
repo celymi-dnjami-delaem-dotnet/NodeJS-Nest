@@ -3,5 +3,5 @@ import { IUser } from './user.type';
 
 export interface IUserToken extends IBaseUserToken {
     _id: string;
-    user: IUser;
+    user?: IUser;
 }

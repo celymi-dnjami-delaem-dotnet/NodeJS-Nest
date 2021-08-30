@@ -1,6 +1,6 @@
 import { IBaseUser } from './base-user.type';
 
-export interface ISetUserTokensDb {
+export interface ISetUserTokenDb {
     user?: IBaseUser;
     accessToken: string;
     refreshToken: string;

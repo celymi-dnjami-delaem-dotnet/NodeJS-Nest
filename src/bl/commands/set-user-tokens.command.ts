@@ -1,6 +1,6 @@
 import { IUserCommand } from './user.command';
 
-export interface ISetUserTokensCommand {
+export interface ISetUserTokenCommand {
     user: IUserCommand;
     accessToken: string;
     refreshToken: string;

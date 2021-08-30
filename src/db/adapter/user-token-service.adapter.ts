@@ -1,12 +1,15 @@
-import { ISetUserTokensCommand } from '../../bl/commands/set-user-tokens.command';
+import { ISetUserTokenCommand } from '../../bl/commands/set-user-tokens.command';
+import { IUserTokenCommand } from '../../bl/commands/user-tokens-pair.command';
 import { IUserTokenDbMapper, UserTokenDbMapperName } from '../mappers/types/user-token-mapper.type';
 import { IUserTokenRepository, UserTokenRepositoryName } from '../base-types/user-token-repository.type';
 import { Inject } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
 export interface IUserTokenServiceAdapter {
-    setUserTokensPair: (tokenPairCommand: ISetUserTokensCommand) => Promise<ServiceResult>;
-    removeUserTokensPair: () => Promise<ServiceResult>;
+    userTokenExists: (accessToken: string, refreshToken: string) => Promise<ServiceResult<IUserTokenCommand>>;
+    updateUserToken: (tokenPairCommand: IUserTokenCommand) => Promise<ServiceResult>;
+    createUserToken: (tokenPairCommand: ISetUserTokenCommand) => Promise<ServiceResult>;
+    removeUserToken: () => Promise<ServiceResult>;
 }
 
 export const UserTokenServiceAdapterName = Symbol('IUserTokenServiceAdapter');
@@ -17,13 +20,32 @@ export class UserTokenServiceAdapter implements IUserTokenServiceAdapter {
         @Inject(UserTokenDbMapperName) private readonly _userTokenMapper: IUserTokenDbMapper,
     ) {}
 
-    async setUserTokensPair(tokenPairCommand: ISetUserTokensCommand): Promise<ServiceResult> {
-        const mappedUserTokenPair = this._userTokenMapper.mapSetPairToDbFromCommand(tokenPairCommand);
+    async userTokenExists(accessToken: string, refreshToken: string): Promise<ServiceResult<IUserTokenCommand>> {
+        const { serviceResultType, exceptionMessage, data } = await this._userTokenRepository.userTokensPairExist(
+            accessToken,
+            refreshToken,
+        );
 
-        return this._userTokenRepository.setUserTokensPair(mappedUserTokenPair);
+        return new ServiceResult<IUserTokenCommand>(
+            serviceResultType,
+            data && this._userTokenMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 
-    async removeUserTokensPair(): Promise<ServiceResult> {
+    async createUserToken(tokenPairCommand: ISetUserTokenCommand): Promise<ServiceResult> {
+        const mappedUserTokenPair = this._userTokenMapper.mapSetToDbFromCommand(tokenPairCommand);
+
+        return this._userTokenRepository.createUserTokensPair(mappedUserTokenPair);
+    }
+
+    async updateUserToken(tokenPairCommand: IUserTokenCommand): Promise<ServiceResult> {
+        const mappedUserTokenPair = this._userTokenMapper.mapToDbFromCommand(tokenPairCommand);
+
+        return this._userTokenRepository.updateUserTokensPair(mappedUserTokenPair);
+    }
+
+    async removeUserToken(): Promise<ServiceResult> {
         return this._userTokenRepository.removeUserTokensPair();
     }
 }

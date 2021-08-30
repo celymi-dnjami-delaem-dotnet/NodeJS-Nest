@@ -1,4 +1,5 @@
-import { ISetUserTokensDb } from '../../base-types/set-user-tokens.type';
+import { IBaseUserToken } from '../../base-types/base-user-token.type';
+import { ISetUserTokenDb } from '../../base-types/set-user-tokens.type';
 import { IUserTokenRepository } from '../../base-types/user-token-repository.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
@@ -12,7 +13,20 @@ import { UserToken } from '../entities/user-token.entity';
 export class UserTokenTypeOrmRepository implements IUserTokenRepository {
     constructor(@InjectRepository(UserToken) private readonly _userTokenRepository: Repository<UserToken>) {}
 
-    async setUserTokensPair({ refreshToken, accessToken, user }: ISetUserTokensDb): Promise<ServiceResult> {
+    async userTokensPairExist(accessToken: string, refreshToken: string): Promise<ServiceResult<IBaseUserToken>> {
+        const foundResult = await this._userTokenRepository.findOne({ accessToken, refreshToken });
+        if (!foundResult) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success, foundResult);
+    }
+
+    async updateUserTokensPair({}: UserToken): Promise<ServiceResult> {
+        return new ServiceResult<void>(ServiceResultType.Success);
+    }
+
+    async createUserTokensPair({ refreshToken, accessToken, user }: ISetUserTokenDb): Promise<ServiceResult> {
         const userTokenEntity = new UserToken();
         userTokenEntity.accessToken = accessToken;
         userTokenEntity.refreshToken = refreshToken;
