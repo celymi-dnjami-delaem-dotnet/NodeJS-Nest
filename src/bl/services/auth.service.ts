@@ -3,6 +3,7 @@ import { IUserTokenServiceAdapter, UserTokenServiceAdapterName } from '../../db/
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtUtils } from '../utils/jwt.utils';
+import { SettingsService } from '../../settings/settings.service';
 import { SignInUserDto } from '../../api/dto/sign-in-user.dto';
 import { SignUpUserDto } from '../../api/dto/sign-up-user.dto';
 import { TokenResultDto } from '../../api/dto/token-result.dto';
@@ -16,6 +17,7 @@ export class AuthService {
         @Inject(UserServiceAdapterName) private readonly _userServiceAdapter: IUserServiceAdapter,
         @Inject(UserTokenServiceAdapterName) private readonly _userTokenServiceAdapter: IUserTokenServiceAdapter,
         private readonly _jwtService: JwtService,
+        private readonly _settingsService: SettingsService,
     ) {}
 
     async updateTokens(userId: string, accessToken: string, refreshToken: string): Promise<TokenResultDto> {
@@ -26,13 +28,17 @@ export class AuthService {
         Utils.validateServiceResultType(foundUser.serviceResultType, foundUser.exceptionMessage);
 
         const newAccessToken = this._jwtService.sign(JwtUtils.createJwtPayload(foundUser.data));
-        const newRefreshToken = JwtUtils.createRefreshToken();
+        let newRefreshToken: string;
 
-        await this._userTokenServiceAdapter.updateUserToken({
-            id: foundUserToken.data.id,
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
-        });
+        if (this._settingsService.refreshTokensEnabled) {
+            newRefreshToken = JwtUtils.createRefreshToken();
+
+            await this._userTokenServiceAdapter.updateUserToken({
+                id: foundUserToken.data.id,
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+            });
+        }
 
         return {
             accessToken: newAccessToken,
@@ -51,9 +57,13 @@ export class AuthService {
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
         const accessToken = this._jwtService.sign(JwtUtils.createJwtPayload(data));
-        const refreshToken = JwtUtils.createRefreshToken();
+        let refreshToken: string;
 
-        await this._userTokenServiceAdapter.createUserToken({ accessToken, refreshToken, user: data });
+        if (this._settingsService.refreshTokensEnabled) {
+            refreshToken = JwtUtils.createRefreshToken();
+
+            await this._userTokenServiceAdapter.createUserToken({ accessToken, refreshToken, user: data });
+        }
 
         return {
             accessToken,

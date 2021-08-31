@@ -12,7 +12,7 @@ import { UserToken, UserTokenDocument } from '../schemas/user-token.schema';
 export class UserTokenMongooseRepository implements IUserTokenRepository {
     constructor(@InjectModel(UserToken.name) private readonly _userTokenModel: Model<UserTokenDocument>) {}
 
-    async userTokensPairExist(accessToken: string, refreshToken: string): Promise<ServiceResult<UserToken>> {
+    async userTokenExist(accessToken: string, refreshToken: string): Promise<ServiceResult<UserToken>> {
         const foundResult = await this._userTokenModel.findOne({ accessToken, refreshToken }).exec();
         if (!foundResult) {
             return new ServiceResult(ServiceResultType.NotFound);
@@ -21,7 +21,7 @@ export class UserTokenMongooseRepository implements IUserTokenRepository {
         return new ServiceResult(ServiceResultType.Success, foundResult);
     }
 
-    async updateUserTokensPair({ _id, accessToken, refreshToken }: UserToken): Promise<ServiceResult> {
+    async updateUserToken({ _id, accessToken, refreshToken }: UserToken): Promise<ServiceResult> {
         const updatedResult = await this._userTokenModel
             .updateOne(
                 { _id },
@@ -42,7 +42,7 @@ export class UserTokenMongooseRepository implements IUserTokenRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
-    async createUserTokensPair({ user, refreshToken, accessToken }: ISetUserTokenDb): Promise<ServiceResult> {
+    async createUserToken({ user, refreshToken, accessToken }: ISetUserTokenDb): Promise<ServiceResult> {
         const userTokenSchema = new this._userTokenModel();
         userTokenSchema.accessToken = accessToken;
         userTokenSchema.refreshToken = refreshToken;
@@ -53,7 +53,7 @@ export class UserTokenMongooseRepository implements IUserTokenRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
-    async removeUserTokensPair(): Promise<ServiceResult> {
+    async removeUserToken(): Promise<ServiceResult> {
         const currentDate = new Date();
 
         await this._userTokenModel

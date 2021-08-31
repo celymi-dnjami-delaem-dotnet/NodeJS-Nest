@@ -13,7 +13,7 @@ import { UserToken } from '../entities/user-token.entity';
 export class UserTokenTypeOrmRepository implements IUserTokenRepository {
     constructor(@InjectRepository(UserToken) private readonly _userTokenRepository: Repository<UserToken>) {}
 
-    async userTokensPairExist(accessToken: string, refreshToken: string): Promise<ServiceResult<IBaseUserToken>> {
+    async userTokenExist(accessToken: string, refreshToken: string): Promise<ServiceResult<IBaseUserToken>> {
         const foundResult = await this._userTokenRepository.findOne({ accessToken, refreshToken });
         if (!foundResult) {
             return new ServiceResult(ServiceResultType.NotFound);
@@ -22,11 +22,16 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
         return new ServiceResult(ServiceResultType.Success, foundResult);
     }
 
-    async updateUserTokensPair({}: UserToken): Promise<ServiceResult> {
-        return new ServiceResult<void>(ServiceResultType.Success);
+    async updateUserToken({ id, accessToken, refreshToken }: UserToken): Promise<ServiceResult> {
+        const updatedResult = await this._userTokenRepository.update({ id }, { accessToken, refreshToken });
+        if (!updatedResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
     }
 
-    async createUserTokensPair({ refreshToken, accessToken, user }: ISetUserTokenDb): Promise<ServiceResult> {
+    async createUserToken({ refreshToken, accessToken, user }: ISetUserTokenDb): Promise<ServiceResult> {
         const userTokenEntity = new UserToken();
         userTokenEntity.accessToken = accessToken;
         userTokenEntity.refreshToken = refreshToken;
@@ -37,7 +42,7 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
-    async removeUserTokensPair(): Promise<ServiceResult> {
+    async removeUserToken(): Promise<ServiceResult> {
         const currentDate = new Date();
 
         await this._userTokenRepository.delete({

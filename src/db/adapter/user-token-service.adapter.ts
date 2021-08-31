@@ -21,7 +21,7 @@ export class UserTokenServiceAdapter implements IUserTokenServiceAdapter {
     ) {}
 
     async userTokenExists(accessToken: string, refreshToken: string): Promise<ServiceResult<IUserTokenCommand>> {
-        const { serviceResultType, exceptionMessage, data } = await this._userTokenRepository.userTokensPairExist(
+        const { serviceResultType, exceptionMessage, data } = await this._userTokenRepository.userTokenExist(
             accessToken,
             refreshToken,
         );
@@ -36,16 +36,16 @@ export class UserTokenServiceAdapter implements IUserTokenServiceAdapter {
     async createUserToken(tokenPairCommand: ISetUserTokenCommand): Promise<ServiceResult> {
         const mappedUserTokenPair = this._userTokenMapper.mapSetToDbFromCommand(tokenPairCommand);
 
-        return this._userTokenRepository.createUserTokensPair(mappedUserTokenPair);
+        return this._userTokenRepository.createUserToken(mappedUserTokenPair);
     }
 
     async updateUserToken(tokenPairCommand: IUserTokenCommand): Promise<ServiceResult> {
         const mappedUserTokenPair = this._userTokenMapper.mapToDbFromCommand(tokenPairCommand);
 
-        return this._userTokenRepository.updateUserTokensPair(mappedUserTokenPair);
+        return this._userTokenRepository.updateUserToken(mappedUserTokenPair);
     }
 
     async removeUserToken(): Promise<ServiceResult> {
-        return this._userTokenRepository.removeUserTokensPair();
+        return this._userTokenRepository.removeUserToken();
     }
 }

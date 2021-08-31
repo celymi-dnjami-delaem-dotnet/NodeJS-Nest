@@ -17,6 +17,7 @@ export class SettingsService {
     private readonly _jwtExpirationTime: string;
     private readonly _jwtAudience: string;
     private readonly _jwtIssuer: string;
+    private readonly _refreshTokensEnabled: string;
 
     constructor(private conf: ConfigService) {
         this._appPort = conf.get<number>('APPLICATION_PORT', 3000);
@@ -30,6 +31,7 @@ export class SettingsService {
         this._jwtAudience = conf.get<string>('JWT_AUDIENCE');
         this._jwtIssuer = conf.get<string>('JWT_ISSUER');
         this._jwtExpirationTime = conf.get<string>('JWT_EXPIRATION_TIME');
+        this._refreshTokensEnabled = conf.get<string>('REFRESH_TOKENS_ENABLED');
     }
 
     get appPort(): number {
@@ -74,6 +76,10 @@ export class SettingsService {
 
     get jwtExpirationTime(): string {
         return this._jwtExpirationTime;
+    }
+
+    get refreshTokensEnabled(): boolean {
+        return this._refreshTokensEnabled === 'true';
     }
 
     getMongooseConnectionString(): string {
