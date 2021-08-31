@@ -14,6 +14,8 @@ import { UserFriendlyException } from '../../bl/exceptions/user-friendly.excepti
 @ApiTags(ControllerTags.Auth)
 @Controller('api/auth')
 export class AuthController {
+    private static readonly refreshTokenHeaderName: string = 'x-refresh-token';
+
     constructor(private readonly _authService: AuthService, private readonly _settingsService: SettingsService) {}
 
     @Post('sign-in')
@@ -32,12 +34,12 @@ export class AuthController {
 
     @UseGuards(AuthGuard('jwt'))
     @Get('renew-token')
-    @ApiHeader({ name: 'x-refresh-token' })
+    @ApiHeader({ name: AuthController.refreshTokenHeaderName })
     @ApiOkResponse({ type: TokenResultDto, description: 'OK' })
     async updateToken(@Req() req: Request): Promise<TokenResultDto> {
         const userId: string = (req as any).user && (req as any).user.userId;
         const accessToken: string = req.headers.authorization as string;
-        const refreshToken: string = req.headers['x-refresh-token'] as string;
+        const refreshToken: string = req.headers[AuthController.refreshTokenHeaderName] as string;
 
         if (!userId || !accessToken || (this._settingsService.refreshTokensEnabled && !refreshToken)) {
             throw new UserFriendlyException(ServiceResultType.InvalidData);
