@@ -1,4 +1,4 @@
-import { IBaseDb } from '../../base-types/base-db.type';
+import { IBaseProduct } from '../../base-types/base-product.type';
 import { ICreateProduct } from '../../base-types/create-product.type';
 import { ICreateProductCommand } from '../../../bl/commands/create-product.command';
 import { IProductCommand } from '../../../bl/commands/product.command';
@@ -7,8 +7,8 @@ import { ISearchParamsProductCommand } from '../../../bl/commands/search-params-
 
 export interface IProductDbMapper {
     mapSearchParamsToDbFromCommand: (searchParams: ISearchParamsProductCommand) => ISearchParamsProduct;
-    mapToCommandFromDb: (productDb: IBaseDb) => IProductCommand;
-    mapToDbFromCommand: (productCommand: IProductCommand) => IBaseDb;
+    mapToCommandFromDb: (productDb: IBaseProduct) => IProductCommand;
+    mapToDbFromCommand: (productCommand: IProductCommand) => IBaseProduct;
     mapCreateToDbFromCommand: (createProductCommand: ICreateProductCommand) => ICreateProduct;
 }
 

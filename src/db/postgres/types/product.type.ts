@@ -1,8 +1,5 @@
-import { IBaseDb } from '../../base-types/base-db.type';
+import { IBaseProduct } from '../../base-types/base-product.type';
 
-export interface IProduct extends IBaseDb {
+export interface IProduct extends IBaseProduct {
     id: string;
-    displayName: string;
-    totalRating: number;
-    price: number;
 }

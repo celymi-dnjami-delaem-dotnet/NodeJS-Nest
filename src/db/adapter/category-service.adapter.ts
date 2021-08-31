@@ -1,20 +1,35 @@
 import { CategoryDbMapperName, ICategoryDbMapper } from '../mappers/types/category-mapper.type';
 import { CategoryRepositoryName, ICategoryRepository } from '../base-types/category-repository.type';
 import { ICategoryCommand } from '../../bl/commands/category.command';
+import { ICollectionSearchCommand } from '../../bl/commands/collection-search.command';
 import { ICreateCategoryCommand } from '../../bl/commands/create-category.command';
 import { ISearchParamsCategoryCommand } from '../../bl/commands/search-params-category.command';
 import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
+export interface ICategoryServiceAdapter {
+    getCategories: (collectionSearchCommand: ICollectionSearchCommand) => Promise<ICategoryCommand[]>;
+    getCategoryById: (
+        id: string,
+        searchParams: ISearchParamsCategoryCommand,
+    ) => Promise<ServiceResult<ICategoryCommand>>;
+    createCategory: (category: ICreateCategoryCommand) => Promise<ICategoryCommand>;
+    updateCategory: (category: ICategoryCommand) => Promise<ServiceResult<ICategoryCommand>>;
+    softRemoveCategory: (id: string) => Promise<ServiceResult>;
+    removeCategory: (id: string) => Promise<ServiceResult>;
+}
+
+export const CategoryServiceAdapterName = Symbol('ICategoryServiceAdapter');
+
 @Injectable()
-export class CategoryServiceAdapter {
+export class CategoryServiceAdapter implements ICategoryServiceAdapter {
     constructor(
         @Inject(CategoryRepositoryName) private readonly _categoryRepository: ICategoryRepository,
         @Inject(CategoryDbMapperName) private readonly _categoryMapper: ICategoryDbMapper,
     ) {}
 
-    async getCategories(): Promise<ICategoryCommand[]> {
-        const categories = await this._categoryRepository.getCategories();
+    async getCategories({ limit, offset }: ICollectionSearchCommand): Promise<ICategoryCommand[]> {
+        const categories = await this._categoryRepository.getCategories(limit, offset);
 
         return categories.map((x) => this._categoryMapper.mapToCommandFromDb(x));
     }

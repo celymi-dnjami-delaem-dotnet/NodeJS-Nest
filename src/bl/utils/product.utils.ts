@@ -1,11 +1,6 @@
 import { ISearchParamsProductCommand } from '../commands/search-params-product.command';
-import {
-    SortDirection,
-    defaultProductsLimit,
-    defaultProductsOffset,
-    defaultProductsSortDirection,
-    defaultProductsSortField,
-} from '../constants';
+import { SortDirection, defaultProductsSortDirection, defaultProductsSortField } from '../constants';
+import { Utils } from './index';
 
 export class ProductUtils {
     static getSearchParams(
@@ -34,14 +29,13 @@ export class ProductUtils {
         }
 
         return {
+            ...Utils.getCollectionSearchParameters(limit, offset),
             displayName,
             minPrice,
             maxPrice,
             minRating: minRating && Number(minRating),
             sortField,
             sortDirection,
-            limit: Number(limit) || defaultProductsLimit,
-            offset: Number(offset) || defaultProductsOffset,
         };
     }
 }

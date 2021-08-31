@@ -1,14 +1,14 @@
 import { CreateProductDto } from '../../api/dto/create-product.dto';
-import { Injectable } from '@nestjs/common';
+import { IProductServiceAdapter, ProductServiceAdapterName } from '../../db/adapter/product-service.adapter';
+import { Inject, Injectable } from '@nestjs/common';
 import { ProductDto } from '../../api/dto/product.dto';
 import { ProductMapper } from '../mappers/product.mapper';
-import { ProductServiceAdapter } from '../../db/adapter/product-service.adapter';
 import { ProductUtils } from '../utils/product.utils';
 import { Utils } from '../utils';
 
 @Injectable()
 export class ProductService {
-    constructor(private readonly _productServiceAdapter: ProductServiceAdapter) {}
+    constructor(@Inject(ProductServiceAdapterName) private readonly _productServiceAdapter: IProductServiceAdapter) {}
 
     async getProducts(
         displayName?: string,

@@ -4,7 +4,7 @@ import { IsNotEmpty } from 'class-validator';
 import { ProductDto } from './product.dto';
 
 export class CategoryDto extends CreateCategoryDto {
-    @ApiProperty({ description: 'Category ID' })
+    @ApiProperty({ description: 'Category ID', required: true })
     @IsNotEmpty()
     id: string;
 

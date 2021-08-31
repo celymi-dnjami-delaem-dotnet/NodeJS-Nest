@@ -6,8 +6,19 @@ import { ISearchParamsProductCommand } from '../../bl/commands/search-params-pro
 import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
+export interface IProductServiceAdapter {
+    getProducts: (searchParams: ISearchParamsProductCommand) => Promise<IProductCommand[]>;
+    getProductById: (id: string) => Promise<ServiceResult<IProductCommand>>;
+    createProduct: (createProductCommand: ICreateProductCommand) => Promise<ServiceResult<IProductCommand>>;
+    updateProduct: (productCommand: IProductCommand) => Promise<ServiceResult<IProductCommand>>;
+    softRemoveProduct: (id: string) => Promise<ServiceResult>;
+    removeProduct: (id: string) => Promise<ServiceResult>;
+}
+
+export const ProductServiceAdapterName = Symbol('IProductServiceAdapter');
+
 @Injectable()
-export class ProductServiceAdapter {
+export class ProductServiceAdapter implements IProductServiceAdapter {
     constructor(
         @Inject(ProductRepositoryName) private readonly _productRepository: IProductRepository,
         @Inject(ProductDbMapperName) private readonly _productMapper: IProductDbMapper,

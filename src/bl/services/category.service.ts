@@ -1,17 +1,19 @@
 import { CategoryDto } from '../../api/dto/category.dto';
 import { CategoryMapper } from '../mappers/category.mapper';
-import { CategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
+import { CategoryServiceAdapterName, ICategoryServiceAdapter } from '../../db/adapter/category-service.adapter';
 import { CategoryUtils } from '../utils/category.utils';
 import { CreateCategoryDto } from '../../api/dto/create-category.dto';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Utils } from '../utils';
 
 @Injectable()
 export class CategoryService {
-    constructor(private readonly _categoryAdapter: CategoryServiceAdapter) {}
+    constructor(@Inject(CategoryServiceAdapterName) private readonly _categoryAdapter: ICategoryServiceAdapter) {}
 
-    async getCategories(): Promise<CategoryDto[]> {
-        const categories = await this._categoryAdapter.getCategories();
+    async getCategories(limit?: string, offset?: string): Promise<CategoryDto[]> {
+        const categories = await this._categoryAdapter.getCategories(
+            Utils.getCollectionSearchParameters(limit, offset),
+        );
 
         return categories.map(CategoryMapper.mapToDtoFromCommand);
     }

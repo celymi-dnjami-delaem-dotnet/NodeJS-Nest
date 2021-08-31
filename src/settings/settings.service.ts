@@ -13,6 +13,10 @@ export class SettingsService {
     private readonly _dbUser: string;
     private readonly _dbPassword: string;
     private readonly _dbType: string;
+    private readonly _jwtKey: string;
+    private readonly _jwtExpirationTime: string;
+    private readonly _jwtAudience: string;
+    private readonly _jwtIssuer: string;
 
     constructor(private conf: ConfigService) {
         this._appPort = conf.get<number>('APPLICATION_PORT', 3000);
@@ -22,6 +26,10 @@ export class SettingsService {
         this._dbUser = conf.get<string>('DB_USER');
         this._dbPassword = conf.get<string>('DB_PASSWORD');
         this._dbType = conf.get<string>('DB_TYPE');
+        this._jwtKey = conf.get<string>('JWT_KEY');
+        this._jwtAudience = conf.get<string>('JWT_AUDIENCE');
+        this._jwtIssuer = conf.get<string>('JWT_ISSUER');
+        this._jwtExpirationTime = conf.get<string>('JWT_EXPIRATION_TIME');
     }
 
     get appPort(): number {
@@ -50,6 +58,22 @@ export class SettingsService {
 
     get dbType(): DbOptions {
         return this._dbType as DbOptions;
+    }
+
+    get jwtSecret(): string {
+        return this._jwtKey;
+    }
+
+    get jwtAudience(): string {
+        return this._jwtAudience;
+    }
+
+    get jwtIssuer(): string {
+        return this._jwtIssuer;
+    }
+
+    get jwtExpirationTime(): string {
+        return this._jwtExpirationTime;
     }
 
     getMongooseConnectionString(): string {

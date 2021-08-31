@@ -1,6 +1,6 @@
 import { Category } from '../entities/category.entity';
 import { FindConditions, FindManyOptions, LessThan, Like, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
-import { IBaseDb } from '../../base-types/base-db.type';
+import { IBaseProduct } from '../../base-types/base-product.type';
 import { ICreateProductEntity } from '../types/create-product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
 import { ISearchParamsProduct } from '../../base-types/search-params-product.type';
@@ -9,18 +9,16 @@ import { Injectable } from '@nestjs/common';
 import { Product } from '../entities/product.entity';
 import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
+import { missingProductEntityExceptionMessage } from '../../constants';
 
 @Injectable()
 export class ProductTypeOrmRepository implements IProductRepository {
-    private static readonly missingProductExceptionMessage: string =
-        'Unable to perform this operation due to missing product by provided parameters';
-
     constructor(
         @InjectRepository(Product) private readonly productRepository: Repository<Product>,
         @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
     ) {}
 
-    getProducts(searchParams: ISearchParamsProduct): Promise<IBaseDb[]> {
+    getProducts(searchParams: ISearchParamsProduct): Promise<IBaseProduct[]> {
         let searchOptions: FindManyOptions = {
             order: { [searchParams.sortField]: searchParams.sortDirection.toUpperCase() as 'ASC' | 'DESC' | 1 | -1 },
             skip: searchParams.offset,
@@ -64,25 +62,25 @@ export class ProductTypeOrmRepository implements IProductRepository {
         return this.productRepository.find(searchOptions);
     }
 
-    async getProductById(id: string): Promise<ServiceResult<IBaseDb>> {
+    async getProductById(id: string): Promise<ServiceResult<IBaseProduct>> {
         const foundProduct = await this.findProductById(id, true);
 
         if (!foundProduct) {
-            return new ServiceResult<Category>(
+            return new ServiceResult<IBaseProduct>(
                 ServiceResultType.NotFound,
                 null,
-                ProductTypeOrmRepository.missingProductExceptionMessage,
+                missingProductEntityExceptionMessage,
             );
         }
 
-        return new ServiceResult<Category>(ServiceResultType.Success, foundProduct);
+        return new ServiceResult<IBaseProduct>(ServiceResultType.Success, foundProduct);
     }
 
-    async createProduct(product: ICreateProductEntity): Promise<ServiceResult<IBaseDb>> {
+    async createProduct(product: ICreateProductEntity): Promise<ServiceResult<IBaseProduct>> {
         const existingCategory = await this.categoryRepository.findOne(product.categoryId);
 
         if (!existingCategory) {
-            return new ServiceResult(ServiceResultType.InvalidData, null, 'No such category exists by provided id');
+            return new ServiceResult(ServiceResultType.InvalidData, null, missingProductEntityExceptionMessage);
         }
 
         const newProductEntity = new Product();
@@ -92,10 +90,10 @@ export class ProductTypeOrmRepository implements IProductRepository {
 
         const creationResult = await this.productRepository.save(newProductEntity);
 
-        return new ServiceResult<Category>(ServiceResultType.Success, creationResult);
+        return new ServiceResult<IBaseProduct>(ServiceResultType.Success, creationResult);
     }
 
-    async updateProduct(product: Product): Promise<ServiceResult<IBaseDb>> {
+    async updateProduct(product: Product): Promise<ServiceResult<IBaseProduct>> {
         const id: string = product.id;
 
         const updateResult = await this.productRepository.update(
@@ -108,27 +106,19 @@ export class ProductTypeOrmRepository implements IProductRepository {
         );
 
         if (!updateResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                ProductTypeOrmRepository.missingProductExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         const updatedEntity = await this.findProductById(id, true);
 
-        return new ServiceResult<Category>(ServiceResultType.Success, updatedEntity);
+        return new ServiceResult<IBaseProduct>(ServiceResultType.Success, updatedEntity);
     }
 
     async softRemoveProduct(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this.productRepository.update({ id }, { isDeleted: true });
 
         if (!softRemoveResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                ProductTypeOrmRepository.missingProductExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);
@@ -138,17 +128,13 @@ export class ProductTypeOrmRepository implements IProductRepository {
         const removeResult = await this.productRepository.delete(id);
 
         if (!removeResult.affected) {
-            return new ServiceResult(
-                ServiceResultType.NotFound,
-                null,
-                ProductTypeOrmRepository.missingProductExceptionMessage,
-            );
+            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         return new ServiceResult(ServiceResultType.Success);
     }
 
-    private async findProductById(id: string, includeChildren?: boolean): Promise<Category> {
+    private async findProductById(id: string, includeChildren?: boolean): Promise<IBaseProduct> {
         return this.productRepository.findOne(id, includeChildren ? { relations: ['category'] } : {});
     }
 }

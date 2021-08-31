@@ -1,6 +1,5 @@
-import { IBaseDb } from '../../base-types/base-db.type';
+import { IBaseCategory } from '../../base-types/base-category.type';
 
-export interface ICategory extends IBaseDb {
+export interface ICategory extends IBaseCategory {
     id: string;
-    displayName: string;
 }

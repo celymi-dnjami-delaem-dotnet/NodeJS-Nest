@@ -1,4 +1,12 @@
-import { ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiNoContentResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiTags,
+} from '@nestjs/swagger';
+import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 import {
     Body,
     Controller,
@@ -15,21 +23,30 @@ import {
 import { CategoryDto } from '../dto/category.dto';
 import { CategorySearchGuard } from '../guards/category-search.guard';
 import { CategoryService } from '../../bl/services/category.service';
+import { CollectionSearchGuard } from '../guards/collection-search.guard';
+import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateCategoryDto } from '../dto/create-category.dto';
+import { DefaultRoles } from '../../bl/constants';
+import { RolesGuard } from '../guards/role.guard';
 
-@ApiTags('Categories')
+@ApiTags(ControllerTags.Categories)
 @Controller('api/categories')
 export class CategoryController {
-    constructor(private readonly categoryService: CategoryService) {}
+    constructor(private readonly _categoryService: CategoryService) {}
 
+    @UseGuards(CollectionSearchGuard)
     @Get()
+    @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
+    @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
     @ApiOkResponse({ type: [CategoryDto], description: 'OK' })
-    async getCategories(): Promise<CategoryDto[]> {
-        return this.categoryService.getCategories();
+    async getCategories(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<CategoryDto[]> {
+        return this._categoryService.getCategories(limit, offset);
     }
 
     @UseGuards(CategorySearchGuard)
     @Get('id/:id')
+    @ApiImplicitQuery({ name: 'includeProducts', required: false, type: Boolean })
+    @ApiImplicitQuery({ name: 'includeTopProducts', required: false, type: Number })
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async getCategoryById(
@@ -37,36 +54,44 @@ export class CategoryController {
         @Query('includeProducts') includeProducts?: string,
         @Query('includeTopProducts') includeTopProducts?: string,
     ): Promise<CategoryDto> {
-        return await this.categoryService.getCategoryById(id, includeProducts, includeTopProducts);
+        return await this._categoryService.getCategoryById(id, includeProducts, includeTopProducts);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @ApiBearerAuth()
     @ApiCreatedResponse({ type: CategoryDto, description: 'Created' })
     async createCategory(@Body() category: CreateCategoryDto): Promise<CategoryDto> {
-        return await this.categoryService.createCategory(category);
+        return await this._categoryService.createCategory(category);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Put()
+    @ApiBearerAuth()
     @ApiOkResponse({ type: CategoryDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async updateCategory(@Body() category: CategoryDto): Promise<CategoryDto> {
-        return await this.categoryService.updateCategory(category);
+        return await this._categoryService.updateCategory(category);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('soft-remove/id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async softRemoveCategory(@Param('id') id: string): Promise<void> {
-        await this.categoryService.softRemoveCategory(id);
+        await this._categoryService.softRemoveCategory(id);
     }
 
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Delete('id/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
     async removeCategory(@Param('id') id: string): Promise<void> {
-        await this.categoryService.removeCategory(id);
+        await this._categoryService.removeCategory(id);
     }
 }

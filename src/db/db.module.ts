@@ -4,12 +4,14 @@ import { CategoryMongooseRepository } from './mongo/repository/category.reposito
 import { CategoryRepositoryName } from './base-types/category-repository.type';
 import { CategorySchema, Category as SchemaCategory } from './mongo/schemas/category.schema';
 import { CategorySchemaMapper } from './mappers/schemas/category-schema.mapper';
-import { CategoryServiceAdapter } from './adapter/category-service.adapter';
+import { CategoryServiceAdapter, CategoryServiceAdapterName } from './adapter/category-service.adapter';
 import { CategoryTypeOrmRepository } from './postgres/repository/category.repository';
 import { ConsoleLogger, DynamicModule, Module, Provider } from '@nestjs/common';
 import { DbOptions } from '../settings/settings.constants';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
+import { Role as EntityRole } from './postgres/entities/role.entity';
+import { User as EntityUser } from './postgres/entities/user.entity';
 import { LoggingModule } from '../logging/logging.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductDbMapperName } from './mappers/types/product-mapper.type';
@@ -18,18 +20,51 @@ import { ProductMongooseRepository } from './mongo/repository/product.repository
 import { ProductRepositoryName } from './base-types/product-repository.type';
 import { ProductSchema, Product as SchemaProduct } from './mongo/schemas/product.schema';
 import { ProductSchemaMapper } from './mappers/schemas/product-schema.mapper';
-import { ProductServiceAdapter } from './adapter/product-service.adapter';
+import { ProductServiceAdapter, ProductServiceAdapterName } from './adapter/product-service.adapter';
 import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
+import { RoleDbMapperName } from './mappers/types/role-mapper.type';
+import { RoleEntityMapper } from './mappers/entities/role-entity.mapper';
+import { RoleMongooseRepository } from './mongo/repository/role.repository';
+import { RoleRepositoryName } from './base-types/role-repository.type';
+import { RoleSchema, Role as SchemaRole } from './mongo/schemas/role.schema';
+import { RoleSchemaMapper } from './mappers/schemas/role-schema.mapper';
+import { RoleServiceAdapter, RoleServiceAdapterName } from './adapter/role-service.adapter';
+import { RoleTypeOrmRepository } from './postgres/repository/role.repository';
+import { User as SchemaUser, UserSchema } from './mongo/schemas/user.schema';
 import { SettingsModule } from '../settings/settings.module';
 import { SettingsService } from '../settings/settings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserDbMapperName } from './mappers/types/user-mapper.type';
+import { UserEntityMapper } from './mappers/entities/user-entity.mapper';
+import { UserMongooseRepository } from './mongo/repository/user.repository';
+import { UserRepositoryName } from './base-types/user-repository.type';
+import { UserSchemaMapper } from './mappers/schemas/user-schema.mapper';
+import { UserServiceAdapter, UserServiceAdapterName } from './adapter/user-service.adapter';
+import { UserTypeOrmRepository } from './postgres/repository/user.repository';
 import { set } from 'mongoose';
 
 @Module({})
 export class DbModule {
     static forRoot(): DynamicModule {
         const imports: any = [SettingsModule];
-        const moduleProviders: Provider[] = [CategoryServiceAdapter, ProductServiceAdapter];
+        const moduleProviders: Provider[] = [
+            {
+                provide: CategoryServiceAdapterName,
+                useClass: CategoryServiceAdapter,
+            },
+            {
+                provide: ProductServiceAdapterName,
+                useClass: ProductServiceAdapter,
+            },
+            {
+                provide: UserServiceAdapterName,
+                useClass: UserServiceAdapter,
+            },
+            {
+                provide: RoleServiceAdapterName,
+                useClass: RoleServiceAdapter,
+            },
+        ];
 
         if (process.env.DB_TYPE === DbOptions.Postgres) {
             imports.push(
@@ -47,7 +82,7 @@ export class DbModule {
                     }),
                     inject: [SettingsService],
                 }),
-                TypeOrmModule.forFeature([EntityCategory, EntityProduct]),
+                TypeOrmModule.forFeature([EntityCategory, EntityProduct, EntityUser, EntityRole]),
             );
 
             moduleProviders.push(
@@ -57,12 +92,28 @@ export class DbModule {
                     useClass: ProductTypeOrmRepository,
                 } as Provider,
                 {
+                    provide: UserRepositoryName,
+                    useClass: UserTypeOrmRepository,
+                } as Provider,
+                {
+                    provide: RoleRepositoryName,
+                    useClass: RoleTypeOrmRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategoryEntityMapper,
                 } as Provider,
                 {
                     provide: ProductDbMapperName,
                     useClass: ProductEntityMapper,
+                } as Provider,
+                {
+                    provide: UserDbMapperName,
+                    useClass: UserEntityMapper,
+                } as Provider,
+                {
+                    provide: RoleDbMapperName,
+                    useClass: RoleEntityMapper,
                 } as Provider,
             );
         } else {
@@ -91,6 +142,14 @@ export class DbModule {
                         name: SchemaProduct.name,
                         schema: ProductSchema,
                     },
+                    {
+                        name: SchemaUser.name,
+                        schema: UserSchema,
+                    },
+                    {
+                        name: SchemaRole.name,
+                        schema: RoleSchema,
+                    },
                 ]),
             );
 
@@ -101,12 +160,28 @@ export class DbModule {
                     useClass: ProductMongooseRepository,
                 } as Provider,
                 {
+                    provide: UserRepositoryName,
+                    useClass: UserMongooseRepository,
+                } as Provider,
+                {
+                    provide: RoleRepositoryName,
+                    useClass: RoleMongooseRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategorySchemaMapper,
                 } as Provider,
                 {
                     provide: ProductDbMapperName,
                     useClass: ProductSchemaMapper,
+                } as Provider,
+                {
+                    provide: UserDbMapperName,
+                    useClass: UserSchemaMapper,
+                } as Provider,
+                {
+                    provide: RoleDbMapperName,
+                    useClass: RoleSchemaMapper,
                 } as Provider,
             );
         }
