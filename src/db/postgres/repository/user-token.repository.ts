@@ -8,6 +8,7 @@ import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 import { User } from '../entities/user.entity';
 import { UserToken } from '../entities/user-token.entity';
+import { getOldRefreshTokenDate } from '../../constants';
 
 @Injectable()
 export class UserTokenTypeOrmRepository implements IUserTokenRepository {
@@ -43,12 +44,8 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
     }
 
     async removeUserToken(): Promise<ServiceResult> {
-        const currentDate = new Date();
-
         await this._userTokenRepository.delete({
-            updatedAt: LessThan(
-                new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getUTCDate()),
-            ),
+            updatedAt: LessThan(getOldRefreshTokenDate(new Date())),
         });
 
         return new ServiceResult(ServiceResultType.Success);

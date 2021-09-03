@@ -7,6 +7,7 @@ import { ServiceResult } from '../../../bl/result-wrappers/service-result';
 import { ServiceResultType } from '../../../bl/result-wrappers/service-result-type';
 import { User } from '../schemas/user.schema';
 import { UserToken, UserTokenDocument } from '../schemas/user-token.schema';
+import { getOldRefreshTokenDate } from '../../constants';
 
 @Injectable()
 export class UserTokenMongooseRepository implements IUserTokenRepository {
@@ -54,12 +55,10 @@ export class UserTokenMongooseRepository implements IUserTokenRepository {
     }
 
     async removeUserToken(): Promise<ServiceResult> {
-        const currentDate = new Date();
-
         await this._userTokenModel
             .deleteMany({
                 updatedAt: {
-                    $lt: new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate()),
+                    $lt: getOldRefreshTokenDate(new Date()),
                 },
             })
             .exec();

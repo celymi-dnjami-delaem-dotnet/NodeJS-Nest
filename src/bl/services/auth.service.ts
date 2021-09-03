@@ -46,8 +46,8 @@ export class AuthService {
         };
     }
 
-    async signIn(signInUser: SignInUserDto): Promise<TokenResultDto> {
-        const signInUserCommand = UserMapper.mapSignInToCommandFromDto(signInUser);
+    async signIn(signInUserDto: SignInUserDto): Promise<TokenResultDto> {
+        const signInUserCommand = UserMapper.mapSignInToCommandFromDto(signInUserDto);
         signInUserCommand.password = UserUtils.hashPassword(signInUserCommand.password);
 
         const { serviceResultType, exceptionMessage, data } = await this._userServiceAdapter.signInUser(
@@ -71,8 +71,8 @@ export class AuthService {
         };
     }
 
-    async signUp(signUpUser: SignUpUserDto): Promise<void> {
-        const signUpUserCommand = UserMapper.mapSignUpToCommandFromDto(signUpUser);
+    async signUp(signUpUserDto: SignUpUserDto): Promise<void> {
+        const signUpUserCommand = UserMapper.mapSignUpToCommandFromDto(signUpUserDto);
         signUpUserCommand.password = UserUtils.hashPassword(signUpUserCommand.password);
 
         const { serviceResultType, exceptionMessage } = await this._userServiceAdapter.signUpUser(signUpUserCommand);

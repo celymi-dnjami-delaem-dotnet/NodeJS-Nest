@@ -47,11 +47,11 @@ export class UserMongooseRepository implements IUserRepository {
     }
 
     async signUpUser(user: ICreateUserDb): Promise<ServiceResult<User>> {
-        return this.handleUserCreation(user, { displayName: DefaultRoles.Buyer });
+        return this.handleUserCreationDb(user, { displayName: DefaultRoles.Buyer });
     }
 
     async createUser(user: ICreateUserDb): Promise<ServiceResult<User>> {
-        return this.handleUserCreation(user, { _id: user.roleId });
+        return this.handleUserCreationDb(user, { _id: user.roleId });
     }
 
     async updateUser(user: User): Promise<ServiceResult<User>> {
@@ -97,11 +97,11 @@ export class UserMongooseRepository implements IUserRepository {
             : this._userModel.findOne({ _id: id }).exec();
     }
 
-    private async handleUserCreation(
+    private async handleUserCreationDb(
         user: ICreateUserDb,
         roleSearchFilter: FilterQuery<RoleDocument>,
     ): Promise<ServiceResult<User>> {
-        const existingRole = await this._roleModel.findOne(roleSearchFilter);
+        const existingRole = await this._roleModel.findOne(roleSearchFilter).exec();
         if (!existingRole) {
             return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
         }

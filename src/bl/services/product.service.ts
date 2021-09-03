@@ -33,8 +33,8 @@ export class ProductService {
         return ProductMapper.mapToDtoFromCommand(data);
     }
 
-    async createProduct(product: CreateProductDto): Promise<ProductDto> {
-        const dbProduct = ProductMapper.mapCreateToCommandFromDto(product);
+    async createProduct(productDto: CreateProductDto): Promise<ProductDto> {
+        const dbProduct = ProductMapper.mapCreateToCommandFromDto(productDto);
 
         const { serviceResultType, data, exceptionMessage } = await this._productServiceAdapter.createProduct(
             dbProduct,
@@ -45,8 +45,8 @@ export class ProductService {
         return ProductMapper.mapToDtoFromCommand(data);
     }
 
-    async updateProduct(product: ProductDto): Promise<ProductDto> {
-        const productSchema = ProductMapper.mapToCommandFromDto(product);
+    async updateProduct(productDto: ProductDto): Promise<ProductDto> {
+        const productSchema = ProductMapper.mapToCommandFromDto(productDto);
 
         const { serviceResultType, data } = await this._productServiceAdapter.updateProduct(productSchema);
 

@@ -9,11 +9,12 @@ import { LoggingModule } from '../logging/logging.module';
 import { Module } from '@nestjs/common';
 import { ProductController } from './controllers/product.controller';
 import { RoleController } from './controllers/role.controller';
+import { SettingsModule } from '../settings/settings.module';
 import { TerminusModule } from '@nestjs/terminus';
 import { UserController } from './controllers/user.controller';
 
 @Module({
-    imports: [BlModule.forRoot(), AuthModule, LoggingModule, TerminusModule],
+    imports: [SettingsModule, BlModule.forRoot(), AuthModule, LoggingModule, TerminusModule],
     controllers: [
         AuthController,
         ProductController,

@@ -39,8 +39,8 @@ export class CategoryService {
         return CategoryMapper.mapToDtoFromCommand(createdCategory);
     }
 
-    async updateCategory(category: CategoryDto): Promise<CategoryDto> {
-        const categorySchema = CategoryMapper.mapToCommandFromDto(category);
+    async updateCategory(categoryDto: CategoryDto): Promise<CategoryDto> {
+        const categorySchema = CategoryMapper.mapToCommandFromDto(categoryDto);
 
         const { serviceResultType, data, exceptionMessage } = await this._categoryAdapter.updateCategory(
             categorySchema,
