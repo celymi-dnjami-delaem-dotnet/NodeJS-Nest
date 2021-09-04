@@ -1,9 +1,9 @@
 import { ApiCreatedResponse, ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiRequest } from '../types';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../../bl/services/auth.service';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { ControllerTags } from '../../configuration/swagger.configuration';
-import { Request } from 'express';
 import { ServiceResultType } from '../../bl/result-wrappers/service-result-type';
 import { SettingsService } from '../../settings/settings.service';
 import { SignInUserDto } from '../dto/sign-in-user.dto';
@@ -36,8 +36,8 @@ export class AuthController {
     @Get('renew-token')
     @ApiHeader({ name: AuthController.refreshTokenHeaderName })
     @ApiOkResponse({ type: TokenResultDto, description: 'OK' })
-    async updateToken(@Req() req: Request): Promise<TokenResultDto> {
-        const userId: string = (req as any).user && (req as any).user.userId;
+    async updateToken(@Req() req: ApiRequest): Promise<TokenResultDto> {
+        const userId: string = req.user && req.user.userId;
         const accessToken: string = req.headers.authorization as string;
         const refreshToken: string = req.headers[AuthController.refreshTokenHeaderName] as string;
 

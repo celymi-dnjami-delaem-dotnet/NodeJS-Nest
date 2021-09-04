@@ -8,6 +8,7 @@ export enum ControllerTags {
     Roles = 'Roles',
     HealthCheck = 'Health-Check',
     Auth = 'Authentication',
+    Ratings = 'Ratings',
 }
 
 export default function registerSwagger(app: INestApplication): void {
@@ -20,6 +21,7 @@ export default function registerSwagger(app: INestApplication): void {
         .addTag(ControllerTags.Users)
         .addTag(ControllerTags.HealthCheck)
         .addTag(ControllerTags.Roles)
+        .addTag(ControllerTags.Ratings)
         .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
         .build();
 

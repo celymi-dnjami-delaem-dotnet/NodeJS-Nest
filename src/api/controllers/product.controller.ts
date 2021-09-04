@@ -44,7 +44,7 @@ export class ProductController {
     @ApiImplicitQuery({ name: 'limit', required: false, type: Number })
     @ApiImplicitQuery({ name: 'offset', required: false, type: Number })
     @ApiOkResponse({ type: [ProductDto], description: 'OK' })
-    async getCategories(
+    async getProducts(
         @Query('displayName') displayName?: string,
         @Query('minRating') minRating?: string,
         @Query('sortBy') sortBy?: string,
@@ -58,7 +58,7 @@ export class ProductController {
     @Get('id/:id')
     @ApiOkResponse({ type: ProductDto, description: 'OK' })
     @ApiNotFoundResponse({ description: 'Not Found' })
-    async getProducts(@Param('id') id: string): Promise<ProductDto> {
+    async getProductById(@Param('id') id: string): Promise<ProductDto> {
         return this._productService.getProductById(id);
     }
 

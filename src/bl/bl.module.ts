@@ -4,6 +4,7 @@ import { CategoryService } from './services/category.service';
 import { DbModule } from '../db/db.module';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { ProductService } from './services/product.service';
+import { RatingService } from './services/rating.service';
 import { RoleService } from './services/role.service';
 import { SettingsModule } from '../settings/settings.module';
 import { UserService } from './services/user.service';
@@ -11,7 +12,14 @@ import { UserService } from './services/user.service';
 @Module({})
 export class BlModule {
     static forRoot(): DynamicModule {
-        const moduleProviders: Provider[] = [AuthService, CategoryService, ProductService, UserService, RoleService];
+        const moduleProviders: Provider[] = [
+            AuthService,
+            CategoryService,
+            ProductService,
+            UserService,
+            RoleService,
+            RatingService,
+        ];
 
         return {
             module: BlModule,
