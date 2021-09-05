@@ -19,6 +19,7 @@ export class SettingsService {
     private readonly _jwtAudience: string;
     private readonly _jwtIssuer: string;
     private readonly _refreshTokensEnabled: string;
+    private readonly _seedInitialData: string;
 
     constructor(private conf: ConfigService) {
         this._appPort = conf.get<number>('APPLICATION_PORT', 3000);
@@ -34,6 +35,7 @@ export class SettingsService {
         this._jwtUseExpiresIn = conf.get<string>('JWT_USE_EXPIRES_IN');
         this._jwtExpirationTime = conf.get<string>('JWT_EXPIRATION_TIME');
         this._refreshTokensEnabled = conf.get<string>('REFRESH_TOKENS_ENABLED');
+        this._seedInitialData = conf.get<string>('SEED_INITIAL_DATA');
     }
 
     get appPort(): number {
@@ -86,6 +88,10 @@ export class SettingsService {
 
     get refreshTokensEnabled(): boolean {
         return this._refreshTokensEnabled === 'true';
+    }
+
+    get seedInitialData(): boolean {
+        return this._seedInitialData === 'true';
     }
 
     getMongooseConnectionString(): string {
