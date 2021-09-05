@@ -1,8 +1,8 @@
 import { Category } from './category.schema';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { IProduct } from '../types/product.type';
-import { IRating } from '../types/rating.type';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Rating } from './rating.schema';
 
 export type ProductDocument = Product & Document;
 
@@ -17,7 +17,7 @@ export class Product implements IProduct {
     category?: Category;
 
     @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Rating' }], default: [] })
-    ratings?: IRating[];
+    ratings?: Rating[];
 
     @Prop({ default: 0, index: true })
     totalRating: number;

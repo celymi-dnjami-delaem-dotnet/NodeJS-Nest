@@ -57,8 +57,15 @@ export class RatingTypeOrmRepository implements IRatingRepository {
             newRating.product = existingProduct;
             newRating.rating = createRatingDb.rating;
 
-            createRating = await this._productRepository.save(newRating);
+            createRating = await this._ratingRepository.save(newRating);
         }
+
+        await this._productRepository
+            .createQueryBuilder()
+            .update(Product)
+            .set({ totalRating: () => 'AVG(ratings.rating)' })
+            .where('id = :id', { id: existingProduct.id })
+            .execute();
 
         return new ServiceResult<Rating>(ServiceResultType.Success, createRating);
     }

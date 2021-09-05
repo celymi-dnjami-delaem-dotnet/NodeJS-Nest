@@ -42,7 +42,10 @@ export class RatingMongooseRepository implements IRatingRepository {
             return new ServiceResult<Rating>(ServiceResultType.Success, null, missingUserEntityExceptionMessage);
         }
 
-        const existingProduct = await this._productModel.findOne({ _id: createRatingDb.productId }).exec();
+        const existingProduct = await this._productModel
+            .findOne({ _id: createRatingDb.productId })
+            .populate('ratings')
+            .exec();
         if (!existingProduct) {
             return new ServiceResult<Rating>(ServiceResultType.Success, null, missingProductEntityExceptionMessage);
         }
@@ -61,6 +64,20 @@ export class RatingMongooseRepository implements IRatingRepository {
 
             createdRating = await new this._ratingModel(newRating).save();
         }
+
+        //todo: investigate more convenient way of updating total rating
+        await this._productModel.updateOne(
+            { _id: existingProduct._id },
+            {
+                $push: {
+                    ratings: createdRating._id,
+                },
+                $set: {
+                    totalRating:
+                        existingProduct.ratings.reduce((acc, x) => acc + x.rating, 0) / existingProduct.ratings.length,
+                },
+            },
+        );
 
         return new ServiceResult<Rating>(ServiceResultType.Success, createdRating);
     }
