@@ -9,19 +9,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 import { ApiRequest } from '../types';
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Param,
-    Post,
-    Query,
-    Req,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { CollectionSearchGuard } from '../guards/collection-search.guard';
 import { ControllerTags } from '../../configuration/swagger.configuration';
 import { CreateRatingDto } from '../dto/create-rating.dto';
@@ -70,8 +58,8 @@ export class RatingController {
     @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
-    async softRemoveCategory(@Param('id') id: string): Promise<void> {
-        await this._ratingService.softRemoveRating(id);
+    async softRemoveCategory(@Req() request: ApiRequest): Promise<void> {
+        await this._ratingService.softRemoveRating(request.params.id, request.user.userId, request.user.roles);
     }
 
     @UseGuards(new RolesGuard([DefaultRoles.Buyer, DefaultRoles.Admin]))
@@ -80,7 +68,7 @@ export class RatingController {
     @ApiBearerAuth()
     @ApiNoContentResponse({ description: 'No Content' })
     @ApiNotFoundResponse({ description: 'Not Found' })
-    async removeCategory(@Param('id') id: string): Promise<void> {
-        await this._ratingService.removeRating(id);
+    async removeCategory(@Req() request: ApiRequest): Promise<void> {
+        await this._ratingService.removeRating(request.params.id, request.user.userId, request.user.roles);
     }
 }

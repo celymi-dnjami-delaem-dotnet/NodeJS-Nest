@@ -14,6 +14,7 @@ export class SettingsService {
     private readonly _dbPassword: string;
     private readonly _dbType: string;
     private readonly _jwtKey: string;
+    private readonly _jwtUseExpiresIn: string;
     private readonly _jwtExpirationTime: string;
     private readonly _jwtAudience: string;
     private readonly _jwtIssuer: string;
@@ -30,6 +31,7 @@ export class SettingsService {
         this._jwtKey = conf.get<string>('JWT_KEY');
         this._jwtAudience = conf.get<string>('JWT_AUDIENCE');
         this._jwtIssuer = conf.get<string>('JWT_ISSUER');
+        this._jwtUseExpiresIn = conf.get<string>('JWT_USE_EXPIRES_IN');
         this._jwtExpirationTime = conf.get<string>('JWT_EXPIRATION_TIME');
         this._refreshTokensEnabled = conf.get<string>('REFRESH_TOKENS_ENABLED');
     }
@@ -72,6 +74,10 @@ export class SettingsService {
 
     get jwtIssuer(): string {
         return this._jwtIssuer;
+    }
+
+    get jwtUseExpiresIn(): boolean {
+        return this._jwtUseExpiresIn === 'true';
     }
 
     get jwtExpirationTime(): string {
