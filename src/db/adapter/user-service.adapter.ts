@@ -93,7 +93,7 @@ export class UserServiceAdapter implements IUserServiceAdapter {
 
         const { serviceResultType, exceptionMessage, data } = await callback(dbUser);
 
-        return new ServiceResult(
+        return new ServiceResult<IUserCommand>(
             serviceResultType,
             data && this._userMapper.mapToCommandFromDb(data),
             exceptionMessage,

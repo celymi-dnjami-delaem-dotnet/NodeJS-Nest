@@ -34,25 +34,31 @@ export class RoleServiceAdapter implements IRoleServiceAdapter {
     }
 
     async getRoleById(id: string): Promise<ServiceResult<IRoleCommand>> {
-        const foundResult = await this._roleRepository.getRoleById(id);
-        foundResult.data = foundResult.data && this._roleMapper.mapToCommandFromDb(foundResult.data);
+        const { serviceResultType, exceptionMessage, data } = await this._roleRepository.getRoleById(id);
 
-        return foundResult;
+        return new ServiceResult<IRoleCommand>(
+            serviceResultType,
+            data && this._roleMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 
     async getRoleByName(name: string): Promise<ServiceResult<IRoleCommand>> {
-        const foundResult = await this._roleRepository.getRoleByName(name);
-        foundResult.data = foundResult.data && this._roleMapper.mapToCommandFromDb(foundResult.data);
+        const { serviceResultType, exceptionMessage, data } = await this._roleRepository.getRoleByName(name);
 
-        return foundResult;
+        return new ServiceResult<IRoleCommand>(
+            serviceResultType,
+            data && this._roleMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 
     async createRole(createRole: ICreateRoleCommand): Promise<IRoleCommand> {
         const createDbRole = this._roleMapper.mapCreateToDbFromCommand(createRole);
 
-        const creationResult = await this._roleRepository.createRole(createDbRole);
+        const createdRoleResult = await this._roleRepository.createRole(createDbRole);
 
-        return this._roleMapper.mapToCommandFromDb(creationResult);
+        return this._roleMapper.mapToCommandFromDb(createdRoleResult);
     }
 
     async updateRole(role: IRoleCommand): Promise<ServiceResult<IRoleCommand>> {

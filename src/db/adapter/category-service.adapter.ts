@@ -63,7 +63,7 @@ export class CategoryServiceAdapter implements ICategoryServiceAdapter {
     async updateCategory(category: ICategoryCommand): Promise<ServiceResult<ICategoryCommand>> {
         const updateCategoryDb = this._categoryMapper.mapToDbFromCommand(category);
 
-        const { exceptionMessage, serviceResultType, data } = await this._categoryRepository.updateCategory(
+        const { serviceResultType, exceptionMessage, data } = await this._categoryRepository.updateCategory(
             updateCategoryDb,
         );
 

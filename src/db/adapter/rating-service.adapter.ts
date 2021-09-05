@@ -29,19 +29,25 @@ export class RatingServiceAdapter implements IRatingServiceAdapter {
     }
 
     async getRatingById(id: string): Promise<ServiceResult<IRatingCommand>> {
-        const foundRating = await this._ratingRepository.getRatingById(id);
-        foundRating.data = foundRating.data && this._ratingMapper.mapToCommandFromDb(foundRating.data);
+        const { serviceResultType, exceptionMessage, data } = await this._ratingRepository.getRatingById(id);
 
-        return foundRating;
+        return new ServiceResult<IRatingCommand>(
+            serviceResultType,
+            data && this._ratingMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 
     async setRating(createRatingCommand: ICreateRatingCommand): Promise<ServiceResult<IRatingCommand>> {
         const createRatingDb = this._ratingMapper.mapCreateToDbFromCommand(createRatingCommand);
 
-        const dbResult = await this._ratingRepository.setRating(createRatingDb);
-        dbResult.data = dbResult.data && this._ratingMapper.mapToCommandFromDb(dbResult.data);
+        const { serviceResultType, exceptionMessage, data } = await this._ratingRepository.setRating(createRatingDb);
 
-        return dbResult;
+        return new ServiceResult<IRatingCommand>(
+            serviceResultType,
+            data && this._ratingMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 
     async softRemoveRating(id: string): Promise<ServiceResult> {

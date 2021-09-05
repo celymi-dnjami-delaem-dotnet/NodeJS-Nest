@@ -29,7 +29,7 @@ export class ProductServiceAdapter implements IProductServiceAdapter {
 
         const products = await this._productRepository.getProducts(dbSearchParams);
 
-        return products.map(this._productMapper.mapToCommandFromDb);
+        return products.map((x) => this._productMapper.mapToCommandFromDb(x));
     }
 
     async getProductById(id: string): Promise<ServiceResult<IProductCommand>> {
@@ -45,7 +45,7 @@ export class ProductServiceAdapter implements IProductServiceAdapter {
     async createProduct(createProductCommand: ICreateProductCommand): Promise<ServiceResult<IProductCommand>> {
         const createProductDb = await this._productMapper.mapCreateToDbFromCommand(createProductCommand);
 
-        const { serviceResultType, data, exceptionMessage } = await this._productRepository.createProduct(
+        const { serviceResultType, exceptionMessage, data } = await this._productRepository.createProduct(
             createProductDb,
         );
 
