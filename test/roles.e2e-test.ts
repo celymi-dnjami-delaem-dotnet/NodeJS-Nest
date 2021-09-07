@@ -1,6 +1,8 @@
-import * as request from 'supertest';
+import { ApiRequest } from './api-request';
 import { AppModule } from '../src/app.module';
+import { CustomExceptionFilter } from '../src/api/filters/custom-exception.filter';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Response } from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('RolesController (e2e)', () => {
@@ -14,6 +16,8 @@ describe('RolesController (e2e)', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
+        app.useGlobalFilters(new CustomExceptionFilter());
+
         await app.init();
     });
 
@@ -22,7 +26,7 @@ describe('RolesController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseRoleUrl} (GET)`, async () => {
-        const response: request.Response = await request(app.getHttpServer()).get(baseRoleUrl);
+        const response: Response = await ApiRequest.get(app.getHttpServer(), baseRoleUrl);
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
     });
