@@ -28,19 +28,17 @@ export class CategoryMongooseRepository implements ICategoryRepository {
     }
 
     async getCategoryById(id: string, search: ISearchParamsCategory): Promise<ServiceResult<Category>> {
-        const category = await this.categoryModel
-            .findOne({ _id: id })
-            .lean()
-            .populate(
-                search.includeProducts
-                    ? {
-                          path: 'products',
-                          model: 'Product',
-                          options: { sort: { totalRating: 'DESC' }, limit: search.includeTopCategories },
-                      }
-                    : {},
-            )
-            .exec();
+        const query = this.categoryModel.findOne({ _id: id });
+
+        if (search.includeProducts) {
+            query.populate({
+                path: 'products',
+                model: 'Product',
+                options: { sort: { totalRating: 'DESC' }, limit: search.includeTopCategories },
+            });
+        }
+
+        const category = await query.exec();
 
         if (!category) {
             return new ServiceResult<Category>(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
