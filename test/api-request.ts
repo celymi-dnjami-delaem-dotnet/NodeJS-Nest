@@ -10,7 +10,7 @@ export class ApiRequest {
     ).replace('\n', '');
 
     static async get(httpServer: HttpServer, url: string, useAuth?: boolean): Promise<request.Test> {
-        const req = request(httpServer).get(url).set('Accept', 'application/json');
+        const req = request.agent(httpServer).get(url).set('Accept', 'application/json');
 
         if (useAuth) {
             req.set('Authorization', `Bearer ${ApiRequest.jwtToken}`);
@@ -25,7 +25,7 @@ export class ApiRequest {
         data: Record<string, unknown>,
         useAuth?: boolean,
     ): Promise<request.Test> {
-        const req = request(httpServer).post(url).set('Accept', 'application/json');
+        const req = request.agent(httpServer).post(url).set('Accept', 'application/json');
 
         if (useAuth) {
             req.set('Authorization', `Bearer ${ApiRequest.jwtToken}`);
@@ -40,7 +40,7 @@ export class ApiRequest {
         data: Record<string, unknown>,
         useAuth?: boolean,
     ): Promise<request.Test> {
-        const req = request(httpServer).put(url).set('Accept', 'application/json');
+        const req = request.agent(httpServer).put(url).set('Accept', 'application/json');
 
         if (useAuth) {
             req.set('Authorization', `Bearer ${ApiRequest.jwtToken}`);
@@ -49,7 +49,13 @@ export class ApiRequest {
         return req.send(data);
     }
 
-    static async delete(httpServer: HttpServer, url: string): Promise<request.Test> {
-        return request(httpServer).delete(url).set('Authorization', `Bearer ${ApiRequest.jwtToken}`);
+    static async delete(httpServer: HttpServer, url: string, useAuth?: boolean): Promise<request.Test> {
+        const req = request.agent(httpServer).delete(url).set('Accept', 'application/json');
+
+        if (useAuth) {
+            req.set('Authorization', `Bearer ${ApiRequest.jwtToken}`);
+        }
+
+        return req;
     }
 }
