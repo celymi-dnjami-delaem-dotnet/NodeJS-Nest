@@ -4,6 +4,6 @@ import { User } from '../entities/user.entity';
 
 export interface IRating extends IBaseRating {
     id: string;
-    user: User;
-    product: Product;
+    user?: User;
+    product?: Product;
 }

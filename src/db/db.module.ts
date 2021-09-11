@@ -25,6 +25,7 @@ import { ProductSchemaMapper } from './mappers/schemas/product-schema.mapper';
 import { ProductServiceAdapter, ProductServiceAdapterName } from './adapter/product-service.adapter';
 import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
 import { RatingDbMapperName } from './mappers/types/rating-mapper.type';
+import { RatingEntityMapper } from './mappers/entities/rating-entity.mapper';
 import { RatingMongooseRepository } from './mongo/repository/rating.repository';
 import { RatingRepositoryName } from './base-types/rating-repository.type';
 import { RatingSchema, Rating as SchemaRating } from './mongo/schemas/rating.schema';
@@ -158,6 +159,10 @@ export class DbModule {
                 {
                     provide: UserTokenDbMapperName,
                     useClass: UserTokenEntityMapper,
+                } as Provider,
+                {
+                    provide: RatingDbMapperName,
+                    useClass: RatingEntityMapper,
                 } as Provider,
             );
         } else {

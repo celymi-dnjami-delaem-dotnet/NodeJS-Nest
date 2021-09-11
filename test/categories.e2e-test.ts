@@ -39,7 +39,7 @@ describe('CategoryController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on ${baseCategoryUrl}/id/:id (GET)`, async () => {
-        const testId = '613654eb07ade7fae7a566c7';
+        const testId = 'c7052035-5737-4587-8002-e43eb6598cbd';
 
         const response: Response = await ApiRequest.get(app.getHttpServer(), `${baseCategoryUrl}/id/${testId}`);
 
@@ -53,6 +53,7 @@ describe('CategoryController (e2e)', () => {
         const id = createdEntity.id;
         expect(id).toBeTruthy();
 
+        console.warn(id);
         const response: Response = await ApiRequest.get(app.getHttpServer(), `${baseCategoryUrl}/id/${id}`);
 
         expect(response.status).toEqual(HttpStatus.OK);
@@ -103,12 +104,14 @@ describe('CategoryController (e2e)', () => {
 
         expect(response.status).toEqual(HttpStatus.OK);
         expect(response.body.displayName).toEqual(newName);
+
+        await categoryAdapter.removeCategory(createdEntity.id);
     });
 
     it(`Should return ${HttpStatus.UNAUTHORIZED} for unauthorized user on remove item ${baseCategoryUrl} (PUT)`, async () => {
         const data: CategoryDto = {
             displayName: 'NewName',
-            id: '613654eb07ade7fae7a566c7',
+            id: 'c7052035-5737-4587-8002-e43eb6598cbd',
             createdAt: new Date(),
             isDeleted: false,
             products: [],
@@ -126,7 +129,7 @@ describe('CategoryController (e2e)', () => {
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on ${baseCategoryUrl} (PUT)`, async () => {
         const data: CategoryDto = {
             displayName: 'NewName',
-            id: '613654eb07ade7fae7a566c7',
+            id: 'c7052035-5737-4587-8002-e43eb6598cbd',
             createdAt: new Date(),
             isDeleted: false,
             products: [],
@@ -162,7 +165,7 @@ describe('CategoryController (e2e)', () => {
     it(`Should return ${HttpStatus.UNAUTHORIZED} for unauthorized user on soft-remove ${baseCategoryUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/soft-remove/id/613654eb07ade7fae7a566c7`,
+            `${baseCategoryUrl}/soft-remove/id/c7052035-5737-4587-8002-e43eb6598cbd`,
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -171,7 +174,7 @@ describe('CategoryController (e2e)', () => {
     it(`Should return ${HttpStatus.NOT_FOUND} on soft-remove for missing item ${baseCategoryUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/soft-remove/id/613654eb07ade7fae7a566c7`,
+            `${baseCategoryUrl}/soft-remove/id/c7052035-5737-4587-8002-e43eb6598cbd`,
             true,
         );
 
@@ -196,7 +199,7 @@ describe('CategoryController (e2e)', () => {
     it(`Should return ${HttpStatus.UNAUTHORIZED} for unauthorized user on remove ${baseCategoryUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/id/613654eb07ade7fae7a566c7`,
+            `${baseCategoryUrl}/id/c7052035-5737-4587-8002-e43eb6598cbd`,
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -205,7 +208,7 @@ describe('CategoryController (e2e)', () => {
     it(`Should return ${HttpStatus.NOT_FOUND} on remove for missing item ${baseCategoryUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/id/613654eb07ade7fae7a566c7`,
+            `${baseCategoryUrl}/id/c7052035-5737-4587-8002-e43eb6598cbd`,
             true,
         );
 
