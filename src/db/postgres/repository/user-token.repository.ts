@@ -50,4 +50,14 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
 
         return new ServiceResult(ServiceResultType.Success);
     }
+
+    async removeAllUserTokens(): Promise<ServiceResult> {
+        const removeResult = await this._userTokenRepository.createQueryBuilder().delete().from(UserToken).execute();
+
+        if (!removeResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
 }

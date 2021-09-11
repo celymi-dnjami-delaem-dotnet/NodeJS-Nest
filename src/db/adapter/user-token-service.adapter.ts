@@ -10,6 +10,7 @@ export interface IUserTokenServiceAdapter {
     updateUserToken: (tokenPairCommand: IUserTokenCommand) => Promise<ServiceResult>;
     createUserToken: (tokenPairCommand: ISetUserTokenCommand) => Promise<ServiceResult>;
     removeUserToken: () => Promise<ServiceResult>;
+    removeAllUserTokens: () => Promise<ServiceResult>;
 }
 
 export const UserTokenServiceAdapterName = Symbol('IUserTokenServiceAdapter');
@@ -47,5 +48,9 @@ export class UserTokenServiceAdapter implements IUserTokenServiceAdapter {
 
     async removeUserToken(): Promise<ServiceResult> {
         return this._userTokenRepository.removeUserToken();
+    }
+
+    async removeAllUserTokens(): Promise<ServiceResult> {
+        return this._userTokenRepository.removeAllUserTokens();
     }
 }

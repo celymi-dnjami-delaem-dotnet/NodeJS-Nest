@@ -17,6 +17,7 @@ export interface ICategoryServiceAdapter {
     updateCategory: (category: ICategoryCommand) => Promise<ServiceResult<ICategoryCommand>>;
     softRemoveCategory: (id: string) => Promise<ServiceResult>;
     removeCategory: (id: string) => Promise<ServiceResult>;
+    removeAllCategories: () => Promise<ServiceResult>;
 }
 
 export const CategoryServiceAdapterName = Symbol('ICategoryServiceAdapter');
@@ -80,5 +81,9 @@ export class CategoryServiceAdapter implements ICategoryServiceAdapter {
 
     async removeCategory(id: string): Promise<ServiceResult> {
         return this._categoryRepository.removeCategory(id);
+    }
+
+    async removeAllCategories(): Promise<ServiceResult> {
+        return this._categoryRepository.removeAllCategories();
     }
 }

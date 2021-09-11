@@ -13,6 +13,7 @@ export interface IProductServiceAdapter {
     updateProduct: (productCommand: IProductCommand) => Promise<ServiceResult<IProductCommand>>;
     softRemoveProduct: (id: string) => Promise<ServiceResult>;
     removeProduct: (id: string) => Promise<ServiceResult>;
+    removeAllProducts: () => Promise<ServiceResult>;
 }
 
 export const ProductServiceAdapterName = Symbol('IProductServiceAdapter');
@@ -76,5 +77,9 @@ export class ProductServiceAdapter implements IProductServiceAdapter {
 
     async removeProduct(id: string): Promise<ServiceResult> {
         return this._productRepository.removeProduct(id);
+    }
+
+    async removeAllProducts(): Promise<ServiceResult> {
+        return this._productRepository.removeAllProducts();
     }
 }

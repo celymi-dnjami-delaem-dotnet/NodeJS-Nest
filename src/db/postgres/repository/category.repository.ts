@@ -64,6 +64,7 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
 
     async softRemoveCategory(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this._categoryRepository.update({ id }, { isDeleted: true });
+
         if (!softRemoveResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
         }
@@ -73,8 +74,19 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
 
     async removeCategory(id: string): Promise<ServiceResult> {
         const removeResult = await this._categoryRepository.delete(id);
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingCategoryEntityExceptionMessage);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
+    async removeAllCategories(): Promise<ServiceResult> {
+        const removeResult = await this._categoryRepository.createQueryBuilder().delete().from(Category).execute();
+
+        if (!removeResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
         }
 
         return new ServiceResult(ServiceResultType.Success);

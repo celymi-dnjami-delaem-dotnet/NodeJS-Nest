@@ -12,6 +12,7 @@ export interface IRatingServiceAdapter {
     setRating: (createRatingCommand: ICreateRatingCommand) => Promise<ServiceResult<IRatingCommand>>;
     softRemoveRating: (id: string) => Promise<ServiceResult>;
     removeRating: (id: string) => Promise<ServiceResult>;
+    removeAllRatings: () => Promise<ServiceResult>;
 }
 
 export const RatingServiceAdapterName = Symbol('IRatingServiceAdapter');
@@ -56,5 +57,9 @@ export class RatingServiceAdapter implements IRatingServiceAdapter {
 
     async removeRating(id: string): Promise<ServiceResult> {
         return this._ratingRepository.removeRating(id);
+    }
+
+    async removeAllRatings(): Promise<ServiceResult> {
+        return this._ratingRepository.removeAllRatings();
     }
 }

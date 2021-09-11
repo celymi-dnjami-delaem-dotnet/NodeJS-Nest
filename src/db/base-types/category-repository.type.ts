@@ -10,6 +10,7 @@ export interface ICategoryRepository {
     updateCategory: (category: IBaseCategory) => Promise<ServiceResult<IBaseCategory>>;
     softRemoveCategory: (id: string) => Promise<ServiceResult>;
     removeCategory: (id: string) => Promise<ServiceResult>;
+    removeAllCategories: () => Promise<ServiceResult>;
 }
 
 export const CategoryRepositoryName = Symbol('ICategoryRepository');

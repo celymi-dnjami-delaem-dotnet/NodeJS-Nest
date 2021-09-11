@@ -29,6 +29,7 @@ export class RatingMongooseRepository implements IRatingRepository {
 
     async getRatingById(id: string): Promise<ServiceResult<Rating>> {
         const foundRating = await this._ratingModel.findOne({ _id: id });
+
         if (!foundRating) {
             return new ServiceResult<Rating>(ServiceResultType.NotFound, null, missingRatingEntityExceptionMessage);
         }
@@ -84,6 +85,7 @@ export class RatingMongooseRepository implements IRatingRepository {
 
     async softRemoveRating(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this._ratingModel.updateOne({ _id: id }, { $set: { isDeleted: true } });
+
         if (!softRemoveResult.nModified) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingRatingEntityExceptionMessage);
         }
@@ -93,10 +95,21 @@ export class RatingMongooseRepository implements IRatingRepository {
 
     async removeRating(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this._ratingModel.deleteOne({ _id: id });
+
         if (!softRemoveResult.deletedCount) {
             return new ServiceResult(ServiceResultType.NotFound);
         }
 
         return new ServiceResult(ServiceResultType.Success, null, missingRatingEntityExceptionMessage);
+    }
+
+    async removeAllRatings(): Promise<ServiceResult> {
+        const removeResult = await this._ratingModel.deleteMany().exec();
+
+        if (!removeResult.deletedCount) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
     }
 }

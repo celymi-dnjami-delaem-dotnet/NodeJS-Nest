@@ -7,6 +7,7 @@ export interface IUserTokenRepository {
     createUserToken: (token: ISetUserTokenDb) => Promise<ServiceResult>;
     updateUserToken: (token: IBaseUserToken) => Promise<ServiceResult>;
     removeUserToken: () => Promise<ServiceResult>;
+    removeAllUserTokens: () => Promise<ServiceResult>;
 }
 
 export const UserTokenRepositoryName = Symbol('IUserTokenRepository');

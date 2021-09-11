@@ -27,6 +27,7 @@ export class RatingTypeOrmRepository implements IRatingRepository {
 
     async getRatingById(id: string): Promise<ServiceResult<IBaseRating>> {
         const foundRating = await this._ratingRepository.findOne({ id });
+
         if (!foundRating) {
             return new ServiceResult(ServiceResultType.NotFound);
         }
@@ -72,6 +73,7 @@ export class RatingTypeOrmRepository implements IRatingRepository {
 
     async softRemoveRating(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this._ratingRepository.update({ id }, { isDeleted: true });
+
         if (!softRemoveResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound);
         }
@@ -81,10 +83,21 @@ export class RatingTypeOrmRepository implements IRatingRepository {
 
     async removeRating(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this._ratingRepository.delete({ id });
+
         if (!softRemoveResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound);
         }
 
         return new ServiceResult(ServiceResultType.Success, null, missingRatingEntityExceptionMessage);
+    }
+
+    async removeAllRatings(): Promise<ServiceResult> {
+        const removeResult = await this._ratingRepository.createQueryBuilder().delete().from(Rating).execute();
+
+        if (!removeResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
     }
 }

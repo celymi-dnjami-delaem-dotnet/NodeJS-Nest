@@ -8,6 +8,7 @@ export interface IRatingRepository {
     setRating: (createRatingDb: ICreateRatingDb) => Promise<ServiceResult<IBaseRating>>;
     softRemoveRating: (id: string) => Promise<ServiceResult>;
     removeRating: (id: string) => Promise<ServiceResult>;
+    removeAllRatings: () => Promise<ServiceResult>;
 }
 
 export const RatingRepositoryName = Symbol('IRatingRepository');
