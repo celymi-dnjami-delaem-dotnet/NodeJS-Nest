@@ -16,6 +16,7 @@ export interface IRoleServiceAdapter {
     revokeRole: (roleId: string, userId: string) => Promise<ServiceResult>;
     softRemoveRole: (id: string) => Promise<ServiceResult>;
     removeRole: (id: string) => Promise<ServiceResult>;
+    removeAllRoles: () => Promise<ServiceResult>;
 }
 
 export const RoleServiceAdapterName = Symbol('IRoleServiceAdapter');
@@ -87,5 +88,9 @@ export class RoleServiceAdapter implements IRoleServiceAdapter {
 
     async removeRole(id: string): Promise<ServiceResult> {
         return this._roleRepository.removeRole(id);
+    }
+
+    async removeAllRoles(): Promise<ServiceResult> {
+        return this._roleRepository.removeAllRoles();
     }
 }

@@ -6,6 +6,7 @@ import { CustomExceptionFilter } from '../src/api/filters/custom-exception.filte
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Response } from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TestUtils } from './utils';
 
 describe('CategoryController (e2e)', () => {
     const baseCategoryUrl = '/api/categories';
@@ -50,17 +51,19 @@ describe('CategoryController (e2e)', () => {
         const data = { displayName: 'TestCategory' };
         const createdEntity = await categoryAdapter.createCategory(data);
 
-        const id = createdEntity.id;
-        expect(id).toBeTruthy();
+        expect(createdEntity).toBeTruthy();
+        expect(createdEntity.id).toBeTruthy();
 
-        console.warn(id);
-        const response: Response = await ApiRequest.get(app.getHttpServer(), `${baseCategoryUrl}/id/${id}`);
+        const response: Response = await ApiRequest.get(
+            app.getHttpServer(),
+            TestUtils.getUrlWithId(baseCategoryUrl, createdEntity.id),
+        );
 
         expect(response.status).toEqual(HttpStatus.OK);
         expect(response.body).toBeTruthy();
         expect(response.body.id).toBeTruthy();
 
-        await categoryAdapter.removeCategory(id);
+        await categoryAdapter.removeCategory(createdEntity.id);
     });
 
     it(`Should return ${HttpStatus.CREATED} and created item on ${baseCategoryUrl} (POST)`, async () => {
@@ -189,7 +192,7 @@ describe('CategoryController (e2e)', () => {
 
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/id/${createdEntity.id}`,
+            TestUtils.getUrlWithId(baseCategoryUrl, createdEntity.id),
             true,
         );
 

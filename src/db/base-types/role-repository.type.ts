@@ -12,6 +12,7 @@ export interface IRoleRepository {
     updateRole: (role: IBaseRole) => Promise<ServiceResult<IBaseRole>>;
     softRemoveRole: (id: string) => Promise<ServiceResult>;
     removeRole: (id: string) => Promise<ServiceResult>;
+    removeAllRoles: () => Promise<ServiceResult>;
 }
 
 export const RoleRepositoryName = Symbol('IRoleRepository');

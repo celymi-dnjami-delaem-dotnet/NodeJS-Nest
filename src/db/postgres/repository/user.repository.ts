@@ -84,6 +84,15 @@ export class UserTypeOrmRepository implements IUserRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
+    async removeAllUsers(): Promise<ServiceResult> {
+        const removeResult = await this._userRepository.createQueryBuilder().delete().from(User).execute();
+        if (!removeResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
     private async findUserById(id: string, includeChildren?: boolean): Promise<User> {
         return this._userRepository.findOne(id, includeChildren ? { relations: ['roles'] } : {});
     }

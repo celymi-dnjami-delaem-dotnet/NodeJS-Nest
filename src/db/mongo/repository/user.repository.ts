@@ -91,6 +91,15 @@ export class UserMongooseRepository implements IUserRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
+    async removeAllUsers(): Promise<ServiceResult> {
+        const removeResult = await this._userModel.deleteMany().exec();
+        if (!removeResult.deletedCount) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
     private async findUserById(id: string, includeChildren?: boolean): Promise<User> {
         return includeChildren
             ? this._userModel.findOne({ _id: id }).populate({ path: 'roles', model: 'Role' }).exec()

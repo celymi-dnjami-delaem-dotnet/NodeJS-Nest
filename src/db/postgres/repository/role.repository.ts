@@ -95,6 +95,15 @@ export class RoleTypeOrmRepository implements IRoleRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
+    async removeAllRoles(): Promise<ServiceResult> {
+        const removeResult = await this._roleRepository.createQueryBuilder().delete().from(Role).execute();
+        if (!removeResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
     private findRoleById(id: string, includeChildren?: boolean): Promise<Role> {
         return this._roleRepository.findOne(id, includeChildren ? { relations: ['users'] } : {});
     }

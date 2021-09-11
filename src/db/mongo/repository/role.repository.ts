@@ -100,6 +100,15 @@ export class RoleMongooseRepository implements IRoleRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
+    async removeAllRoles(): Promise<ServiceResult> {
+        const removeResult = await this._roleModel.deleteMany().exec();
+        if (!removeResult.deletedCount) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
     private async findRoleById(id: string, includeChildren?: boolean): Promise<Role> {
         return includeChildren
             ? this._roleModel.findOne({ _id: id }).populate('users').exec()

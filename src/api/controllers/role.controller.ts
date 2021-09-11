@@ -74,16 +74,6 @@ export class RoleController {
     }
 
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))
-    @Delete('soft-remove/id/:id')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    @ApiBearerAuth()
-    @ApiNoContentResponse({ description: 'No Content' })
-    @ApiNotFoundResponse({ description: 'Not Found' })
-    async softRemoveRole(@Param('id') id: string): Promise<void> {
-        return this._roleService.softRemoveRole(id);
-    }
-
-    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
     @Post('grant')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiBearerAuth()
@@ -101,6 +91,16 @@ export class RoleController {
     @ApiNotFoundResponse({ description: 'Not Found' })
     async revokeRole(@Body() roleManagement: RoleManageDto): Promise<void> {
         return this._roleService.revokeRole(roleManagement);
+    }
+
+    @UseGuards(new RolesGuard([DefaultRoles.Admin]))
+    @Delete('soft-remove/id/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiBearerAuth()
+    @ApiNoContentResponse({ description: 'No Content' })
+    @ApiNotFoundResponse({ description: 'Not Found' })
+    async softRemoveRole(@Param('id') id: string): Promise<void> {
+        return this._roleService.softRemoveRole(id);
     }
 
     @UseGuards(new RolesGuard([DefaultRoles.Admin]))

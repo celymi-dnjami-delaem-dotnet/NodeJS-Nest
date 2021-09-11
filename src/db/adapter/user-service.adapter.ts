@@ -18,6 +18,7 @@ export interface IUserServiceAdapter {
     updateUser: (userCommand: IUserCommand) => Promise<ServiceResult<IUserCommand>>;
     softRemoveUser: (id: string) => Promise<ServiceResult>;
     removeUser: (id: string) => Promise<ServiceResult>;
+    removeAllUsers: () => Promise<ServiceResult>;
 }
 
 export const UserServiceAdapterName = Symbol('IUserServiceAdapter');
@@ -83,6 +84,10 @@ export class UserServiceAdapter implements IUserServiceAdapter {
 
     async removeUser(id: string): Promise<ServiceResult> {
         return this._userRepository.removeUser(id);
+    }
+
+    async removeAllUsers(): Promise<ServiceResult> {
+        return this._userRepository.removeAllUsers();
     }
 
     private async handleUserCreationAdapter(
