@@ -16,6 +16,7 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
 
     async userTokenExist(accessToken: string, refreshToken: string): Promise<ServiceResult<IBaseUserToken>> {
         const foundResult = await this._userTokenRepository.findOne({ accessToken, refreshToken });
+
         if (!foundResult) {
             return new ServiceResult(ServiceResultType.NotFound);
         }
@@ -25,6 +26,7 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
 
     async updateUserToken({ id, accessToken, refreshToken }: UserToken): Promise<ServiceResult> {
         const updatedResult = await this._userTokenRepository.update({ id }, { accessToken, refreshToken });
+
         if (!updatedResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound);
         }

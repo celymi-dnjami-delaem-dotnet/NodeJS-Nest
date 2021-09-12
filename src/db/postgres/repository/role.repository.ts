@@ -79,6 +79,7 @@ export class RoleTypeOrmRepository implements IRoleRepository {
 
     async softRemoveRole(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this._roleRepository.update(id, { isDeleted: true });
+
         if (!softRemoveResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
         }

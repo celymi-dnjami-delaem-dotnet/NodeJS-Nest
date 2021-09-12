@@ -25,6 +25,7 @@ export class UserTypeOrmRepository implements IUserRepository {
 
     async getUserById(id: string): Promise<ServiceResult<User>> {
         const foundResult = await this.findUserById(id, true);
+
         if (!foundResult) {
             return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
@@ -37,8 +38,9 @@ export class UserTypeOrmRepository implements IUserRepository {
             userName: signInUser.userName,
             password: signInUser.password,
         });
+
         if (!foundResult) {
-            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
+            return new ServiceResult<User>(ServiceResultType.InvalidData, null, missingUserEntityExceptionMessage);
         }
 
         return new ServiceResult<User>(ServiceResultType.Success, foundResult);
