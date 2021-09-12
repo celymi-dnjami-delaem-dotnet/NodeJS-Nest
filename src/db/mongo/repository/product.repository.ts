@@ -1,5 +1,4 @@
 import { Category, CategoryDocument } from '../schemas/category.schema';
-import { IBaseProduct } from '../../base-types/base-product.type';
 import { ICreateProductSchema } from '../types/create-product.type';
 import { IProductRepository } from '../../base-types/product-repository.type';
 import { ISearchParamsProduct } from '../../base-types/search-params-product.type';
@@ -18,7 +17,7 @@ export class ProductMongooseRepository implements IProductRepository {
         @InjectModel(Category.name) private readonly _categoryModel: Model<CategoryDocument>,
     ) {}
 
-    async getProducts(searchParams: ISearchParamsProduct): Promise<IBaseProduct[]> {
+    async getProducts(searchParams: ISearchParamsProduct): Promise<Product[]> {
         const search = this._productModel.find();
 
         if (searchParams.displayName) {
@@ -55,25 +54,25 @@ export class ProductMongooseRepository implements IProductRepository {
         return new ServiceResult<Product>(ServiceResultType.Success, productSchema);
     }
 
-    async createProduct(product: ICreateProductSchema): Promise<ServiceResult<IBaseProduct>> {
-        const existingCategory = await this._categoryModel.findOne({ _id: product.category }).exec();
+    async createProduct(product: ICreateProductSchema): Promise<ServiceResult<Product>> {
+        let existingCategory: Category;
+        if (product.category) {
+            existingCategory = await this._categoryModel.findOne({ _id: product.category }).exec();
 
-        if (!existingCategory) {
-            return new ServiceResult<IBaseProduct>(ServiceResultType.InvalidData);
+            if (!existingCategory) {
+                return new ServiceResult<Product>(ServiceResultType.InvalidData);
+            }
         }
-
         const createdProduct = new this._productModel(product);
         const creationResult = await createdProduct.save();
 
-        const updateResult = await this._categoryModel
-            .updateOne({ _id: existingCategory._id }, { $push: { products: creationResult._id } })
-            .exec();
-
-        if (!updateResult.nModified) {
-            return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
+        if (product.category) {
+            await this._categoryModel
+                .updateOne({ _id: existingCategory._id }, { $push: { products: creationResult._id } })
+                .exec();
         }
 
-        return new ServiceResult<IBaseProduct>(ServiceResultType.Success, creationResult);
+        return new ServiceResult<Product>(ServiceResultType.Success, creationResult);
     }
 
     async updateProduct(productSchema: Product): Promise<ServiceResult<Product>> {

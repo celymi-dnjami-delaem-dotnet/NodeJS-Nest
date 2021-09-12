@@ -42,7 +42,7 @@ export class RatingController {
         return this._ratingService.getRatingById(request.params.id, request.user.userId, request.user.roles);
     }
 
-    @UseGuards(new RolesGuard([DefaultRoles.Buyer]))
+    @UseGuards(new RolesGuard([DefaultRoles.Buyer, DefaultRoles.Admin]))
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiBearerAuth()

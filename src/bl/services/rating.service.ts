@@ -22,7 +22,7 @@ export class RatingService {
         return ratings.map(RatingMapper.mapToDtoFromCommand);
     }
 
-    async getRatingById(ratingId: string, userId: string, userRoles: string): Promise<RatingDto> {
+    async getRatingById(ratingId: string, userId: string, userRoles: string[]): Promise<RatingDto> {
         const foundRating = await this.findRating(ratingId, userId, userRoles);
 
         return RatingMapper.mapToDtoFromCommand(foundRating);
@@ -38,24 +38,24 @@ export class RatingService {
         return RatingMapper.mapToDtoFromCommand(data);
     }
 
-    async softRemoveRating(ratingId: string, userId: string, userRoles: string): Promise<void> {
+    async softRemoveRating(ratingId: string, userId: string, userRoles: string[]): Promise<void> {
         await this.handleUserRemovement(ratingId, userId, userRoles, (args) =>
             this._ratingServiceAdapter.softRemoveRating(args),
         );
     }
 
-    async removeRating(ratingId: string, userId: string, userRoles: string): Promise<void> {
+    async removeRating(ratingId: string, userId: string, userRoles: string[]): Promise<void> {
         await this.handleUserRemovement(ratingId, userId, userRoles, (args) =>
             this._ratingServiceAdapter.removeRating(args),
         );
     }
 
-    private async findRating(id: string, userId: string, userRoles: string): Promise<IRatingCommand> {
+    private async findRating(id: string, userId: string, userRoles: string[]): Promise<IRatingCommand> {
         const { serviceResultType, exceptionMessage, data } = await this._ratingServiceAdapter.getRatingById(id);
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
-        if (UserUtils.isBuyer(userRoles) && data.userId !== userId) {
+        if (UserUtils.isBuyerOrAdmin(userRoles) && data.userId !== userId) {
             throw new UserFriendlyException(
                 ServiceResultType.InvalidData,
                 RatingService.notPartOfDbItemExceptionMessage,
@@ -68,7 +68,7 @@ export class RatingService {
     private async handleUserRemovement(
         ratingId: string,
         userId: string,
-        userRoles: string,
+        userRoles: string[],
         callback: (id: string) => Promise<ServiceResult>,
     ): Promise<void> {
         await this.findRating(ratingId, userId, userRoles);

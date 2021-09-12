@@ -29,21 +29,21 @@ export class RatingTypeOrmRepository implements IRatingRepository {
         const foundRating = await this._ratingRepository.findOne({ id });
 
         if (!foundRating) {
-            return new ServiceResult(ServiceResultType.NotFound);
+            return new ServiceResult(ServiceResultType.NotFound, null, missingRatingEntityExceptionMessage);
         }
 
-        return new ServiceResult(ServiceResultType.Success, null, missingRatingEntityExceptionMessage);
+        return new ServiceResult(ServiceResultType.Success, foundRating);
     }
 
     async setRating(createRatingDb: ICreateRatingDb): Promise<ServiceResult<IBaseRating>> {
         const existingUser = await this._userRepository.findOne({ id: createRatingDb.userId });
         if (!existingUser) {
-            return new ServiceResult<Rating>(ServiceResultType.Success, null, missingUserEntityExceptionMessage);
+            return new ServiceResult<Rating>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
         const existingProduct = await this._productRepository.findOne({ id: createRatingDb.productId });
         if (!existingProduct) {
-            return new ServiceResult<Rating>(ServiceResultType.Success, null, missingProductEntityExceptionMessage);
+            return new ServiceResult<Rating>(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
         const existingRating = await this._ratingRepository.findOne({ user: existingUser, product: existingProduct });
@@ -64,7 +64,7 @@ export class RatingTypeOrmRepository implements IRatingRepository {
         await this._productRepository
             .createQueryBuilder()
             .update(Product)
-            .set({ totalRating: () => 'AVG(ratings.rating)' })
+            .set({ totalRating: () => `"totalRating" + ${createRatingDb.rating}` })
             .where('id = :id', { id: existingProduct.id })
             .execute();
 

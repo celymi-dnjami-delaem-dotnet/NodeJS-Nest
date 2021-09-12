@@ -6,8 +6,7 @@ export class CreateUserDto {
     @IsNotEmpty()
     userName: string;
 
-    @ApiProperty({ description: 'User role', example: 'Buyer', required: true })
-    @IsNotEmpty()
+    @ApiProperty({ description: 'User role. If it is missing - no role will be attached', example: 'Buyer' })
     roleId: string;
 
     @ApiProperty({ description: 'User firstname', example: 'Igor', required: true })

@@ -72,16 +72,22 @@ export class ProductTypeOrmRepository implements IProductRepository {
     }
 
     async createProduct(product: ICreateProductEntity): Promise<ServiceResult<Product>> {
-        const existingCategory = await this._categoryRepository.findOne(product.categoryId);
+        let existingCategory: Category;
+        if (product.categoryId) {
+            existingCategory = await this._categoryRepository.findOne(product.categoryId);
 
-        if (!existingCategory) {
-            return new ServiceResult(ServiceResultType.InvalidData, null, missingProductEntityExceptionMessage);
+            if (!existingCategory) {
+                return new ServiceResult(ServiceResultType.InvalidData, null, missingProductEntityExceptionMessage);
+            }
         }
 
         const newProductEntity = new Product();
         newProductEntity.price = product.price;
         newProductEntity.displayName = product.displayName;
-        newProductEntity.category = existingCategory;
+
+        if (existingCategory) {
+            newProductEntity.category = existingCategory;
+        }
 
         const creationResult = await this._productRepository.save(newProductEntity);
 

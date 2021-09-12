@@ -49,7 +49,7 @@ export class UserTypeOrmRepository implements IUserRepository {
     }
 
     async createUser(createUserDb: ICreateUserDb): Promise<ServiceResult<User>> {
-        return this.handleUserCreation(createUserDb, { id: createUserDb.roleId });
+        return this.handleUserCreation(createUserDb, createUserDb.roleId && { id: createUserDb.roleId });
     }
 
     async updateUser(user: User): Promise<ServiceResult<User>> {
@@ -104,9 +104,13 @@ export class UserTypeOrmRepository implements IUserRepository {
         createUser: ICreateUserDb,
         searchRoleCondition: FindConditions<Role>,
     ): Promise<ServiceResult<User>> {
-        const existingRole = await this._roleRepository.findOne(searchRoleCondition);
-        if (!existingRole) {
-            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+        let existingRole: Role;
+        if (searchRoleCondition) {
+            existingRole = await this._roleRepository.findOne(searchRoleCondition);
+
+            if (!existingRole) {
+                return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+            }
         }
 
         const newUser = new User();
@@ -114,7 +118,10 @@ export class UserTypeOrmRepository implements IUserRepository {
         newUser.firstName = createUser.firstName;
         newUser.lastName = createUser.lastName;
         newUser.password = createUser.password;
-        newUser.roles = [existingRole];
+
+        if (searchRoleCondition) {
+            newUser.roles = [existingRole];
+        }
 
         const createdUser = await this._userRepository.save(newUser);
 

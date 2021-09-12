@@ -57,7 +57,10 @@ describe('RoleController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
     });
 
-    it(`Should return ${HttpStatus.OK} and found item on ${baseRoleUrl}/id/:id (GET)`, async () => {
+    it(`Should return ${HttpStatus.OK} and found item on ${TestUtils.getUrlWithId(
+        baseRoleUrl,
+        ':id',
+    )} (GET)`, async () => {
         const createdEntity = await createRole();
 
         const response: Response = await ApiRequest.get(

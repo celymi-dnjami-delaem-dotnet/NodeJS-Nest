@@ -66,7 +66,6 @@ export class RatingMongooseRepository implements IRatingRepository {
             createdRating = await new this._ratingModel(newRating).save();
         }
 
-        //todo: investigate more convenient way of updating total rating
         await this._productModel.updateOne(
             { _id: existingProduct._id },
             {
@@ -74,8 +73,7 @@ export class RatingMongooseRepository implements IRatingRepository {
                     ratings: createdRating._id,
                 },
                 $set: {
-                    totalRating:
-                        existingProduct.ratings.reduce((acc, x) => acc + x.rating, 0) / existingProduct.ratings.length,
+                    totalRating: existingProduct.totalRating + createRatingDb.rating,
                 },
             },
         );

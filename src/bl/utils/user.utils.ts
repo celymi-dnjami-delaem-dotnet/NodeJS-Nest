@@ -5,7 +5,7 @@ export class UserUtils {
         return createHash('sha256').update(password).digest('hex');
     }
 
-    static isBuyer(userRoles: string): boolean {
-        return !!userRoles.match(/\w*(Byuer)\w*/);
+    static isBuyerOrAdmin(userRoles: string[]): boolean {
+        return !userRoles.some((x) => x.match(/\w*(Byuer|Admin)\w*/));
     }
 }
