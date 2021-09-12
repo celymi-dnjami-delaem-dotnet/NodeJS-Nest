@@ -1,17 +1,26 @@
 import { ApiRequest } from './api-request';
 import { AppModule } from '../src/app.module';
 import { CustomExceptionFilter } from '../src/api/filters/custom-exception.filter';
+import { DefaultRoles } from '../src/bl/constants';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ICreateRoleCommand } from '../src/bl/commands/create-role.command';
 import { ICreateUserCommand } from '../src/bl/commands/create-user.command';
 import { IRoleCommand } from '../src/bl/commands/role.command';
 import { IRoleServiceAdapter, RoleServiceAdapterName } from '../src/db/adapter/role-service.adapter';
+import { IUserCommand } from '../src/bl/commands/user.command';
 import { IUserServiceAdapter, UserServiceAdapterName } from '../src/db/adapter/user-service.adapter';
 import { Response } from 'supertest';
 import { RoleDto } from '../src/api/dto/role.dto';
+import { ServiceResultType } from '../src/bl/result-wrappers/service-result-type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
-import { invalidItemId } from './constants';
+import {
+    invalidItemId,
+    testRoleName,
+    testUserFirstName,
+    testUserLastName,
+    testUserName,
+    testUserPassword,
+} from './constants';
 
 describe('RoleController (e2e)', () => {
     const baseRoleUrl = '/api/roles';
@@ -100,7 +109,7 @@ describe('RoleController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.CREATED} on ${baseRoleUrl} (POST)`, async () => {
-        const data = { displayName: 'testRole' };
+        const data = { displayName: testRoleName };
         const response: Response = await ApiRequest.post(app.getHttpServer(), baseRoleUrl, data, true);
 
         expect(response.status).toEqual(HttpStatus.CREATED);
@@ -115,29 +124,20 @@ describe('RoleController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.NO_CONTENT} on grant role on ${baseRoleUrl}/grant (POST)`, async () => {
-        const basicCreatedRole = await createRole('Buyer');
+        const basicCreatedRole = await createRole(DefaultRoles.Buyer);
+        const createdUser = await createUser(basicCreatedRole.id);
 
-        const userCreationData: ICreateUserCommand = {
-            username: 'test',
-            firstName: 'test',
-            lastName: 'test',
-            password: 'test',
-            roleId: basicCreatedRole.id,
-        };
-        const createdUser = await userServiceAdapter.createUser(userCreationData);
+        const newCreatedRole = await createRole();
 
-        const newRoleCreationData: ICreateRoleCommand = { displayName: 'TestRole' };
-        const newCreatedRole = await roleServiceAdapter.createRole(newRoleCreationData);
-
-        const data = { userId: createdUser.data.id, roleId: newCreatedRole.id };
+        const data = { userId: createdUser.id, roleId: newCreatedRole.id };
         const response: Response = await ApiRequest.post(app.getHttpServer(), `${baseRoleUrl}/grant`, data, true);
 
         expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 
-        const userWithRole = await userServiceAdapter.getUserById(createdUser.data.id);
+        const userWithRole = await userServiceAdapter.getUserById(createdUser.id);
         expect(userWithRole.data.roles).toContainEqual({
             id: newCreatedRole.id,
-            displayName: newRoleCreationData.displayName,
+            displayName: newCreatedRole.displayName,
         });
     });
 
@@ -154,22 +154,14 @@ describe('RoleController (e2e)', () => {
 
     it(`Should return ${HttpStatus.NO_CONTENT} on revoke role on ${baseRoleUrl}/revoke (POST)`, async () => {
         const basicCreatedRole = await createRole('Buyer');
+        const createdUser = await createUser(basicCreatedRole.id);
 
-        const userCreationData: ICreateUserCommand = {
-            username: 'test',
-            firstName: 'test',
-            lastName: 'test',
-            password: 'test',
-            roleId: basicCreatedRole.id,
-        };
-        const createdUser = await userServiceAdapter.createUser(userCreationData);
-
-        const data = { userId: createdUser.data.id, roleId: basicCreatedRole.id };
+        const data = { userId: createdUser.id, roleId: basicCreatedRole.id };
         const response: Response = await ApiRequest.post(app.getHttpServer(), `${baseRoleUrl}/revoke`, data, true);
 
         expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 
-        const userWithRole = await userServiceAdapter.getUserById(createdUser.data.id);
+        const userWithRole = await userServiceAdapter.getUserById(createdUser.id);
         expect(userWithRole.data.roles).toEqual([]);
     });
 
@@ -293,7 +285,7 @@ describe('RoleController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
 
-    const createRole = async (displayName = 'TestRole'): Promise<IRoleCommand> => {
+    const createRole = async (displayName = testRoleName): Promise<IRoleCommand> => {
         const creationData = { displayName };
         const createdEntity = await roleServiceAdapter.createRole(creationData);
 
@@ -301,5 +293,21 @@ describe('RoleController (e2e)', () => {
         expect(createdEntity.id).toBeTruthy();
 
         return createdEntity;
+    };
+
+    const createUser = async (roleId: string): Promise<IUserCommand> => {
+        const userCreationData: ICreateUserCommand = {
+            username: testUserName,
+            firstName: testUserFirstName,
+            lastName: testUserLastName,
+            password: testUserPassword,
+            roleId,
+        };
+        const createdUser = await userServiceAdapter.createUser(userCreationData);
+
+        expect(createdUser.serviceResultType).toEqual(ServiceResultType.Success);
+        expect(createdUser.data).toBeTruthy();
+
+        return createdUser.data;
     };
 });

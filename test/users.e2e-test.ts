@@ -12,7 +12,14 @@ import { ServiceResultType } from '../src/bl/result-wrappers/service-result-type
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
 import { UserDto } from '../src/api/dto/user.dto';
-import { invalidItemId } from './constants';
+import {
+    invalidItemId,
+    testRoleName,
+    testUserFirstName,
+    testUserLastName,
+    testUserName,
+    testUserPassword,
+} from './constants';
 
 describe('UserController (e2e)', () => {
     const baseUserUrl = '/api/users';
@@ -218,7 +225,7 @@ describe('UserController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
 
-    const createRole = async (displayName = 'TestRole'): Promise<string> => {
+    const createRole = async (displayName = testRoleName): Promise<string> => {
         const creationData: ICreateRoleCommand = { displayName };
         const createdEntity = await roleServiceAdapter.createRole(creationData);
 
@@ -228,12 +235,12 @@ describe('UserController (e2e)', () => {
         return createdEntity.id;
     };
 
-    const createUser = async (roleId: string, displayName = 'TestRole'): Promise<IUserCommand> => {
+    const createUser = async (roleId: string, displayName = testUserName): Promise<IUserCommand> => {
         const creationData: ICreateUserCommand = {
             username: displayName,
-            firstName: 'test',
-            lastName: 'test',
-            password: 'test',
+            firstName: testUserFirstName,
+            lastName: testUserLastName,
+            password: testUserPassword,
             roleId,
         };
         const createdEntity = await userServiceAdapter.createUser(creationData);

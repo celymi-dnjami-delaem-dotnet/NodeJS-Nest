@@ -16,7 +16,14 @@ import { Response } from 'supertest';
 import { ServiceResultType } from '../src/bl/result-wrappers/service-result-type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
-import { invalidItemId } from './constants';
+import {
+    invalidItemId,
+    testProductName,
+    testRoleName,
+    testUserFirstName,
+    testUserLastName,
+    testUserPassword,
+} from './constants';
 
 describe('CategoryController (e2e)', () => {
     const baseRatingUrl = '/api/ratings';
@@ -266,12 +273,12 @@ describe('CategoryController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
 
-    const createUser = async (displayName = 'TestRole'): Promise<IUserCommand> => {
+    const createUser = async (displayName = testRoleName): Promise<IUserCommand> => {
         const creationData: ICreateUserCommand = {
             username: displayName,
-            firstName: 'test',
-            lastName: 'test',
-            password: 'test',
+            firstName: testUserFirstName,
+            lastName: testUserLastName,
+            password: testUserPassword,
         };
         const createdEntity = await userServiceAdapter.createUser(creationData);
 
@@ -283,7 +290,7 @@ describe('CategoryController (e2e)', () => {
 
     const createProduct = async (): Promise<IProductCommand> => {
         const productData: ICreateProductCommand = {
-            displayName: 'TestProduct',
+            displayName: testProductName,
             price: 100,
         };
         const createdProductEntity = await productServiceAdapter.createProduct(productData);

@@ -13,7 +13,7 @@ import { Response } from 'supertest';
 import { ServiceResultType } from '../src/bl/result-wrappers/service-result-type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
-import { invalidItemId } from './constants';
+import { invalidItemId, testProductName } from './constants';
 
 describe('ProductController (e2e)', () => {
     const baseProductUrl = '/api/products';
@@ -87,7 +87,7 @@ describe('ProductController (e2e)', () => {
         const categoryId = await createCategory();
         const data: CreateProductDto = {
             categoryId,
-            displayName: 'TestProduct',
+            displayName: testProductName,
             price: 100,
         };
 
@@ -106,7 +106,7 @@ describe('ProductController (e2e)', () => {
     it(`Should return ${HttpStatus.BAD_REQUEST} for missing category on ${baseProductUrl} (POST)`, async () => {
         const data: CreateProductDto = {
             categoryId: invalidItemId,
-            displayName: 'TestProduct',
+            displayName: testProductName,
             price: 100,
         };
 
@@ -123,7 +123,7 @@ describe('ProductController (e2e)', () => {
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseProductUrl} (POST)`, async () => {
         const data: CreateProductDto = {
             categoryId: invalidItemId,
-            displayName: 'TestProduct',
+            displayName: testProductName,
             price: 100,
         };
 
@@ -168,7 +168,7 @@ describe('ProductController (e2e)', () => {
             isDeleted: false,
             totalRating: 0,
             categoryId: invalidItemId,
-            displayName: 'TestProduct',
+            displayName: testProductName,
             price: 100,
             createdAt: new Date(),
         };
@@ -188,7 +188,7 @@ describe('ProductController (e2e)', () => {
             isDeleted: false,
             totalRating: 0,
             categoryId: invalidItemId,
-            displayName: 'TestProduct',
+            displayName: testProductName,
             price: 100,
             createdAt: new Date(),
         };
@@ -301,7 +301,7 @@ describe('ProductController (e2e)', () => {
     const createProduct = async (categoryId: string): Promise<IProductCommand> => {
         const productData: ICreateProductCommand = {
             categoryId,
-            displayName: 'TestProduct',
+            displayName: testProductName,
             price: 100,
         };
         const createdProductEntity = await productServiceAdapter.createProduct(productData);

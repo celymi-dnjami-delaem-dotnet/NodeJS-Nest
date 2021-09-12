@@ -15,7 +15,7 @@ import { SignInUserDto } from '../src/api/dto/sign-in-user.dto';
 import { SignUpUserDto } from '../src/api/dto/sign-up-user.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserUtils } from '../src/bl/utils/user.utils';
-import { testFirstName, testLastName, testName, testPassword } from './constants';
+import { testRoleName, testUserFirstName, testUserLastName, testUserName, testUserPassword } from './constants';
 
 describe('AuthController (e2e)', () => {
     const baseAuthUrl = '/api/auth';
@@ -54,10 +54,10 @@ describe('AuthController (e2e)', () => {
         await createRole(DefaultRoles.Buyer);
 
         const data: SignUpUserDto = {
-            firstName: testFirstName,
-            lastName: testLastName,
-            password: testPassword,
-            userName: testName,
+            firstName: testUserFirstName,
+            lastName: testUserLastName,
+            password: testUserPassword,
+            userName: testUserName,
         };
 
         const response: Response = await ApiRequest.post(
@@ -71,10 +71,10 @@ describe('AuthController (e2e)', () => {
 
     it(`Should return ${HttpStatus.NOT_FOUND} for missing role on ${baseAuthUrl}/sign-up (POST)`, async () => {
         const data: SignUpUserDto = {
-            firstName: testFirstName,
-            lastName: testLastName,
-            password: testPassword,
-            userName: testName,
+            firstName: testUserFirstName,
+            lastName: testUserLastName,
+            password: testUserPassword,
+            userName: testUserName,
         };
 
         const response: Response = await ApiRequest.post(
@@ -88,11 +88,11 @@ describe('AuthController (e2e)', () => {
 
     it(`Should return ${HttpStatus.OK} for valid auth data on ${baseAuthUrl}/sign-in (POST)`, async () => {
         const createdRole = await createRole(DefaultRoles.Buyer);
-        await createUser(createdRole, testName);
+        await createUser(createdRole);
 
         const data: SignInUserDto = {
-            password: testPassword,
-            userName: testName,
+            password: testUserPassword,
+            userName: testUserName,
         };
 
         const response: Response = await ApiRequest.post(
@@ -109,8 +109,8 @@ describe('AuthController (e2e)', () => {
 
     it(`Should return ${HttpStatus.BAD_REQUEST} for invalid auth data on ${baseAuthUrl}/sign-in (POST)`, async () => {
         const data: SignInUserDto = {
-            password: testPassword,
-            userName: testName,
+            password: testUserPassword,
+            userName: testUserName,
         };
 
         const response: Response = await ApiRequest.post(
@@ -124,8 +124,8 @@ describe('AuthController (e2e)', () => {
 
     it(`Should return ${HttpStatus.BAD_REQUEST} for invalid auth data on ${baseAuthUrl}/sign-in (POST)`, async () => {
         const data: SignInUserDto = {
-            password: testPassword,
-            userName: testName,
+            password: testUserPassword,
+            userName: testUserName,
         };
 
         const response: Response = await ApiRequest.post(
@@ -149,7 +149,7 @@ describe('AuthController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
     });
 
-    const createRole = async (displayName = 'TestRole'): Promise<string> => {
+    const createRole = async (displayName = testRoleName): Promise<string> => {
         const creationData: ICreateRoleCommand = { displayName };
         const createdEntity = await roleServiceAdapter.createRole(creationData);
 
@@ -159,12 +159,12 @@ describe('AuthController (e2e)', () => {
         return createdEntity.id;
     };
 
-    const createUser = async (roleId: string, displayName = 'TestRole'): Promise<IUserCommand> => {
+    const createUser = async (roleId: string, displayName = testUserName): Promise<IUserCommand> => {
         const creationData: ICreateUserCommand = {
             username: displayName,
-            firstName: testFirstName,
-            lastName: testLastName,
-            password: UserUtils.hashPassword(testPassword),
+            firstName: testUserFirstName,
+            lastName: testUserLastName,
+            password: UserUtils.hashPassword(testUserPassword),
             roleId,
         };
         const createdEntity = await userServiceAdapter.createUser(creationData);
