@@ -31,7 +31,7 @@ describe('CategoryController (e2e)', () => {
         await app.close();
     });
 
-    it(`Should return collection on ${baseCategoryUrl} (GET)`, async () => {
+    it(`Should return ${HttpStatus.OK} and collection of items on ${baseCategoryUrl} (GET)`, async () => {
         const response: Response = await ApiRequest.get(app.getHttpServer(), baseCategoryUrl);
 
         expect(response.status).toEqual(HttpStatus.OK);

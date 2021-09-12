@@ -96,7 +96,6 @@ export class ProductTypeOrmRepository implements IProductRepository {
             {
                 displayName: product.displayName,
                 price: product.price,
-                totalRating: product.totalRating,
             },
         );
 

@@ -41,7 +41,7 @@ describe('RolesController (e2e)', () => {
         await app.close();
     });
 
-    it(`Should return ${HttpStatus.OK} on ${baseRoleUrl} (GET)`, async () => {
+    it(`Should return ${HttpStatus.OK} and collection of items on ${baseRoleUrl} (GET)`, async () => {
         const response: Response = await ApiRequest.get(app.getHttpServer(), baseRoleUrl, true);
 
         expect(response.status).toEqual(HttpStatus.OK);
@@ -83,6 +83,19 @@ describe('RolesController (e2e)', () => {
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+    });
+
+    it(`Should return ${HttpStatus.NOT_FOUND} on missing item on ${TestUtils.getUrlWithId(
+        baseRoleUrl,
+        ':id',
+    )} (GET)`, async () => {
+        const response: Response = await ApiRequest.get(
+            app.getHttpServer(),
+            TestUtils.getUrlWithId(baseRoleUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            true,
+        );
+
+        expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
 
     it(`Should return ${HttpStatus.CREATED} on ${baseRoleUrl} (POST)`, async () => {

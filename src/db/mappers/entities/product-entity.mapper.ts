@@ -22,6 +22,7 @@ export class ProductEntityMapper extends BaseProductMapper implements IProductDb
 
         return {
             ...baseProduct,
+            id: productDb.id,
             categoryId: productDb.category && productDb.category.id,
         };
     }
