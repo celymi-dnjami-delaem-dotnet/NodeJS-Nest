@@ -4,6 +4,7 @@ import { CustomExceptionFilter } from '../src/api/filters/custom-exception.filte
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ICreateRoleCommand } from '../src/bl/commands/create-role.command';
 import { ICreateUserCommand } from '../src/bl/commands/create-user.command';
+import { IRoleCommand } from '../src/bl/commands/role.command';
 import { IRoleServiceAdapter, RoleServiceAdapterName } from '../src/db/adapter/role-service.adapter';
 import { IUserServiceAdapter, UserServiceAdapterName } from '../src/db/adapter/user-service.adapter';
 import { Response } from 'supertest';
@@ -56,11 +57,7 @@ describe('RolesController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.OK} and found item on ${baseRoleUrl}/id/:id (GET)`, async () => {
-        const data: ICreateRoleCommand = { displayName: 'testRole' };
-        const createdEntity = await roleServiceAdapter.createRole(data);
-
-        expect(createdEntity).toBeTruthy();
-        expect(createdEntity.id).toBeTruthy();
+        const createdEntity = await createRole();
 
         const response: Response = await ApiRequest.get(
             app.getHttpServer(),
@@ -114,8 +111,7 @@ describe('RolesController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.NO_CONTENT} on grant role on ${baseRoleUrl}/grant (POST)`, async () => {
-        const basicRoleCreationData: ICreateRoleCommand = { displayName: 'Buyer' };
-        const basicCreatedRole = await roleServiceAdapter.createRole(basicRoleCreationData);
+        const basicCreatedRole = await createRole('Buyer');
 
         const userCreationData: ICreateUserCommand = {
             username: 'test',
@@ -153,8 +149,7 @@ describe('RolesController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.NO_CONTENT} on revoke role on ${baseRoleUrl}/revoke (POST)`, async () => {
-        const basicRoleCreationData: ICreateRoleCommand = { displayName: 'Buyer' };
-        const basicCreatedRole = await roleServiceAdapter.createRole(basicRoleCreationData);
+        const basicCreatedRole = await createRole('Buyer');
 
         const userCreationData: ICreateUserCommand = {
             username: 'test',
@@ -186,14 +181,13 @@ describe('RolesController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.OK} on ${baseRoleUrl} (PUT)`, async () => {
-        const creationData = { displayName: 'testRole' };
-        const createdResponse = await roleServiceAdapter.createRole(creationData);
+        const createdEntity = await createRole();
 
         const updateData: RoleDto = {
-            id: createdResponse.id,
+            id: createdEntity.id,
             displayName: 'newRoleName',
-            createdAt: createdResponse.createdAt,
-            isDeleted: createdResponse.isDeleted,
+            createdAt: createdEntity.createdAt,
+            isDeleted: createdEntity.isDeleted,
         };
 
         const updateResponse: Response = await ApiRequest.put(
@@ -231,11 +225,7 @@ describe('RolesController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.NO_CONTENT} on soft-remove ${baseRoleUrl} (DELETE)`, async () => {
-        const creationData = { displayName: 'TestCategory' };
-        const createdEntity = await roleServiceAdapter.createRole(creationData);
-
-        expect(createdEntity).toBeTruthy();
-        expect(createdEntity.id).toBeTruthy();
+        const createdEntity = await createRole();
 
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
@@ -269,11 +259,7 @@ describe('RolesController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.NO_CONTENT} on remove ${baseRoleUrl} (DELETE)`, async () => {
-        const creationData = { displayName: 'TestCategory' };
-        const createdEntity = await roleServiceAdapter.createRole(creationData);
-
-        expect(createdEntity).toBeTruthy();
-        expect(createdEntity.id).toBeTruthy();
+        const createdEntity = await createRole();
 
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
@@ -302,4 +288,14 @@ describe('RolesController (e2e)', () => {
 
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
+
+    const createRole = async (displayName = 'TestCategory'): Promise<IRoleCommand> => {
+        const creationData = { displayName };
+        const createdEntity = await roleServiceAdapter.createRole(creationData);
+
+        expect(createdEntity).toBeTruthy();
+        expect(createdEntity.id).toBeTruthy();
+
+        return createdEntity;
+    };
 });

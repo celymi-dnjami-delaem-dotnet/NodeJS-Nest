@@ -43,13 +43,11 @@ export class CategoryTypeOrmRepository implements ICategoryRepository {
         return this._categoryRepository.save(category);
     }
 
-    async updateCategory(category: Category): Promise<ServiceResult<IBaseCategory>> {
-        const id: string = category.id;
-
+    async updateCategory({ id, displayName }: Category): Promise<ServiceResult<IBaseCategory>> {
         const updateResult = await this._categoryRepository.update(
             { id },
             {
-                displayName: category.displayName,
+                displayName: displayName,
             },
         );
 

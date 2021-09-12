@@ -4,6 +4,8 @@ import { CategoryDto } from '../src/api/dto/category.dto';
 import { CategoryServiceAdapterName, ICategoryServiceAdapter } from '../src/db/adapter/category-service.adapter';
 import { CustomExceptionFilter } from '../src/api/filters/custom-exception.filter';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { ICategoryCommand } from '../src/bl/commands/category.command';
+import { ICreateCategoryCommand } from '../src/bl/commands/create-category.command';
 import { Response } from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
@@ -11,7 +13,7 @@ import { TestUtils } from './utils';
 describe('CategoryController (e2e)', () => {
     const baseCategoryUrl = '/api/categories';
 
-    let categoryAdapter: ICategoryServiceAdapter;
+    let categoryServiceAdapter: ICategoryServiceAdapter;
     let app: INestApplication;
 
     beforeAll(async () => {
@@ -22,9 +24,13 @@ describe('CategoryController (e2e)', () => {
         app = moduleFixture.createNestApplication();
         app.useGlobalFilters(new CustomExceptionFilter());
 
-        categoryAdapter = moduleFixture.get(CategoryServiceAdapterName);
+        categoryServiceAdapter = moduleFixture.get(CategoryServiceAdapterName);
 
         await app.init();
+    });
+
+    afterEach(async () => {
+        await categoryServiceAdapter.removeAllCategories();
     });
 
     afterAll(async () => {
@@ -48,11 +54,7 @@ describe('CategoryController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.OK} and found item on ${baseCategoryUrl}/id/:id (GET)`, async () => {
-        const data = { displayName: 'TestCategory' };
-        const createdEntity = await categoryAdapter.createCategory(data);
-
-        expect(createdEntity).toBeTruthy();
-        expect(createdEntity.id).toBeTruthy();
+        const createdEntity = await createCategory();
 
         const response: Response = await ApiRequest.get(
             app.getHttpServer(),
@@ -62,8 +64,6 @@ describe('CategoryController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.OK);
         expect(response.body).toBeTruthy();
         expect(response.body.id).toBeTruthy();
-
-        await categoryAdapter.removeCategory(createdEntity.id);
     });
 
     it(`Should return ${HttpStatus.CREATED} and created item on ${baseCategoryUrl} (POST)`, async () => {
@@ -79,20 +79,14 @@ describe('CategoryController (e2e)', () => {
         expect(createdCategoryResponse.status).toEqual(HttpStatus.CREATED);
         expect(createdCategoryResponse.body).toBeTruthy();
         expect(createdCategoryResponse.body.id).toBeTruthy();
-
-        await categoryAdapter.removeCategory(createdCategoryResponse.body.id);
     });
 
     it(`Should return ${HttpStatus.OK} and updated existing item on ${baseCategoryUrl} (PUT)`, async () => {
-        const creationData = { displayName: 'TestCategory' };
-        const createdEntity = await categoryAdapter.createCategory(creationData);
+        const createdEntity = await createCategory();
 
-        expect(createdEntity.id).toBeTruthy();
-
-        const newName = 'NewName';
         const data: CategoryDto = {
-            displayName: newName,
             id: createdEntity.id,
+            displayName: 'NewCategoryName',
             createdAt: createdEntity.createdAt,
             isDeleted: createdEntity.isDeleted,
             products: [],
@@ -106,9 +100,7 @@ describe('CategoryController (e2e)', () => {
         );
 
         expect(response.status).toEqual(HttpStatus.OK);
-        expect(response.body.displayName).toEqual(newName);
-
-        await categoryAdapter.removeCategory(createdEntity.id);
+        expect(response.body.displayName).toEqual(data.displayName);
     });
 
     it(`Should return ${HttpStatus.UNAUTHORIZED} for unauthorized user on remove item ${baseCategoryUrl} (PUT)`, async () => {
@@ -148,47 +140,55 @@ describe('CategoryController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
 
-    it(`Should return ${HttpStatus.NO_CONTENT} on soft-remove item ${baseCategoryUrl} (DELETE)`, async () => {
-        const creationData = { displayName: 'TestCategory' };
-        const createdEntity = await categoryAdapter.createCategory(creationData);
-
-        expect(createdEntity.id).toBeTruthy();
+    it(`Should return ${HttpStatus.NO_CONTENT} on soft-remove item ${TestUtils.getSoftRemoveUrlWithId(
+        baseCategoryUrl,
+        ':id',
+    )} (DELETE)`, async () => {
+        const createdEntity = await createCategory();
 
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/soft-remove/id/${createdEntity.id}`,
+            TestUtils.getSoftRemoveUrlWithId(baseCategoryUrl, createdEntity.id),
             true,
         );
 
         expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 
-        await categoryAdapter.removeCategory(createdEntity.id);
+        await categoryServiceAdapter.removeCategory(createdEntity.id);
     });
 
-    it(`Should return ${HttpStatus.UNAUTHORIZED} for unauthorized user on soft-remove ${baseCategoryUrl} (DELETE)`, async () => {
+    it(`Should return ${
+        HttpStatus.UNAUTHORIZED
+    } for unauthorized user on soft-remove ${TestUtils.getSoftRemoveUrlWithId(
+        baseCategoryUrl,
+        ':id',
+    )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/soft-remove/id/c7052035-5737-4587-8002-e43eb6598cbd`,
+            TestUtils.getSoftRemoveUrlWithId(baseCategoryUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
     });
 
-    it(`Should return ${HttpStatus.NOT_FOUND} on soft-remove for missing item ${baseCategoryUrl} (DELETE)`, async () => {
+    it(`Should return ${HttpStatus.NOT_FOUND} on soft-remove for missing item ${TestUtils.getSoftRemoveUrlWithId(
+        baseCategoryUrl,
+        ':id',
+    )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/soft-remove/id/c7052035-5737-4587-8002-e43eb6598cbd`,
+            TestUtils.getSoftRemoveUrlWithId(baseCategoryUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
             true,
         );
 
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
 
-    it(`Should return ${HttpStatus.NO_CONTENT} on remove ${baseCategoryUrl} (DELETE)`, async () => {
-        const creationData = { displayName: 'TestCategory' };
-        const createdEntity = await categoryAdapter.createCategory(creationData);
-
-        expect(createdEntity.id).toBeTruthy();
+    it(`Should return ${HttpStatus.NO_CONTENT} on remove  ${TestUtils.getUrlWithId(
+        baseCategoryUrl,
+        ':id',
+    )} (DELETE)`, async () => {
+        const createdEntity = await createCategory();
 
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
@@ -199,22 +199,38 @@ describe('CategoryController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.NO_CONTENT);
     });
 
-    it(`Should return ${HttpStatus.UNAUTHORIZED} for unauthorized user on remove ${baseCategoryUrl} (DELETE)`, async () => {
+    it(`Should return ${HttpStatus.UNAUTHORIZED} for unauthorized user on remove ${TestUtils.getUrlWithId(
+        baseCategoryUrl,
+        ':id',
+    )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/id/c7052035-5737-4587-8002-e43eb6598cbd`,
+            TestUtils.getUrlWithId(baseCategoryUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
     });
 
-    it(`Should return ${HttpStatus.NOT_FOUND} on remove for missing item ${baseCategoryUrl} (DELETE)`, async () => {
+    it(`Should return ${HttpStatus.NOT_FOUND} on remove for missing item ${TestUtils.getUrlWithId(
+        baseCategoryUrl,
+        ':id',
+    )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            `${baseCategoryUrl}/id/c7052035-5737-4587-8002-e43eb6598cbd`,
+            TestUtils.getUrlWithId(baseCategoryUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
             true,
         );
 
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
+
+    const createCategory = async (): Promise<ICategoryCommand> => {
+        const categoryData: ICreateCategoryCommand = { displayName: 'TestCategoryName' };
+        const createdCategoryEntity = await categoryServiceAdapter.createCategory(categoryData);
+
+        expect(createdCategoryEntity).toBeTruthy();
+        expect(createdCategoryEntity.id).toBeTruthy();
+
+        return createdCategoryEntity;
+    };
 });
