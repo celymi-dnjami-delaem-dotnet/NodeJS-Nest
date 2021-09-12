@@ -47,11 +47,11 @@ export class UserService {
     }
 
     async softRemoveUser(id: string): Promise<void> {
-        await UserService.handleRemoveUser(id, this._userServiceAdapter.softRemoveUser);
+        await UserService.handleRemoveUser(id, (id) => this._userServiceAdapter.softRemoveUser(id));
     }
 
     async removeUser(id: string): Promise<void> {
-        await UserService.handleRemoveUser(id, this._userServiceAdapter.removeUser);
+        await UserService.handleRemoveUser(id, (id) => this._userServiceAdapter.softRemoveUser(id));
     }
 
     private static async handleRemoveUser(id: string, callback: (id: string) => Promise<ServiceResult>): Promise<void> {

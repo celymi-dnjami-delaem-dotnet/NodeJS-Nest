@@ -12,7 +12,7 @@ import { RoleDto } from '../src/api/dto/role.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
 
-describe('RolesController (e2e)', () => {
+describe('RoleController (e2e)', () => {
     const baseRoleUrl = '/api/roles';
 
     let roleServiceAdapter: IRoleServiceAdapter;
@@ -289,7 +289,7 @@ describe('RolesController (e2e)', () => {
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
 
-    const createRole = async (displayName = 'TestCategory'): Promise<IRoleCommand> => {
+    const createRole = async (displayName = 'TestRole'): Promise<IRoleCommand> => {
         const creationData = { displayName };
         const createdEntity = await roleServiceAdapter.createRole(creationData);
 

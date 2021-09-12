@@ -88,6 +88,7 @@ export class RoleTypeOrmRepository implements IRoleRepository {
 
     async removeRole(id: string): Promise<ServiceResult> {
         const removeResult = await this._roleRepository.delete(id);
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
         }
@@ -97,6 +98,7 @@ export class RoleTypeOrmRepository implements IRoleRepository {
 
     async removeAllRoles(): Promise<ServiceResult> {
         const removeResult = await this._roleRepository.createQueryBuilder().delete().from(Role).execute();
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound);
         }

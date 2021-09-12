@@ -68,6 +68,7 @@ export class UserTypeOrmRepository implements IUserRepository {
 
     async softRemoveUser(id: string): Promise<ServiceResult> {
         const removeResult = await this._userRepository.update({ id }, { isDeleted: true });
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
@@ -77,6 +78,7 @@ export class UserTypeOrmRepository implements IUserRepository {
 
     async removeUser(id: string): Promise<ServiceResult> {
         const removeResult = await this._userRepository.delete(id);
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
@@ -86,6 +88,7 @@ export class UserTypeOrmRepository implements IUserRepository {
 
     async removeAllUsers(): Promise<ServiceResult> {
         const removeResult = await this._userRepository.createQueryBuilder().delete().from(User).execute();
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound);
         }
