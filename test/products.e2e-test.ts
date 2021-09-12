@@ -13,6 +13,7 @@ import { Response } from 'supertest';
 import { ServiceResultType } from '../src/bl/result-wrappers/service-result-type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
+import { invalidItemId } from './constants';
 
 describe('ProductController (e2e)', () => {
     const baseProductUrl = '/api/products';
@@ -76,7 +77,7 @@ describe('ProductController (e2e)', () => {
     )} (GET)`, async () => {
         const response: Response = await ApiRequest.get(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseProductUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseProductUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
@@ -104,7 +105,7 @@ describe('ProductController (e2e)', () => {
 
     it(`Should return ${HttpStatus.BAD_REQUEST} for missing category on ${baseProductUrl} (POST)`, async () => {
         const data: CreateProductDto = {
-            categoryId: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            categoryId: invalidItemId,
             displayName: 'TestProduct',
             price: 100,
         };
@@ -121,7 +122,7 @@ describe('ProductController (e2e)', () => {
 
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseProductUrl} (POST)`, async () => {
         const data: CreateProductDto = {
-            categoryId: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            categoryId: invalidItemId,
             displayName: 'TestProduct',
             price: 100,
         };
@@ -163,10 +164,10 @@ describe('ProductController (e2e)', () => {
 
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseProductUrl} (PUT)`, async () => {
         const data: ProductDto = {
-            id: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            id: invalidItemId,
             isDeleted: false,
             totalRating: 0,
-            categoryId: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            categoryId: invalidItemId,
             displayName: 'TestProduct',
             price: 100,
             createdAt: new Date(),
@@ -183,10 +184,10 @@ describe('ProductController (e2e)', () => {
 
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on ${baseProductUrl} (PUT)`, async () => {
         const data: ProductDto = {
-            id: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            id: invalidItemId,
             isDeleted: false,
             totalRating: 0,
-            categoryId: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            categoryId: invalidItemId,
             displayName: 'TestProduct',
             price: 100,
             createdAt: new Date(),
@@ -227,7 +228,7 @@ describe('ProductController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getSoftRemoveUrlWithId(baseProductUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getSoftRemoveUrlWithId(baseProductUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -239,7 +240,7 @@ describe('ProductController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getSoftRemoveUrlWithId(baseProductUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getSoftRemoveUrlWithId(baseProductUrl, invalidItemId),
             true,
         );
 
@@ -268,7 +269,7 @@ describe('ProductController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseProductUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseProductUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -280,7 +281,7 @@ describe('ProductController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseProductUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseProductUrl, invalidItemId),
             true,
         );
 

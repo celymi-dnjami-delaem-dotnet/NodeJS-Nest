@@ -11,6 +11,7 @@ import { Response } from 'supertest';
 import { RoleDto } from '../src/api/dto/role.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
+import { invalidItemId } from './constants';
 
 describe('RoleController (e2e)', () => {
     const baseRoleUrl = '/api/roles';
@@ -76,7 +77,7 @@ describe('RoleController (e2e)', () => {
     )} (GET)`, async () => {
         const response: Response = await ApiRequest.get(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseRoleUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseRoleUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -88,7 +89,7 @@ describe('RoleController (e2e)', () => {
     )} (GET)`, async () => {
         const response: Response = await ApiRequest.get(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseRoleUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseRoleUrl, invalidItemId),
             true,
         );
 
@@ -139,8 +140,8 @@ describe('RoleController (e2e)', () => {
 
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseRoleUrl}/grant (POST)`, async () => {
         const data = {
-            roleId: 'c7052035-5737-4587-8002-e43eb6598cbd',
-            userId: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            roleId: invalidItemId,
+            userId: invalidItemId,
         };
 
         const response: Response = await ApiRequest.post(app.getHttpServer(), `${baseRoleUrl}/grant`, data);
@@ -171,8 +172,8 @@ describe('RoleController (e2e)', () => {
 
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseRoleUrl}/revoke (POST)`, async () => {
         const data = {
-            roleId: 'c7052035-5737-4587-8002-e43eb6598cbd',
-            userId: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            roleId: invalidItemId,
+            userId: invalidItemId,
         };
 
         const response: Response = await ApiRequest.post(app.getHttpServer(), `${baseRoleUrl}/revoke`, data);
@@ -204,7 +205,7 @@ describe('RoleController (e2e)', () => {
 
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseRoleUrl} (PUT)`, async () => {
         const data = {
-            id: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            id: invalidItemId,
             displayName: 'TestRole',
         };
 
@@ -215,7 +216,7 @@ describe('RoleController (e2e)', () => {
 
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on ${baseRoleUrl} (PUT)`, async () => {
         const data = {
-            id: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            id: invalidItemId,
             displayName: 'TestRole',
         };
 
@@ -242,7 +243,7 @@ describe('RoleController (e2e)', () => {
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on soft-remove ${baseRoleUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getSoftRemoveUrlWithId(baseRoleUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getSoftRemoveUrlWithId(baseRoleUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -251,7 +252,7 @@ describe('RoleController (e2e)', () => {
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on soft-remove ${baseRoleUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getSoftRemoveUrlWithId(baseRoleUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getSoftRemoveUrlWithId(baseRoleUrl, invalidItemId),
             true,
         );
 
@@ -273,7 +274,7 @@ describe('RoleController (e2e)', () => {
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseRoleUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseRoleUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseRoleUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -282,7 +283,7 @@ describe('RoleController (e2e)', () => {
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on ${baseRoleUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseRoleUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseRoleUrl, invalidItemId),
             true,
         );
 

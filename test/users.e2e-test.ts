@@ -12,6 +12,7 @@ import { ServiceResultType } from '../src/bl/result-wrappers/service-result-type
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
 import { UserDto } from '../src/api/dto/user.dto';
+import { invalidItemId } from './constants';
 
 describe('UserController (e2e)', () => {
     const baseUserUrl = '/api/users';
@@ -81,7 +82,7 @@ describe('UserController (e2e)', () => {
     )} (GET)`, async () => {
         const response: Response = await ApiRequest.get(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseUserUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseUserUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -93,7 +94,7 @@ describe('UserController (e2e)', () => {
     )} (GET)`, async () => {
         const response: Response = await ApiRequest.get(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseUserUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseUserUrl, invalidItemId),
             true,
         );
 
@@ -166,7 +167,7 @@ describe('UserController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getSoftRemoveUrlWithId(baseUserUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getSoftRemoveUrlWithId(baseUserUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -178,7 +179,7 @@ describe('UserController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getSoftRemoveUrlWithId(baseUserUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getSoftRemoveUrlWithId(baseUserUrl, invalidItemId),
             true,
         );
 
@@ -201,7 +202,7 @@ describe('UserController (e2e)', () => {
     it(`Should return ${HttpStatus.UNAUTHORIZED} for anonymous user on ${baseUserUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseUserUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseUserUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -210,7 +211,7 @@ describe('UserController (e2e)', () => {
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on ${baseUserUrl} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseUserUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseUserUrl, invalidItemId),
             true,
         );
 

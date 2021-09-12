@@ -9,6 +9,7 @@ import { ICreateCategoryCommand } from '../src/bl/commands/create-category.comma
 import { Response } from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtils } from './utils';
+import { invalidItemId } from './constants';
 
 describe('CategoryController (e2e)', () => {
     const baseCategoryUrl = '/api/categories';
@@ -46,9 +47,10 @@ describe('CategoryController (e2e)', () => {
     });
 
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on ${baseCategoryUrl}/id/:id (GET)`, async () => {
-        const testId = 'c7052035-5737-4587-8002-e43eb6598cbd';
-
-        const response: Response = await ApiRequest.get(app.getHttpServer(), `${baseCategoryUrl}/id/${testId}`);
+        const response: Response = await ApiRequest.get(
+            app.getHttpServer(),
+            TestUtils.getUrlWithId(baseCategoryUrl, invalidItemId),
+        );
 
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
     });
@@ -106,7 +108,7 @@ describe('CategoryController (e2e)', () => {
     it(`Should return ${HttpStatus.UNAUTHORIZED} for unauthorized user on remove item ${baseCategoryUrl} (PUT)`, async () => {
         const data: CategoryDto = {
             displayName: 'NewName',
-            id: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            id: invalidItemId,
             createdAt: new Date(),
             isDeleted: false,
             products: [],
@@ -124,7 +126,7 @@ describe('CategoryController (e2e)', () => {
     it(`Should return ${HttpStatus.NOT_FOUND} for missing item on ${baseCategoryUrl} (PUT)`, async () => {
         const data: CategoryDto = {
             displayName: 'NewName',
-            id: 'c7052035-5737-4587-8002-e43eb6598cbd',
+            id: invalidItemId,
             createdAt: new Date(),
             isDeleted: false,
             products: [],
@@ -165,7 +167,7 @@ describe('CategoryController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getSoftRemoveUrlWithId(baseCategoryUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getSoftRemoveUrlWithId(baseCategoryUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -177,7 +179,7 @@ describe('CategoryController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getSoftRemoveUrlWithId(baseCategoryUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getSoftRemoveUrlWithId(baseCategoryUrl, invalidItemId),
             true,
         );
 
@@ -205,7 +207,7 @@ describe('CategoryController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseCategoryUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseCategoryUrl, invalidItemId),
         );
 
         expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -217,7 +219,7 @@ describe('CategoryController (e2e)', () => {
     )} (DELETE)`, async () => {
         const response: Response = await ApiRequest.delete(
             app.getHttpServer(),
-            TestUtils.getUrlWithId(baseCategoryUrl, 'c7052035-5737-4587-8002-e43eb6598cbd'),
+            TestUtils.getUrlWithId(baseCategoryUrl, invalidItemId),
             true,
         );
 
