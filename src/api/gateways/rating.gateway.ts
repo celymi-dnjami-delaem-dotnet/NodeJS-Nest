@@ -2,7 +2,7 @@ import { RatingService } from '../../bl/services/rating.service';
 import { Server } from 'socket.io';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
-@WebSocketGateway({ transports: ['websocket'] })
+@WebSocketGateway()
 export class RatingGateway {
     @WebSocketServer()
     server: Server;
@@ -10,7 +10,9 @@ export class RatingGateway {
     constructor(private readonly _ratingService: RatingService) {}
 
     @SubscribeMessage('last-ratings')
-    sendLastRatings(): void {
-        this.server.emit('last-ratings', 'Test');
+    async sendLastRatings(): Promise<void> {
+        const lastRatings = await this._ratingService.getTopLastRatings(10);
+
+        this.server.emit('last-ratings', lastRatings);
     }
 }
