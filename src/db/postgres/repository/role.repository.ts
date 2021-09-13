@@ -43,9 +43,7 @@ export class RoleTypeOrmRepository implements IRoleRepository {
             return new ServiceResult<IBaseRole>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
         }
 
-        const updatedRole = await this.findRoleById(role.id);
-
-        return new ServiceResult<IBaseRole>(ServiceResultType.Success, updatedRole);
+        return this.getRoleById(role.id);
     }
 
     async grantRole(roleId: string, userId: string): Promise<ServiceResult> {

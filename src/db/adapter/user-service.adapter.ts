@@ -1,6 +1,8 @@
 import { IAuthUserCommand } from '../../bl/commands/auth-user.command';
+import { IBaseUser } from '../base-types/base-user.type';
 import { ICollectionSearchCommand } from '../../bl/commands/collection-search.command';
 import { ICreateUserCommand } from '../../bl/commands/create-user.command';
+import { ICreateUserDb } from '../base-types/create-user.type';
 import { IUserCommand } from '../../bl/commands/user.command';
 import { IUserDbMapper, UserDbMapperName } from '../mappers/types/user-mapper.type';
 import { IUserRepository, UserRepositoryName } from '../base-types/user-repository.type';
@@ -56,27 +58,11 @@ export class UserServiceAdapter implements IUserServiceAdapter {
     }
 
     async signUpUser(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
-        const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
-
-        const { serviceResultType, exceptionMessage, data } = await this._userRepository.signUpUser(dbUser);
-
-        return new ServiceResult(
-            serviceResultType,
-            data && this._userMapper.mapToCommandFromDb(data),
-            exceptionMessage,
-        );
+        return this.handleUserCreationAdapter(createUserCommand, (...args) => this._userRepository.signUpUser(...args));
     }
 
     async createUser(createUserCommand: ICreateUserCommand): Promise<ServiceResult<IUserCommand>> {
-        const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
-
-        const { serviceResultType, exceptionMessage, data } = await this._userRepository.createUser(dbUser);
-
-        return new ServiceResult(
-            serviceResultType,
-            data && this._userMapper.mapToCommandFromDb(data),
-            exceptionMessage,
-        );
+        return this.handleUserCreationAdapter(createUserCommand, (...args) => this._userRepository.createUser(...args));
     }
 
     async updateUser(userCommand: IUserCommand): Promise<ServiceResult<IUserCommand>> {
@@ -97,5 +83,20 @@ export class UserServiceAdapter implements IUserServiceAdapter {
 
     async removeUser(id: string): Promise<ServiceResult> {
         return this._userRepository.removeUser(id);
+    }
+
+    private async handleUserCreationAdapter(
+        createUserCommand: ICreateUserCommand,
+        callback: (dbUser: ICreateUserDb) => Promise<ServiceResult<IBaseUser>>,
+    ): Promise<ServiceResult<IUserCommand>> {
+        const dbUser = this._userMapper.mapCreateToDbFromCommand(createUserCommand);
+
+        const { serviceResultType, exceptionMessage, data } = await callback(dbUser);
+
+        return new ServiceResult(
+            serviceResultType,
+            data && this._userMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
     }
 }

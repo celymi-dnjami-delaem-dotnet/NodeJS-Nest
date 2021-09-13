@@ -109,9 +109,7 @@ export class ProductTypeOrmRepository implements IProductRepository {
             return new ServiceResult(ServiceResultType.NotFound, null, missingProductEntityExceptionMessage);
         }
 
-        const updatedEntity = await this.findProductById(id, true);
-
-        return new ServiceResult<IBaseProduct>(ServiceResultType.Success, updatedEntity);
+        return this.getProductById(id);
     }
 
     async softRemoveProduct(id: string): Promise<ServiceResult> {

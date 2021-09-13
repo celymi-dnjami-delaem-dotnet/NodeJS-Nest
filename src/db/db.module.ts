@@ -12,6 +12,7 @@ import { Category as EntityCategory } from './postgres/entities/category.entity'
 import { Product as EntityProduct } from './postgres/entities/product.entity';
 import { Role as EntityRole } from './postgres/entities/role.entity';
 import { User as EntityUser } from './postgres/entities/user.entity';
+import { UserToken as EntityUserToken } from './postgres/entities/user-token.entity';
 import { LoggingModule } from '../logging/logging.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductDbMapperName } from './mappers/types/product-mapper.type';
@@ -31,6 +32,7 @@ import { RoleSchemaMapper } from './mappers/schemas/role-schema.mapper';
 import { RoleServiceAdapter, RoleServiceAdapterName } from './adapter/role-service.adapter';
 import { RoleTypeOrmRepository } from './postgres/repository/role.repository';
 import { User as SchemaUser, UserSchema } from './mongo/schemas/user.schema';
+import { UserToken as SchemaUserToken, UserTokenSchema } from './mongo/schemas/user-token.schema';
 import { SettingsModule } from '../settings/settings.module';
 import { SettingsService } from '../settings/settings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -40,6 +42,13 @@ import { UserMongooseRepository } from './mongo/repository/user.repository';
 import { UserRepositoryName } from './base-types/user-repository.type';
 import { UserSchemaMapper } from './mappers/schemas/user-schema.mapper';
 import { UserServiceAdapter, UserServiceAdapterName } from './adapter/user-service.adapter';
+import { UserTokenDbMapperName } from './mappers/types/user-token-mapper.type';
+import { UserTokenEntityMapper } from './mappers/entities/user-token-entity.mapper';
+import { UserTokenMongooseRepository } from './mongo/repository/user-token.repository';
+import { UserTokenRepositoryName } from './base-types/user-token-repository.type';
+import { UserTokenSchemaMapper } from './mappers/schemas/user-token-schema.mapper';
+import { UserTokenServiceAdapter, UserTokenServiceAdapterName } from './adapter/user-token-service.adapter';
+import { UserTokenTypeOrmRepository } from './postgres/repository/user-token.repository';
 import { UserTypeOrmRepository } from './postgres/repository/user.repository';
 import { set } from 'mongoose';
 
@@ -51,19 +60,23 @@ export class DbModule {
             {
                 provide: CategoryServiceAdapterName,
                 useClass: CategoryServiceAdapter,
-            },
+            } as Provider,
             {
                 provide: ProductServiceAdapterName,
                 useClass: ProductServiceAdapter,
-            },
+            } as Provider,
             {
                 provide: UserServiceAdapterName,
                 useClass: UserServiceAdapter,
-            },
+            } as Provider,
             {
                 provide: RoleServiceAdapterName,
                 useClass: RoleServiceAdapter,
-            },
+            } as Provider,
+            {
+                provide: UserTokenServiceAdapterName,
+                useClass: UserTokenServiceAdapter,
+            } as Provider,
         ];
 
         if (process.env.DB_TYPE === DbOptions.Postgres) {
@@ -82,7 +95,7 @@ export class DbModule {
                     }),
                     inject: [SettingsService],
                 }),
-                TypeOrmModule.forFeature([EntityCategory, EntityProduct, EntityUser, EntityRole]),
+                TypeOrmModule.forFeature([EntityCategory, EntityProduct, EntityUser, EntityRole, EntityUserToken]),
             );
 
             moduleProviders.push(
@@ -100,6 +113,10 @@ export class DbModule {
                     useClass: RoleTypeOrmRepository,
                 } as Provider,
                 {
+                    provide: UserTokenRepositoryName,
+                    useClass: UserTokenTypeOrmRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategoryEntityMapper,
                 } as Provider,
@@ -114,6 +131,10 @@ export class DbModule {
                 {
                     provide: RoleDbMapperName,
                     useClass: RoleEntityMapper,
+                } as Provider,
+                {
+                    provide: UserTokenDbMapperName,
+                    useClass: UserTokenEntityMapper,
                 } as Provider,
             );
         } else {
@@ -150,6 +171,10 @@ export class DbModule {
                         name: SchemaRole.name,
                         schema: RoleSchema,
                     },
+                    {
+                        name: SchemaUserToken.name,
+                        schema: UserTokenSchema,
+                    },
                 ]),
             );
 
@@ -168,6 +193,10 @@ export class DbModule {
                     useClass: RoleMongooseRepository,
                 } as Provider,
                 {
+                    provide: UserTokenRepositoryName,
+                    useClass: UserTokenMongooseRepository,
+                },
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategorySchemaMapper,
                 } as Provider,
@@ -182,6 +211,10 @@ export class DbModule {
                 {
                     provide: RoleDbMapperName,
                     useClass: RoleSchemaMapper,
+                } as Provider,
+                {
+                    provide: UserTokenDbMapperName,
+                    useClass: UserTokenSchemaMapper,
                 } as Provider,
             );
         }

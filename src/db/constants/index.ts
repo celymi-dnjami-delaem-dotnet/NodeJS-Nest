@@ -5,3 +5,6 @@ export const missingCategoryEntityExceptionMessage: string = getMissingEntityExc
 export const missingProductEntityExceptionMessage: string = getMissingEntityExceptionMessage('product');
 export const missingUserEntityExceptionMessage: string = getMissingEntityExceptionMessage('user');
 export const missingRoleEntityExceptionMessage: string = getMissingEntityExceptionMessage('role');
+
+export const getOldRefreshTokenDate = (currentDate: Date) =>
+    new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getUTCDate());

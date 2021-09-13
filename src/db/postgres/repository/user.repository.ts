@@ -63,9 +63,7 @@ export class UserTypeOrmRepository implements IUserRepository {
             return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
 
-        const updatedUser = await this.findUserById(userId, true);
-
-        return new ServiceResult<User>(ServiceResultType.Success, updatedUser);
+        return this.getUserById(userId);
     }
 
     async softRemoveUser(id: string): Promise<ServiceResult> {
