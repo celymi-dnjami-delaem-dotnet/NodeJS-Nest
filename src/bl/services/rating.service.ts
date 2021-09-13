@@ -22,6 +22,12 @@ export class RatingService {
         return ratings.map(RatingMapper.mapToDtoFromCommand);
     }
 
+    async getTopLastRatings(limit: number): Promise<RatingDto[]> {
+        const ratings = await this._ratingServiceAdapter.getTopLastRatings(limit);
+
+        return ratings.map(RatingMapper.mapToDtoFromCommand);
+    }
+
     async getRatingById(ratingId: string, userId: string, userRoles: string[]): Promise<RatingDto> {
         const foundRating = await this.findRating(ratingId, userId, userRoles);
 

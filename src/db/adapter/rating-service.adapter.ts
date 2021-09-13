@@ -8,6 +8,7 @@ import { ServiceResult } from '../../bl/result-wrappers/service-result';
 
 export interface IRatingServiceAdapter {
     getRatings: (collectionSearchCommand: ICollectionSearchCommand) => Promise<IRatingCommand[]>;
+    getTopLastRatings: (limit: number) => Promise<IRatingCommand[]>;
     getRatingById: (id: string) => Promise<ServiceResult<IRatingCommand>>;
     setRating: (createRatingCommand: ICreateRatingCommand) => Promise<ServiceResult<IRatingCommand>>;
     softRemoveRating: (id: string) => Promise<ServiceResult>;
@@ -25,6 +26,12 @@ export class RatingServiceAdapter implements IRatingServiceAdapter {
 
     async getRatings({ limit, offset }: ICollectionSearchCommand): Promise<IRatingCommand[]> {
         const ratings = await this._ratingRepository.getRatings(limit, offset);
+
+        return ratings.map((x) => this._ratingMapper.mapToCommandFromDb(x));
+    }
+
+    async getTopLastRatings(limit: number): Promise<IRatingCommand[]> {
+        const ratings = await this._ratingRepository.getTopLastRatings(limit);
 
         return ratings.map((x) => this._ratingMapper.mapToCommandFromDb(x));
     }

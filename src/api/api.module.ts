@@ -9,6 +9,7 @@ import { LoggingModule } from '../logging/logging.module';
 import { Module } from '@nestjs/common';
 import { ProductController } from './controllers/product.controller';
 import { RatingController } from './controllers/rating.controller';
+import { RatingGateway } from './gateways/rating.gateway';
 import { RoleController } from './controllers/role.controller';
 import { SettingsModule } from '../settings/settings.module';
 import { TerminusModule } from '@nestjs/terminus';
@@ -30,6 +31,7 @@ import { UserController } from './controllers/user.controller';
             provide: APP_INTERCEPTOR,
             useClass: LoggingInterceptor,
         },
+        RatingGateway,
     ],
 })
 export class ApiModule {}

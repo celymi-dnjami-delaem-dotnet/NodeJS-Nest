@@ -25,6 +25,10 @@ export class RatingTypeOrmRepository implements IRatingRepository {
         return this._ratingRepository.find({ skip: offset, take: limit });
     }
 
+    async getTopLastRatings(limit: number): Promise<IBaseRating[]> {
+        return this._ratingRepository.find({ order: { createdAt: -1 }, take: limit });
+    }
+
     async getRatingById(id: string): Promise<ServiceResult<IBaseRating>> {
         const foundRating = await this._ratingRepository.findOne({ id });
 

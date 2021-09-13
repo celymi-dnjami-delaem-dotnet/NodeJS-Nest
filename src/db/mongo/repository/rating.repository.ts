@@ -27,6 +27,10 @@ export class RatingMongooseRepository implements IRatingRepository {
         return this._ratingModel.find().skip(offset).limit(limit);
     }
 
+    async getTopLastRatings(limit: number): Promise<IBaseRating[]> {
+        return this._ratingModel.find().sort({ createdAt: -1 }).limit(limit);
+    }
+
     async getRatingById(id: string): Promise<ServiceResult<Rating>> {
         const foundRating = await this._ratingModel.findOne({ _id: id });
 
