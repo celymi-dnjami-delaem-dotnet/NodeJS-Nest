@@ -23,7 +23,7 @@ export class SeedService {
 
         let data;
         try {
-            data = JSON.parse(readFileSync(resolve(__dirname, `../../seed.json`), 'utf-8'));
+            data = JSON.parse(readFileSync(resolve(__dirname, `../../../seed.json`), 'utf-8'));
         } catch (error) {
             console.error(`Unable to read seed.json, error: ${error.message}`);
 
@@ -43,6 +43,8 @@ export class SeedService {
         for (const role of roles) {
             const existingRole = await this._roleServiceAdapter.getRoleByName(role.displayName);
             if (existingRole.serviceResultType === ServiceResultType.Success) {
+                createdRoles.push(existingRole.data);
+
                 continue;
             }
 
@@ -59,13 +61,13 @@ export class SeedService {
         }
 
         for (const user of users) {
-            const existingUser = await this._roleServiceAdapter.getRoleById(user.userName);
-            if (existingUser.serviceResultType === ServiceResultType.Success) {
+            const existingSeedRole = roles.find((x) => x.displayName === user.role);
+            if (!existingSeedRole) {
                 continue;
             }
 
-            const existingRole = roles.find((x) => x.displayName === user.role);
-            if (!existingRole) {
+            const existingDbRole = await this._roleServiceAdapter.getRoleByName(existingSeedRole.displayName);
+            if (existingDbRole.serviceResultType !== ServiceResultType.Success) {
                 continue;
             }
 
@@ -74,7 +76,7 @@ export class SeedService {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 password: UserUtils.hashPassword(user.password),
-                roleId: existingRole.id,
+                roleId: existingSeedRole.id,
             });
         }
     }

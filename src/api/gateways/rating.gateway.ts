@@ -1,18 +1,15 @@
-import { RatingService } from '../../bl/services/rating.service';
+import { RatingDto } from '../dto/rating.dto';
 import { Server } from 'socket.io';
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
 @WebSocketGateway()
 export class RatingGateway {
+    private static readonly lastRatingsEventName = 'last-ratings';
+
     @WebSocketServer()
     server: Server;
 
-    constructor(private readonly _ratingService: RatingService) {}
-
-    @SubscribeMessage('last-ratings')
-    async sendLastRatings(): Promise<void> {
-        const lastRatings = await this._ratingService.getTopLastRatings(10);
-
-        this.server.emit('last-ratings', lastRatings);
+    sendLastRatings(lastRatings: RatingDto[]): void {
+        this.server.emit(RatingGateway.lastRatingsEventName, lastRatings);
     }
 }

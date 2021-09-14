@@ -3,6 +3,7 @@ import { IRatingCommand } from '../commands/rating.command';
 import { IRatingServiceAdapter, RatingServiceAdapterName } from '../../db/adapter/rating-service.adapter';
 import { Inject, Injectable } from '@nestjs/common';
 import { RatingDto } from '../../api/dto/rating.dto';
+import { RatingGateway } from '../../api/gateways/rating.gateway';
 import { RatingMapper } from '../mappers/rating.mapper';
 import { ServiceResult } from '../result-wrappers/service-result';
 import { ServiceResultType } from '../result-wrappers/service-result-type';
@@ -13,17 +14,15 @@ import { Utils } from '../utils';
 @Injectable()
 export class RatingService {
     private static readonly notPartOfDbItemExceptionMessage: string = 'User is not part of this entity';
+    private static readonly totalRatingsAmount: number = 10;
 
-    constructor(@Inject(RatingServiceAdapterName) private readonly _ratingServiceAdapter: IRatingServiceAdapter) {}
+    constructor(
+        @Inject(RatingServiceAdapterName) private readonly _ratingServiceAdapter: IRatingServiceAdapter,
+        private readonly _ratingsGateway: RatingGateway,
+    ) {}
 
     async getRatings(limit: string, offset: string): Promise<RatingDto[]> {
         const ratings = await this._ratingServiceAdapter.getRatings(Utils.getCollectionSearchParameters(limit, offset));
-
-        return ratings.map(RatingMapper.mapToDtoFromCommand);
-    }
-
-    async getTopLastRatings(limit: number): Promise<RatingDto[]> {
-        const ratings = await this._ratingServiceAdapter.getTopLastRatings(limit);
 
         return ratings.map(RatingMapper.mapToDtoFromCommand);
     }
@@ -40,6 +39,8 @@ export class RatingService {
         );
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
+
+        await this.emitLastRatingsEvent();
 
         return RatingMapper.mapToDtoFromCommand(data);
     }
@@ -82,5 +83,14 @@ export class RatingService {
         const { serviceResultType } = await callback(ratingId);
 
         Utils.validateServiceResultType(serviceResultType);
+
+        await this.emitLastRatingsEvent();
+    }
+
+    private async emitLastRatingsEvent(): Promise<void> {
+        const lastRatingsCommand = await this._ratingServiceAdapter.getTopLastRatings(RatingService.totalRatingsAmount);
+        const lastRatingsDto = lastRatingsCommand.map(RatingMapper.mapToDtoFromCommand);
+
+        await this._ratingsGateway.sendLastRatings(lastRatingsDto);
     }
 }
