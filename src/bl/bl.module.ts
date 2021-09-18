@@ -5,7 +5,7 @@ import { DbModule } from '../db/db.module';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { LastRatingJob } from './jobs/last-rating.job';
 import { ProductService } from './services/product.service';
-import { RatingGateway } from '../api/gateways/rating.gateway';
+import { RatingGateway } from './gateways/rating.gateway';
 import { RatingService } from './services/rating.service';
 import { RoleService } from './services/role.service';
 import { ScheduleModule } from '@nestjs/schedule';

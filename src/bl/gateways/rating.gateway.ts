@@ -1,4 +1,4 @@
-import { LastRatingDto } from '../dto/last-rating.dto';
+import { LastRatingDto } from '../../api/dto/last-rating.dto';
 import { Server } from 'socket.io';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 

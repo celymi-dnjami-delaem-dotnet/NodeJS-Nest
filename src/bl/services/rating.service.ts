@@ -4,7 +4,7 @@ import { IRatingServiceAdapter, RatingServiceAdapterName } from '../../db/adapte
 import { Inject, Injectable } from '@nestjs/common';
 import { LastRatingMapper } from '../mappers/last-rating.mapper';
 import { RatingDto } from '../../api/dto/rating.dto';
-import { RatingGateway } from '../../api/gateways/rating.gateway';
+import { RatingGateway } from '../gateways/rating.gateway';
 import { RatingMapper } from '../mappers/rating.mapper';
 import { ServiceResult } from '../result-wrappers/service-result';
 import { ServiceResultType } from '../result-wrappers/service-result-type';
