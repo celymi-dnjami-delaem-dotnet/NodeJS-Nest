@@ -110,6 +110,7 @@ export class DbModule {
                         database: settingsService.dbName,
                         autoLoadEntities: true,
                         synchronize: true,
+                        ssl: settingsService.dbSsl,
                     }),
                     inject: [SettingsService],
                 }),
