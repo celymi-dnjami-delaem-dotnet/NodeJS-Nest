@@ -5,11 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { LastRating } from '../entities/last-rating.entity';
 import { Repository } from 'typeorm';
+import { getMinDateForLastRating } from '../../constants';
 
 @Injectable()
 export class LastRatingTypeOrmRepository implements ILastRatingRepository {
-    private static obsoleteLastRatingsDays = 7;
-
     constructor(@InjectRepository(LastRating) private readonly _lastRatingRepository: Repository<LastRating>) {}
 
     async getLastRatings(limit: number): Promise<ILastRating[]> {
@@ -27,17 +26,12 @@ export class LastRatingTypeOrmRepository implements ILastRatingRepository {
 
     async removeObsoleteRatings(): Promise<void> {
         const currentDate = new Date();
-        const minPastDate = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            currentDate.getDate() - LastRatingTypeOrmRepository.obsoleteLastRatingsDays,
-        );
 
         await this._lastRatingRepository
             .createQueryBuilder()
             .delete()
             .from(LastRating)
-            .where('createdAt < :date', { date: minPastDate })
+            .where('createdAt < :date', { date: getMinDateForLastRating(currentDate) })
             .execute();
     }
 }

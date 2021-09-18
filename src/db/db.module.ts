@@ -17,7 +17,10 @@ import { User as EntityUser } from './postgres/entities/user.entity';
 import { UserToken as EntityUserToken } from './postgres/entities/user-token.entity';
 import { LastRatingDbMapperName } from './mappers/types/last-rating-mapper.type';
 import { LastRatingEntityMapper } from './mappers/entities/last-rating-entity.mapper';
+import { LastRatingMongooseRepository } from './mongo/repository/last-rating.repository';
 import { LastRatingRepositoryName } from './base-types/last-rating-repository.type';
+import { LastRatingSchema, LastRating as SchemaLastRating } from './mongo/schemas/last-rating.schema';
+import { LastRatingSchemaMapper } from './mappers/schemas/last-rating-schema.mapper';
 import { LastRatingTypeOrmRepository } from './postgres/repository/last-rating.repository';
 import { LoggingModule } from '../logging/logging.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -222,6 +225,10 @@ export class DbModule {
                         name: SchemaRating.name,
                         schema: RatingSchema,
                     },
+                    {
+                        name: SchemaLastRating.name,
+                        schema: LastRatingSchema,
+                    },
                 ]),
             );
 
@@ -248,6 +255,10 @@ export class DbModule {
                     useClass: RatingMongooseRepository,
                 } as Provider,
                 {
+                    provide: LastRatingRepositoryName,
+                    useClass: LastRatingMongooseRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategorySchemaMapper,
                 } as Provider,
@@ -270,6 +281,10 @@ export class DbModule {
                 {
                     provide: RatingDbMapperName,
                     useClass: RatingSchemaMapper,
+                } as Provider,
+                {
+                    provide: LastRatingDbMapperName,
+                    useClass: LastRatingSchemaMapper,
                 } as Provider,
             );
         }
