@@ -9,11 +9,16 @@ import { CategoryTypeOrmRepository } from './postgres/repository/category.reposi
 import { ConsoleLogger, DynamicModule, Module, Provider } from '@nestjs/common';
 import { DbOptions } from '../settings/settings.constants';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
+import { LastRating as EntityLastRating } from './postgres/entities/last-rating.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
 import { Rating as EntityRating } from './postgres/entities/rating.entity';
 import { Role as EntityRole } from './postgres/entities/role.entity';
 import { User as EntityUser } from './postgres/entities/user.entity';
 import { UserToken as EntityUserToken } from './postgres/entities/user-token.entity';
+import { LastRatingDbMapperName } from './mappers/types/last-rating-mapper.type';
+import { LastRatingEntityMapper } from './mappers/entities/last-rating-entity.mapper';
+import { LastRatingRepositoryName } from './base-types/last-rating-repository.type';
+import { LastRatingTypeOrmRepository } from './postgres/repository/last-rating.repository';
 import { LoggingModule } from '../logging/logging.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductDbMapperName } from './mappers/types/product-mapper.type';
@@ -115,6 +120,7 @@ export class DbModule {
                     EntityRole,
                     EntityUserToken,
                     EntityRating,
+                    EntityLastRating,
                 ]),
             );
 
@@ -141,6 +147,10 @@ export class DbModule {
                     useClass: RatingTypeOrmRepository,
                 } as Provider,
                 {
+                    provide: LastRatingRepositoryName,
+                    useClass: LastRatingTypeOrmRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategoryEntityMapper,
                 } as Provider,
@@ -163,6 +173,10 @@ export class DbModule {
                 {
                     provide: RatingDbMapperName,
                     useClass: RatingEntityMapper,
+                } as Provider,
+                {
+                    provide: LastRatingDbMapperName,
+                    useClass: LastRatingEntityMapper,
                 } as Provider,
             );
         } else {

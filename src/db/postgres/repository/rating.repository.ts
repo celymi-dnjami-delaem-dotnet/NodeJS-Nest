@@ -2,6 +2,7 @@ import { IBaseRating } from '../../base-types/base-rating.type';
 import { ICreateRatingDb } from '../../base-types/create-rating.type';
 import { IRatingRepository } from '../../base-types/rating-repository.type';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import { Product } from '../entities/product.entity';
 import { Rating } from '../entities/rating.entity';
 import { Repository } from 'typeorm';
@@ -14,6 +15,7 @@ import {
     missingUserEntityExceptionMessage,
 } from '../../constants';
 
+@Injectable()
 export class RatingTypeOrmRepository implements IRatingRepository {
     constructor(
         @InjectRepository(Product) private readonly _productRepository: Repository<Product>,
@@ -23,10 +25,6 @@ export class RatingTypeOrmRepository implements IRatingRepository {
 
     async getRatings(limit: number, offset: number): Promise<IBaseRating[]> {
         return this._ratingRepository.find({ skip: offset, take: limit });
-    }
-
-    async getTopLastRatings(limit: number): Promise<IBaseRating[]> {
-        return this._ratingRepository.find({ order: { createdAt: -1 }, take: limit });
     }
 
     async getRatingById(id: string): Promise<ServiceResult<IBaseRating>> {
