@@ -15,6 +15,7 @@
     "test:e2e": "jest --runInBand --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/cli": "^8.0.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.1",
     "@nestjs/core": "^8.0.0",
@@ -45,7 +46,6 @@
     "typeorm": "^0.2.36"
   },
   "devDependencies": {
-    "@nestjs/cli": "^8.0.0",
     "@types/cron": "^1.7.3",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
