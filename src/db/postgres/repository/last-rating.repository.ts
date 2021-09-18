@@ -37,6 +37,7 @@ export class LastRatingTypeOrmRepository implements ILastRatingRepository {
             .createQueryBuilder()
             .delete()
             .from(LastRating)
-            .where('createdAt < :date', { date: minPastDate });
+            .where('createdAt < :date', { date: minPastDate })
+            .execute();
     }
 }
