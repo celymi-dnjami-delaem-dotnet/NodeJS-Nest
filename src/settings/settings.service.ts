@@ -23,7 +23,7 @@ export class SettingsService {
     private readonly _seedInitialData: string;
 
     constructor(private conf: ConfigService) {
-        this._appPort = conf.get<number>('APPLICATION_PORT', 3000);
+        this._appPort = conf.get<number>('APPLICATION_PORT');
         this._dbHost = conf.get<string>('DB_HOST');
         this._dbPort = conf.get<number>('DB_PORT');
         this._dbName = conf.get<string>('DB_NAME');
