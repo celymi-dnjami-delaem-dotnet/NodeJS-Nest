@@ -1,4 +1,4 @@
-import { RatingDto } from '../dto/rating.dto';
+import { LastRatingDto } from '../../api/dto/last-rating.dto';
 import { Server } from 'socket.io';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
@@ -9,7 +9,7 @@ export class RatingGateway {
     @WebSocketServer()
     server: Server;
 
-    sendLastRatings(lastRatings: RatingDto[]): void {
+    sendLastRatings(lastRatings: LastRatingDto[]): void {
         this.server.emit(RatingGateway.lastRatingsEventName, lastRatings);
     }
 }

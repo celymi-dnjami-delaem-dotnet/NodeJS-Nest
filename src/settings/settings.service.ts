@@ -12,6 +12,7 @@ export class SettingsService {
     private readonly _dbName: string;
     private readonly _dbUser: string;
     private readonly _dbPassword: string;
+    private readonly _dbSsl: string;
     private readonly _dbType: string;
     private readonly _jwtKey: string;
     private readonly _jwtUseExpiresIn: string;
@@ -22,12 +23,13 @@ export class SettingsService {
     private readonly _seedInitialData: string;
 
     constructor(private conf: ConfigService) {
-        this._appPort = conf.get<number>('APPLICATION_PORT', 3000);
+        this._appPort = conf.get<number>('PORT');
         this._dbHost = conf.get<string>('DB_HOST');
         this._dbPort = conf.get<number>('DB_PORT');
         this._dbName = conf.get<string>('DB_NAME');
         this._dbUser = conf.get<string>('DB_USER');
         this._dbPassword = conf.get<string>('DB_PASSWORD');
+        this._dbSsl = conf.get<string>('DB_SSL');
         this._dbType = conf.get<string>('DB_TYPE');
         this._jwtKey = conf.get<string>('JWT_KEY');
         this._jwtAudience = conf.get<string>('JWT_AUDIENCE');
@@ -60,6 +62,10 @@ export class SettingsService {
 
     get dbPassword(): string {
         return this._dbPassword;
+    }
+
+    get dbSsl(): boolean {
+        return this._dbSsl === 'true';
     }
 
     get dbType(): DbOptions {

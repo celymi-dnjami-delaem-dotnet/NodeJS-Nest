@@ -2,8 +2,9 @@ import { CreateRatingDto } from '../../api/dto/create-rating.dto';
 import { IRatingCommand } from '../commands/rating.command';
 import { IRatingServiceAdapter, RatingServiceAdapterName } from '../../db/adapter/rating-service.adapter';
 import { Inject, Injectable } from '@nestjs/common';
+import { LastRatingMapper } from '../mappers/last-rating.mapper';
 import { RatingDto } from '../../api/dto/rating.dto';
-import { RatingGateway } from '../../api/gateways/rating.gateway';
+import { RatingGateway } from '../gateways/rating.gateway';
 import { RatingMapper } from '../mappers/rating.mapper';
 import { ServiceResult } from '../result-wrappers/service-result';
 import { ServiceResultType } from '../result-wrappers/service-result-type';
@@ -40,6 +41,7 @@ export class RatingService {
 
         Utils.validateServiceResultType(serviceResultType, exceptionMessage);
 
+        await this._ratingServiceAdapter.createLastRating(LastRatingMapper.mapCreateToCommandFromRatingCommand(data));
         await this.emitLastRatingsEvent();
 
         return RatingMapper.mapToDtoFromCommand(data);
@@ -89,7 +91,7 @@ export class RatingService {
 
     private async emitLastRatingsEvent(): Promise<void> {
         const lastRatingsCommand = await this._ratingServiceAdapter.getTopLastRatings(RatingService.totalRatingsAmount);
-        const lastRatingsDto = lastRatingsCommand.map(RatingMapper.mapToDtoFromCommand);
+        const lastRatingsDto = lastRatingsCommand.map(LastRatingMapper.mapToDtoFromCommand);
 
         await this._ratingsGateway.sendLastRatings(lastRatingsDto);
     }
