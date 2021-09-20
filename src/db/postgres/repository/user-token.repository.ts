@@ -16,6 +16,7 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
 
     async userTokenExist(accessToken: string, refreshToken: string): Promise<ServiceResult<IBaseUserToken>> {
         const foundResult = await this._userTokenRepository.findOne({ accessToken, refreshToken });
+
         if (!foundResult) {
             return new ServiceResult(ServiceResultType.NotFound);
         }
@@ -25,6 +26,7 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
 
     async updateUserToken({ id, accessToken, refreshToken }: UserToken): Promise<ServiceResult> {
         const updatedResult = await this._userTokenRepository.update({ id }, { accessToken, refreshToken });
+
         if (!updatedResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound);
         }
@@ -47,6 +49,16 @@ export class UserTokenTypeOrmRepository implements IUserTokenRepository {
         await this._userTokenRepository.delete({
             updatedAt: LessThan(getOldRefreshTokenDate(new Date())),
         });
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
+    async removeAllUserTokens(): Promise<ServiceResult> {
+        const removeResult = await this._userTokenRepository.createQueryBuilder().delete().from(UserToken).execute();
+
+        if (!removeResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
 
         return new ServiceResult(ServiceResultType.Success);
     }

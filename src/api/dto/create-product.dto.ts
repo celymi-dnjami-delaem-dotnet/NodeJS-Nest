@@ -11,7 +11,6 @@ export class CreateProductDto {
     @Min(1)
     price: number;
 
-    @ApiProperty({ description: 'Product category id', required: true })
-    @IsNotEmpty()
+    @ApiProperty({ description: 'Product category ID. If it is missing - no category will be attached' })
     categoryId: string;
 }

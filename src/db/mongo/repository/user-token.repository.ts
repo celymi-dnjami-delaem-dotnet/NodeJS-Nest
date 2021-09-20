@@ -65,4 +65,14 @@ export class UserTokenMongooseRepository implements IUserTokenRepository {
 
         return new ServiceResult(ServiceResultType.Success);
     }
+
+    async removeAllUserTokens(): Promise<ServiceResult> {
+        const removeResult = await this._userTokenModel.deleteMany().exec();
+
+        if (!removeResult.deletedCount) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
 }

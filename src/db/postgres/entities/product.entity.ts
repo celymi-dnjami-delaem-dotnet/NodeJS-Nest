@@ -1,6 +1,7 @@
 import { Category } from './category.entity';
-import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { IProduct } from '../types/product.type';
+import { Rating } from './rating.entity';
 
 @Entity()
 export class Product implements IProduct {
@@ -21,6 +22,9 @@ export class Product implements IProduct {
 
     @ManyToOne(() => Category, (category) => category.products)
     category?: Category;
+
+    @OneToMany(() => Rating, (rating) => rating.product)
+    ratings?: Rating[];
 
     @Column({ default: new Date() })
     createdAt: Date;

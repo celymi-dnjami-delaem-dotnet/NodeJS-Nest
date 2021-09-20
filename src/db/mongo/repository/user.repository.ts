@@ -51,7 +51,7 @@ export class UserMongooseRepository implements IUserRepository {
     }
 
     async createUser(user: ICreateUserDb): Promise<ServiceResult<User>> {
-        return this.handleUserCreationDb(user, { _id: user.roleId });
+        return this.handleUserCreationDb(user, user.roleId && { _id: user.roleId });
     }
 
     async updateUser(user: User): Promise<ServiceResult<User>> {
@@ -91,6 +91,15 @@ export class UserMongooseRepository implements IUserRepository {
         return new ServiceResult(ServiceResultType.Success);
     }
 
+    async removeAllUsers(): Promise<ServiceResult> {
+        const removeResult = await this._userModel.deleteMany().exec();
+        if (!removeResult.deletedCount) {
+            return new ServiceResult(ServiceResultType.NotFound);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
     private async findUserById(id: string, includeChildren?: boolean): Promise<User> {
         return includeChildren
             ? this._userModel.findOne({ _id: id }).populate({ path: 'roles', model: 'Role' }).exec()
@@ -101,9 +110,13 @@ export class UserMongooseRepository implements IUserRepository {
         user: ICreateUserDb,
         roleSearchFilter: FilterQuery<RoleDocument>,
     ): Promise<ServiceResult<User>> {
-        const existingRole = await this._roleModel.findOne(roleSearchFilter).exec();
-        if (!existingRole) {
-            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+        let existingRole: Role;
+        if (existingRole) {
+            existingRole = await this._roleModel.findOne(roleSearchFilter).exec();
+
+            if (!existingRole) {
+                return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+            }
         }
 
         const newUser = new User();
@@ -111,7 +124,10 @@ export class UserMongooseRepository implements IUserRepository {
         newUser.firstName = user.firstName;
         newUser.lastName = user.lastName;
         newUser.password = user.password;
-        newUser.roles = [existingRole._id];
+
+        if (existingRole) {
+            newUser.roles = [existingRole];
+        }
 
         const userSchema = new this._userModel(newUser);
         const createdUser = await userSchema.save();

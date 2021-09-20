@@ -10,6 +10,7 @@ import { ConsoleLogger, DynamicModule, Module, Provider } from '@nestjs/common';
 import { DbOptions } from '../settings/settings.constants';
 import { Category as EntityCategory } from './postgres/entities/category.entity';
 import { Product as EntityProduct } from './postgres/entities/product.entity';
+import { Rating as EntityRating } from './postgres/entities/rating.entity';
 import { Role as EntityRole } from './postgres/entities/role.entity';
 import { User as EntityUser } from './postgres/entities/user.entity';
 import { UserToken as EntityUserToken } from './postgres/entities/user-token.entity';
@@ -23,6 +24,14 @@ import { ProductSchema, Product as SchemaProduct } from './mongo/schemas/product
 import { ProductSchemaMapper } from './mappers/schemas/product-schema.mapper';
 import { ProductServiceAdapter, ProductServiceAdapterName } from './adapter/product-service.adapter';
 import { ProductTypeOrmRepository } from './postgres/repository/product.repository';
+import { RatingDbMapperName } from './mappers/types/rating-mapper.type';
+import { RatingEntityMapper } from './mappers/entities/rating-entity.mapper';
+import { RatingMongooseRepository } from './mongo/repository/rating.repository';
+import { RatingRepositoryName } from './base-types/rating-repository.type';
+import { RatingSchema, Rating as SchemaRating } from './mongo/schemas/rating.schema';
+import { RatingSchemaMapper } from './mappers/schemas/rating-schema.mapper';
+import { RatingServiceAdapter, RatingServiceAdapterName } from './adapter/rating-service.adapter';
+import { RatingTypeOrmRepository } from './postgres/repository/rating.repository';
 import { RoleDbMapperName } from './mappers/types/role-mapper.type';
 import { RoleEntityMapper } from './mappers/entities/role-entity.mapper';
 import { RoleMongooseRepository } from './mongo/repository/role.repository';
@@ -77,6 +86,10 @@ export class DbModule {
                 provide: UserTokenServiceAdapterName,
                 useClass: UserTokenServiceAdapter,
             } as Provider,
+            {
+                provide: RatingServiceAdapterName,
+                useClass: RatingServiceAdapter,
+            } as Provider,
         ];
 
         if (process.env.DB_TYPE === DbOptions.Postgres) {
@@ -95,7 +108,14 @@ export class DbModule {
                     }),
                     inject: [SettingsService],
                 }),
-                TypeOrmModule.forFeature([EntityCategory, EntityProduct, EntityUser, EntityRole, EntityUserToken]),
+                TypeOrmModule.forFeature([
+                    EntityCategory,
+                    EntityProduct,
+                    EntityUser,
+                    EntityRole,
+                    EntityUserToken,
+                    EntityRating,
+                ]),
             );
 
             moduleProviders.push(
@@ -117,6 +137,10 @@ export class DbModule {
                     useClass: UserTokenTypeOrmRepository,
                 } as Provider,
                 {
+                    provide: RatingRepositoryName,
+                    useClass: RatingTypeOrmRepository,
+                } as Provider,
+                {
                     provide: CategoryDbMapperName,
                     useClass: CategoryEntityMapper,
                 } as Provider,
@@ -135,6 +159,10 @@ export class DbModule {
                 {
                     provide: UserTokenDbMapperName,
                     useClass: UserTokenEntityMapper,
+                } as Provider,
+                {
+                    provide: RatingDbMapperName,
+                    useClass: RatingEntityMapper,
                 } as Provider,
             );
         } else {
@@ -175,6 +203,10 @@ export class DbModule {
                         name: SchemaUserToken.name,
                         schema: UserTokenSchema,
                     },
+                    {
+                        name: SchemaRating.name,
+                        schema: RatingSchema,
+                    },
                 ]),
             );
 
@@ -195,7 +227,11 @@ export class DbModule {
                 {
                     provide: UserTokenRepositoryName,
                     useClass: UserTokenMongooseRepository,
-                },
+                } as Provider,
+                {
+                    provide: RatingRepositoryName,
+                    useClass: RatingMongooseRepository,
+                } as Provider,
                 {
                     provide: CategoryDbMapperName,
                     useClass: CategorySchemaMapper,
@@ -215,6 +251,10 @@ export class DbModule {
                 {
                     provide: UserTokenDbMapperName,
                     useClass: UserTokenSchemaMapper,
+                } as Provider,
+                {
+                    provide: RatingDbMapperName,
+                    useClass: RatingSchemaMapper,
                 } as Provider,
             );
         }

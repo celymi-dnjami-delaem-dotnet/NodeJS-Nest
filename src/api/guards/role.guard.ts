@@ -1,5 +1,5 @@
 import { AuthGuard } from '@nestjs/passport';
-import { ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class RolesGuard extends AuthGuard('jwt') {
@@ -13,7 +13,11 @@ export class RolesGuard extends AuthGuard('jwt') {
 
     handleRequest(_, user) {
         const { roles } = user;
-        if (!roles || !(roles as string[]).some((x) => this._roles.some((y) => y === x))) {
+        if (!roles || !roles.length) {
+            throw new UnauthorizedException();
+        }
+
+        if (!(roles as string[]).some((x) => this._roles.some((y) => y === x))) {
             throw new ForbiddenException();
         }
 

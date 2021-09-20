@@ -8,6 +8,7 @@ import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { LoggingModule } from '../logging/logging.module';
 import { Module } from '@nestjs/common';
 import { ProductController } from './controllers/product.controller';
+import { RatingController } from './controllers/rating.controller';
 import { RoleController } from './controllers/role.controller';
 import { SettingsModule } from '../settings/settings.module';
 import { TerminusModule } from '@nestjs/terminus';
@@ -21,6 +22,7 @@ import { UserController } from './controllers/user.controller';
         CategoryController,
         UserController,
         RoleController,
+        RatingController,
         HealthCheckController,
     ],
     providers: [

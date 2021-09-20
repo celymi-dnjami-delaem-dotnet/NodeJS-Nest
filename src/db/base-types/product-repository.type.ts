@@ -10,6 +10,7 @@ export interface IProductRepository {
     updateProduct: (productSchema: IBaseProduct) => Promise<ServiceResult<IBaseProduct>>;
     softRemoveProduct: (id: string) => Promise<ServiceResult>;
     removeProduct: (id: string) => Promise<ServiceResult>;
+    removeAllProducts: () => Promise<ServiceResult>;
 }
 
 export const ProductRepositoryName = Symbol('IProductRepository');

@@ -25,6 +25,7 @@ export class UserTypeOrmRepository implements IUserRepository {
 
     async getUserById(id: string): Promise<ServiceResult<User>> {
         const foundResult = await this.findUserById(id, true);
+
         if (!foundResult) {
             return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
@@ -37,8 +38,9 @@ export class UserTypeOrmRepository implements IUserRepository {
             userName: signInUser.userName,
             password: signInUser.password,
         });
+
         if (!foundResult) {
-            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
+            return new ServiceResult<User>(ServiceResultType.InvalidData, null, missingUserEntityExceptionMessage);
         }
 
         return new ServiceResult<User>(ServiceResultType.Success, foundResult);
@@ -49,7 +51,7 @@ export class UserTypeOrmRepository implements IUserRepository {
     }
 
     async createUser(createUserDb: ICreateUserDb): Promise<ServiceResult<User>> {
-        return this.handleUserCreation(createUserDb, { id: createUserDb.roleId });
+        return this.handleUserCreation(createUserDb, createUserDb.roleId && { id: createUserDb.roleId });
     }
 
     async updateUser(user: User): Promise<ServiceResult<User>> {
@@ -68,6 +70,7 @@ export class UserTypeOrmRepository implements IUserRepository {
 
     async softRemoveUser(id: string): Promise<ServiceResult> {
         const removeResult = await this._userRepository.update({ id }, { isDeleted: true });
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
         }
@@ -77,8 +80,19 @@ export class UserTypeOrmRepository implements IUserRepository {
 
     async removeUser(id: string): Promise<ServiceResult> {
         const removeResult = await this._userRepository.delete(id);
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingUserEntityExceptionMessage);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
+    async removeAllUsers(): Promise<ServiceResult> {
+        const removeResult = await this._userRepository.createQueryBuilder().delete().from(User).execute();
+
+        if (!removeResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
         }
 
         return new ServiceResult(ServiceResultType.Success);
@@ -92,9 +106,13 @@ export class UserTypeOrmRepository implements IUserRepository {
         createUser: ICreateUserDb,
         searchRoleCondition: FindConditions<Role>,
     ): Promise<ServiceResult<User>> {
-        const existingRole = await this._roleRepository.findOne(searchRoleCondition);
-        if (!existingRole) {
-            return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+        let existingRole: Role;
+        if (searchRoleCondition) {
+            existingRole = await this._roleRepository.findOne(searchRoleCondition);
+
+            if (!existingRole) {
+                return new ServiceResult<User>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+            }
         }
 
         const newUser = new User();
@@ -102,7 +120,10 @@ export class UserTypeOrmRepository implements IUserRepository {
         newUser.firstName = createUser.firstName;
         newUser.lastName = createUser.lastName;
         newUser.password = createUser.password;
-        newUser.roles = [existingRole];
+
+        if (searchRoleCondition) {
+            newUser.roles = [existingRole];
+        }
 
         const createdUser = await this._userRepository.save(newUser);
 

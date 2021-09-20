@@ -29,6 +29,15 @@ export class RoleMongooseRepository implements IRoleRepository {
         return new ServiceResult<Role>(ServiceResultType.Success, foundRole);
     }
 
+    async getRoleByName(name: string): Promise<ServiceResult<Role>> {
+        const foundRole = await this._roleModel.findOne({ displayName: name }).exec();
+        if (!foundRole) {
+            return new ServiceResult<Role>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+        }
+
+        return new ServiceResult<Role>(ServiceResultType.Success, foundRole);
+    }
+
     async createRole(newRole: ICreateRoleDb): Promise<Role> {
         const roleSchema = new this._roleModel(newRole);
 
@@ -86,6 +95,15 @@ export class RoleMongooseRepository implements IRoleRepository {
         const removeResult = await this._roleModel.remove({ _id: id });
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
+    async removeAllRoles(): Promise<ServiceResult> {
+        const removeResult = await this._roleModel.deleteMany().exec();
+        if (!removeResult.deletedCount) {
+            return new ServiceResult(ServiceResultType.NotFound);
         }
 
         return new ServiceResult(ServiceResultType.Success);

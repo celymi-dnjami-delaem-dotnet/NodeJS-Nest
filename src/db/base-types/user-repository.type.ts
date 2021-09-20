@@ -12,6 +12,7 @@ export interface IUserRepository {
     updateUser: (user: IBaseUser) => Promise<ServiceResult<IBaseUser>>;
     softRemoveUser: (id: string) => Promise<ServiceResult>;
     removeUser: (id: string) => Promise<ServiceResult>;
+    removeAllUsers: () => Promise<ServiceResult>;
 }
 
 export const UserRepositoryName = Symbol('IUserRepository');

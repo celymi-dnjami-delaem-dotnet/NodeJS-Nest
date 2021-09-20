@@ -9,12 +9,14 @@ import { ServiceResult } from '../../bl/result-wrappers/service-result';
 export interface IRoleServiceAdapter {
     getRoles: (collectionSearchCommand: ICollectionSearchCommand) => Promise<IRoleCommand[]>;
     getRoleById: (id: string) => Promise<ServiceResult<IRoleCommand>>;
+    getRoleByName: (name: string) => Promise<ServiceResult<IRoleCommand>>;
     createRole: (createRole: ICreateRoleCommand) => Promise<IRoleCommand>;
     updateRole: (role: IRoleCommand) => Promise<ServiceResult<IRoleCommand>>;
     grantRole: (roleId: string, userId: string) => Promise<ServiceResult>;
     revokeRole: (roleId: string, userId: string) => Promise<ServiceResult>;
     softRemoveRole: (id: string) => Promise<ServiceResult>;
     removeRole: (id: string) => Promise<ServiceResult>;
+    removeAllRoles: () => Promise<ServiceResult>;
 }
 
 export const RoleServiceAdapterName = Symbol('IRoleServiceAdapter');
@@ -42,12 +44,22 @@ export class RoleServiceAdapter implements IRoleServiceAdapter {
         );
     }
 
+    async getRoleByName(name: string): Promise<ServiceResult<IRoleCommand>> {
+        const { serviceResultType, exceptionMessage, data } = await this._roleRepository.getRoleByName(name);
+
+        return new ServiceResult<IRoleCommand>(
+            serviceResultType,
+            data && this._roleMapper.mapToCommandFromDb(data),
+            exceptionMessage,
+        );
+    }
+
     async createRole(createRole: ICreateRoleCommand): Promise<IRoleCommand> {
         const createDbRole = this._roleMapper.mapCreateToDbFromCommand(createRole);
 
-        const creationResult = await this._roleRepository.createRole(createDbRole);
+        const createdRoleResult = await this._roleRepository.createRole(createDbRole);
 
-        return this._roleMapper.mapToCommandFromDb(creationResult);
+        return this._roleMapper.mapToCommandFromDb(createdRoleResult);
     }
 
     async updateRole(role: IRoleCommand): Promise<ServiceResult<IRoleCommand>> {
@@ -76,5 +88,9 @@ export class RoleServiceAdapter implements IRoleServiceAdapter {
 
     async removeRole(id: string): Promise<ServiceResult> {
         return this._roleRepository.removeRole(id);
+    }
+
+    async removeAllRoles(): Promise<ServiceResult> {
+        return this._roleRepository.removeAllRoles();
     }
 }

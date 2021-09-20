@@ -1,0 +1,26 @@
+{
+  "roles": [
+    {
+      "displayName": "Admin"
+    },
+    {
+      "displayName": "Buyer"
+    }
+  ],
+  "users": [
+    {
+      "userName": "DefaultAdmin",
+      "firstName": "DefaultAdmin",
+      "lastName": "-",
+      "password": "123",
+      "role": "Admin"
+    },
+    {
+      "userName": "DefaultBuyer",
+      "firstName": "DefaultBuyer",
+      "lastName": "-",
+      "password": "123",
+      "role": "Buyer"
+    }
+  ]
+}

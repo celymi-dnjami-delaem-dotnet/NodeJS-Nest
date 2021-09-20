@@ -30,6 +30,15 @@ export class RoleTypeOrmRepository implements IRoleRepository {
         return new ServiceResult<IBaseRole>(ServiceResultType.Success, foundRole);
     }
 
+    async getRoleByName(name: string): Promise<ServiceResult<IBaseRole>> {
+        const foundRole = await this._roleRepository.findOne({ displayName: name });
+        if (!foundRole) {
+            return new ServiceResult<IBaseRole>(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+        }
+
+        return new ServiceResult<IBaseRole>(ServiceResultType.Success, foundRole);
+    }
+
     async createRole(createRole: ICreateRoleDb): Promise<IBaseRole> {
         const newRole = new Role();
         newRole.displayName = createRole.displayName;
@@ -70,6 +79,7 @@ export class RoleTypeOrmRepository implements IRoleRepository {
 
     async softRemoveRole(id: string): Promise<ServiceResult> {
         const softRemoveResult = await this._roleRepository.update(id, { isDeleted: true });
+
         if (!softRemoveResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
         }
@@ -79,8 +89,19 @@ export class RoleTypeOrmRepository implements IRoleRepository {
 
     async removeRole(id: string): Promise<ServiceResult> {
         const removeResult = await this._roleRepository.delete(id);
+
         if (!removeResult.affected) {
             return new ServiceResult(ServiceResultType.NotFound, null, missingRoleEntityExceptionMessage);
+        }
+
+        return new ServiceResult(ServiceResultType.Success);
+    }
+
+    async removeAllRoles(): Promise<ServiceResult> {
+        const removeResult = await this._roleRepository.createQueryBuilder().delete().from(Role).execute();
+
+        if (!removeResult.affected) {
+            return new ServiceResult(ServiceResultType.NotFound);
         }
 
         return new ServiceResult(ServiceResultType.Success);
