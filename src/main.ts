@@ -8,8 +8,6 @@ import { SeedService } from './seed/seed.service';
 import { SettingsService } from './settings/settings.service';
 
 async function bootstrap() {
-    const defaultPort = 3000;
-
     const app: INestApplication = await NestFactory.create(AppModule);
     const settingsService = app.get(SettingsService);
     const seedService = app.get(SeedService);
@@ -21,7 +19,7 @@ async function bootstrap() {
     registerSwagger(app);
     await seedService.seedData();
 
-    await app.listen(startPort || defaultPort);
+    await app.listen(startPort);
 }
 
 bootstrap();

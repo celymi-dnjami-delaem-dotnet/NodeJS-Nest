@@ -1,8 +1,5 @@
 import { ICollectionSearchCommand } from '../../bl/commands/collection-search.command';
-import { ICreateLastRatingCommand } from '../../bl/commands/create-last-rating.command';
 import { ICreateRatingCommand } from '../../bl/commands/create-rating.command';
-import { ILastRatingDbMapper, LastRatingDbMapperName } from '../mappers/types/last-rating-mapper.type';
-import { ILastRatingRepository, LastRatingRepositoryName } from '../base-types/last-rating-repository.type';
 import { IRatingCommand } from '../../bl/commands/rating.command';
 import { IRatingDbMapper, RatingDbMapperName } from '../mappers/types/rating-mapper.type';
 import { IRatingRepository, RatingRepositoryName } from '../base-types/rating-repository.type';
@@ -14,11 +11,9 @@ export interface IRatingServiceAdapter {
     getTopLastRatings: (limit: number) => Promise<IRatingCommand[]>;
     getRatingById: (id: string) => Promise<ServiceResult<IRatingCommand>>;
     setRating: (createRatingCommand: ICreateRatingCommand) => Promise<ServiceResult<IRatingCommand>>;
-    createLastRating: (createLastRatingCommand: ICreateLastRatingCommand) => Promise<void>;
     softRemoveRating: (id: string) => Promise<ServiceResult>;
     removeRating: (id: string) => Promise<ServiceResult>;
     removeAllRatings: () => Promise<ServiceResult>;
-    removeObsoleteRatings: () => Promise<void>;
 }
 
 export const RatingServiceAdapterName = Symbol('IRatingServiceAdapter');
@@ -26,9 +21,7 @@ export const RatingServiceAdapterName = Symbol('IRatingServiceAdapter');
 export class RatingServiceAdapter implements IRatingServiceAdapter {
     constructor(
         @Inject(RatingRepositoryName) private readonly _ratingRepository: IRatingRepository,
-        @Inject(LastRatingRepositoryName) private readonly _lastRatingRepository: ILastRatingRepository,
         @Inject(RatingDbMapperName) private readonly _ratingMapper: IRatingDbMapper,
-        @Inject(LastRatingDbMapperName) private readonly _lastRatingMapper: ILastRatingDbMapper,
     ) {}
 
     async getRatings({ limit, offset }: ICollectionSearchCommand): Promise<IRatingCommand[]> {
@@ -38,7 +31,7 @@ export class RatingServiceAdapter implements IRatingServiceAdapter {
     }
 
     async getTopLastRatings(limit: number): Promise<IRatingCommand[]> {
-        const ratings = await this._lastRatingRepository.getLastRatings(limit);
+        const ratings = await this._ratingRepository.getTopLastRatings(limit);
 
         return ratings.map((x) => this._ratingMapper.mapToCommandFromDb(x));
     }
@@ -65,12 +58,6 @@ export class RatingServiceAdapter implements IRatingServiceAdapter {
         );
     }
 
-    async createLastRating(createLastRatingCommand: ICreateLastRatingCommand): Promise<void> {
-        const createLastRatingDb = this._lastRatingMapper.mapCreateToDbFromCommand(createLastRatingCommand);
-
-        await this._lastRatingRepository.addLastRating(createLastRatingDb);
-    }
-
     async softRemoveRating(id: string): Promise<ServiceResult> {
         return this._ratingRepository.softRemoveRating(id);
     }
@@ -81,9 +68,5 @@ export class RatingServiceAdapter implements IRatingServiceAdapter {
 
     async removeAllRatings(): Promise<ServiceResult> {
         return this._ratingRepository.removeAllRatings();
-    }
-
-    async removeObsoleteRatings(): Promise<void> {
-        await this._lastRatingRepository.removeObsoleteRatings();
     }
 }
